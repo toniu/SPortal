@@ -1,0 +1,12 @@
+{
+    "sourceDirectory": "src",
+    "sharePointSiteUrl": "https://undefined",
+    "workspaceRoot": "/Users/neka/CS4825Repo",
+    "publishWorkspaceOptions": {
+        "destinationFolder": "/",
+        "globPattern": "/Users/neka/CS4825Repo/src/**/*.*",
+        "localRoot": "/Users/neka/CS4825Repo/src"
+    },
+    "publishingScope": "SaveOnly",
+    "authenticationType": "Digest"
+}
