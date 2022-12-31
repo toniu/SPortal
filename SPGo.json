@@ -1,6 +1,6 @@
 {
     "sourceDirectory": "src",
-    "sharePointSiteUrl": "https://undefined",
+    "sharePointSiteUrl": "https://rhul.sharepoint.com/sites/RHULComputerScienceIAB",
     "workspaceRoot": "/Users/neka/CS4825Repo",
     "publishWorkspaceOptions": {
         "destinationFolder": "/",
@@ -8,5 +8,5 @@
         "localRoot": "/Users/neka/CS4825Repo/src"
     },
     "publishingScope": "SaveOnly",
-    "authenticationType": "Digest"
+    "authenticationType": "NTLM"
 }
