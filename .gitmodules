@@ -1,4 +1,0 @@
-[submodule "sp-frontend"]
-	path = sp-frontend
-	url = https://github.com/BenRunInBay/vue3-spfx.git
-cd 
