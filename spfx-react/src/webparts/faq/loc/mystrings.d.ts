@@ -1,4 +1,4 @@
-declare interface IBaseWpWebPartStrings {
+declare interface IFaqWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -12,7 +12,7 @@ declare interface IBaseWpWebPartStrings {
   AppOutlookEnvironment: string;
 }
 
-declare module 'BaseWpWebPartStrings' {
-  const strings: IBaseWpWebPartStrings;
+declare module 'FaqWebPartStrings' {
+  const strings: IFaqWebPartStrings;
   export = strings;
 }

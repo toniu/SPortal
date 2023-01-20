@@ -1,9 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "5f1a051a-f846-46b7-ad00-1a07ec88f902",
-  "alias": "BaseWpWebPart",
+  "id": "77c782bd-4666-4bce-8be9-66a83be8ae05",
+  "alias": "FaqWebPart",
   "componentType": "WebPart",
-  "supportsThemeVariants": true,
 
   // The "*" signifies that the version should be taken from the package.json
   "version": "*",
@@ -19,11 +18,11 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Advanced
     "group": { "default": "Advanced" },
-    "title": { "default": "Base webpart" },
-    "description": { "default": "The webpart of the base of this project..." },
+    "title": { "default": "FAQ" },
+    "description": { "default": "FAQ description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "BaseWP"
+      "description": "FAQ"
     }
   }]
 }

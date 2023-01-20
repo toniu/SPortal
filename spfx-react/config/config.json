@@ -2,17 +2,19 @@
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
   "version": "2.0",
   "bundles": {
-    "base-wp-web-part": {
+    "faq-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/baseWp/BaseWpWebPart.js",
-          "manifest": "./src/webparts/baseWp/BaseWpWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/faq/FaqWebPart.js",
+          "manifest": "./src/webparts/faq/FaqWebPart.manifest.json"
         }
       ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "BaseWpWebPartStrings": "lib/webparts/baseWp/loc/{locale}.js"
+    "FaqWebPartStrings": "lib/webparts/faq/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
   }
 }
