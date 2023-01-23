@@ -8,41 +8,29 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'FaqWebPartStrings';
-import Faq from './components/Faq';
-import { IFaqProps } from './components/IFaqProps';
+import * as strings from 'HelloTailwindWebPartStrings';
+import HelloTailwind from './components/HelloTailwind';
+import { IHelloTailwindProps } from './components/IHelloTailwindProps';
 import '../../../assets/dist/tailwind.css';
 
-import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
-
-export interface IFaqWebPartProps {
+export interface IHelloTailwindWebPartProps {
   description: string;
-  list: string;
-  title: string;
 }
 
-export default class FaqWebPart extends BaseClientSideWebPart<IFaqWebPartProps> {
+export default class HelloTailwindWebPart extends BaseClientSideWebPart<IHelloTailwindWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IFaqProps> = React.createElement(
-      Faq,
+    const element: React.ReactElement<IHelloTailwindProps> = React.createElement(
+      HelloTailwind,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName,
-        context: this.context,
-        listGuid: this.properties.list,
-        title: this.properties.title,
-        displayMode: this.displayMode,
-        updateProperty: (value: string) => {
-          this.properties.title = value;
-        }
-        
+        userDisplayName: this.context.pageContext.user.displayName
       }
     );
 
@@ -102,21 +90,6 @@ export default class FaqWebPart extends BaseClientSideWebPart<IFaqWebPartProps> 
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
-                }),
-
-                PropertyFieldListPicker('list', {
-                  label: 'Select a list',
-                  selectedList: this.properties.list,
-                  includeHidden: false,
-                  orderBy: PropertyFieldListPickerOrderBy.Title,
-                  disabled: false,
-                  onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
-                  properties: this.properties,
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  context: this.context as any,
-                  onGetErrorMessage: null,
-                  deferredValidationTime: 0,
-                  key: 'listPickerFieldId'
                 })
               ]
             }

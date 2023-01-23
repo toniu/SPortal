@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
 'use strict';
 
 const build = require('@microsoft/sp-build-web');
@@ -12,5 +14,29 @@ build.rig.getTasks = function () {
 
   return result;
 };
+
+// TailwindCSS
+const postcss = require("gulp-postcss");
+const atimport = require("postcss-import");
+const tailwind = require("tailwindcss");
+
+const tailwindcss = build.subTask(
+   "tailwindcss",
+   function (gulp, buildOptions, done) {
+      gulp
+         .src("assets/tailwind.css")
+         .pipe(
+            postcss([
+               atimport(),
+               tailwind("./tailwind.config.js"),
+            ])
+         )
+         .pipe(gulp.dest("assets/dist"));
+      done();
+   }
+);
+build.rig.addPreBuildTask(tailwindcss);
+
+// wnd TailwindCSS
 
 build.initialize(require('gulp'));
