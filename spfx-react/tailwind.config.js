@@ -4,7 +4,7 @@ const plugin = require('tailwindcss/plugin');
 const customSpSectionVariant = ['sp-col-1', 'sp-col-1/2', 'sp-col-1/3', 'sp-col-2/3'];
 
 module.exports = {
-  purge: {
+  content: {
     enabled: true,
     content: ['./src/**/*.tsx'],
     options: {

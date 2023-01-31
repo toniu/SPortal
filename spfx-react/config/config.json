@@ -17,6 +17,14 @@
           "manifest": "./src/webparts/helloTailwind/HelloTailwindWebPart.manifest.json"
         }
       ]
+    },
+    "simple-poll-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/simplePoll/SimplePollWebPart.js",
+          "manifest": "./src/webparts/simplePoll/SimplePollWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -24,6 +32,7 @@
     "FaqWebPartStrings": "lib/webparts/faq/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
-    "HelloTailwindWebPartStrings": "lib/webparts/helloTailwind/loc/{locale}.js"
+    "HelloTailwindWebPartStrings": "lib/webparts/helloTailwind/loc/{locale}.js",
+    "SimplePollWebPartStrings": "lib/webparts/simplePoll/loc/{locale}.js"
   }
 }
