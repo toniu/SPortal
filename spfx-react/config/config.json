@@ -25,6 +25,22 @@
           "manifest": "./src/webparts/simplePoll/SimplePollWebPart.manifest.json"
         }
       ]
+    },
+    "calendar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/calendar/CalendarWebPart.js",
+          "manifest": "./src/webparts/calendar/CalendarWebPart.manifest.json"
+        }
+      ]
+    },
+    "feed-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/feed/FeedWebPart.js",
+          "manifest": "./src/webparts/feed/FeedWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -33,6 +49,8 @@
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
     "HelloTailwindWebPartStrings": "lib/webparts/helloTailwind/loc/{locale}.js",
-    "SimplePollWebPartStrings": "lib/webparts/simplePoll/loc/{locale}.js"
+    "SimplePollWebPartStrings": "lib/webparts/simplePoll/loc/{locale}.js",
+    "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
+    "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js"
   }
 }
