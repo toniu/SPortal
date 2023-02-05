@@ -41,6 +41,14 @@
           "manifest": "./src/webparts/feed/FeedWebPart.manifest.json"
         }
       ]
+    },
+    "groups-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/groups/GroupsWebPart.js",
+          "manifest": "./src/webparts/groups/GroupsWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -51,6 +59,7 @@
     "HelloTailwindWebPartStrings": "lib/webparts/helloTailwind/loc/{locale}.js",
     "SimplePollWebPartStrings": "lib/webparts/simplePoll/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
-    "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js"
+    "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js",
+    "GroupsWebPartStrings": "lib/webparts/groups/loc/{locale}.js"
   }
 }

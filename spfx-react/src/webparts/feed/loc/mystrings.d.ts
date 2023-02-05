@@ -1,4 +1,4 @@
-declare interface IReactNewsWebpartStrings {
+declare interface IFeedWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -7,7 +7,7 @@ declare interface IReactNewsWebpartStrings {
   sites: IPropertyFieldSite[];
 }
 
-declare module 'FeedWebpartStrings' {
-  const strings: IFeedWebpartStrings;
+declare module 'FeedWebPartStrings' {
+  const strings: IFeedWebPartStrings;
   export = strings;
 }

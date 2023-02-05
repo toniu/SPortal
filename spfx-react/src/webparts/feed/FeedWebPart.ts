@@ -9,7 +9,7 @@ import {
   PropertyPaneToggle
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import * as strings from 'FeedWebpartStrings';
+import * as strings from 'FeedWebPartStrings';
 import Feed from './components/FeedWebpart';
 import { IFeedWebpartProps } from './components/IFeedWebpartProps';
 import { IPropertyFieldSite, PropertyFieldSitePicker } from '@pnp/spfx-property-controls/lib/PropertyFieldSitePicker';
