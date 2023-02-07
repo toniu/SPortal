@@ -1,7 +1,10 @@
-export interface IHelloTailwindProps {
+import { WebPartContext } from "@microsoft/sp-webpart-base";
+
+export interface ICalendarAppProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  context: WebPartContext;
 }

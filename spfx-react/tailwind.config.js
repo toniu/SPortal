@@ -6,7 +6,7 @@ const customSpSectionVariant = ['sp-col-1', 'sp-col-1/2', 'sp-col-1/3', 'sp-col-
 module.exports = {
   content: {
     enabled: true,
-    content: ['./src/**/*.tsx'],
+    content: ['./src/**/*.{html,js,ts,jsx,tsx}'],
     options: {
       whitelistPatterns: [/^CanvasSection*/]
     }

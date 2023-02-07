@@ -10,43 +10,27 @@
         }
       ]
     },
-    "hello-tailwind-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/helloTailwind/HelloTailwindWebPart.js",
-          "manifest": "./src/webparts/helloTailwind/HelloTailwindWebPart.manifest.json"
-        }
-      ]
-    },
-    "simple-poll-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/simplePoll/SimplePollWebPart.js",
-          "manifest": "./src/webparts/simplePoll/SimplePollWebPart.manifest.json"
-        }
-      ]
-    },
-    "calendar-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/calendar/CalendarWebPart.js",
-          "manifest": "./src/webparts/calendar/CalendarWebPart.manifest.json"
-        }
-      ]
-    },
-    "feed-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/feed/FeedWebPart.js",
-          "manifest": "./src/webparts/feed/FeedWebPart.manifest.json"
-        }
-      ]
-    },
     "groups-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/groups/GroupsWebPart.js",
           "manifest": "./src/webparts/groups/GroupsWebPart.manifest.json"
+        }
+      ]
+    },
+    "calendar-app-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/calendarApp/CalendarAppWebPart.js",
+          "manifest": "./src/webparts/calendarApp/CalendarAppWebPart.manifest.json"
+        }
+      ]
+    },
+    "poll-app-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/pollApp/PollAppWebPart.js",
+          "manifest": "./src/webparts/pollApp/PollAppWebPart.manifest.json"
         }
       ]
     }
@@ -56,10 +40,8 @@
     "FaqWebPartStrings": "lib/webparts/faq/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
-    "HelloTailwindWebPartStrings": "lib/webparts/helloTailwind/loc/{locale}.js",
-    "SimplePollWebPartStrings": "lib/webparts/simplePoll/loc/{locale}.js",
-    "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js",
-    "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js",
-    "GroupsWebPartStrings": "lib/webparts/groups/loc/{locale}.js"
+    "GroupsWebPartStrings": "lib/webparts/groups/loc/{locale}.js",
+    "CalendarAppWebPartStrings": "lib/webparts/calendarApp/loc/{locale}.js",
+    "PollAppWebPartStrings": "lib/webparts/pollApp/loc/{locale}.js"
   }
 }

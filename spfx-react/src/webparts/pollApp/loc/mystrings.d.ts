@@ -1,4 +1,4 @@
-declare interface IHelloTailwindWebPartStrings {
+declare interface IPollAppWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -12,7 +12,7 @@ declare interface IHelloTailwindWebPartStrings {
   AppOutlookEnvironment: string;
 }
 
-declare module 'HelloTailwindWebPartStrings' {
-  const strings: IHelloTailwindWebPartStrings;
+declare module 'PollAppWebPartStrings' {
+  const strings: IPollAppWebPartStrings;
   export = strings;
 }

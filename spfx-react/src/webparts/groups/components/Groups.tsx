@@ -8,7 +8,7 @@ import { IGroupsProps } from './IGroupsProps';
 import { getSP } from '../../../pnpjsConfig';
 
 // Import library
-import {  PrimaryButton, Stack,MessageBar} from 'office-ui-fabric-react';
+import {  PrimaryButton, Stack} from 'office-ui-fabric-react';
 import { SPFI, IItemAddResult } from "@pnp/sp/presets/all";
 
 // Create state
@@ -32,29 +32,13 @@ export default class Groups extends React.Component<IGroupsProps, IGroupsState> 
   public render(): React.ReactElement<IGroupsProps> {
     return (
       <div className="m-5 p-3 bg-black-100">
-        <div className="m-3 p-3 bg-rose-400">
-          <div className="m-2 p-2 bg-gray-400">
-            <div className="m-2 p-1 bg-lime-400">
-              <span className="p-1 text-lg font-bold">Welcome to PnP JS List Items Operations Demo!</span>
-            </div>
-          </div>
-        </div>
-        <br />
-        <br />
+
         <Stack horizontal tokens={{childrenGap:40}}>
-                <PrimaryButton text="Create New Item" onClick={()=>this.createNewItem()}  />
-                <PrimaryButton text="Get Item" onClick={()=>this.getItem()} />
-                <PrimaryButton text="Update Item" onClick={()=>this.updateItem()} />
-                <PrimaryButton text="Delete Item" onClick={()=>this.deleteItem()} />
-             </Stack>
-             <br />
-            <br />
-             {this.state.showmessageBar &&
-             <MessageBar   onDismiss={()=>this.setState({showmessageBar:false})}
-                dismissButtonAriaLabel="Close">
-                  {this.state.message}
-            </MessageBar>
-            }
+          <PrimaryButton text="Create New Item" onClick={()=>this.createNewItem()}  />
+          <PrimaryButton text="Get Item" onClick={()=>this.getItem()} />
+          <PrimaryButton text="Update Item" onClick={()=>this.updateItem()} />
+          <PrimaryButton text="Delete Item" onClick={()=>this.deleteItem()} />
+        </Stack>
       </div>
     );
   }

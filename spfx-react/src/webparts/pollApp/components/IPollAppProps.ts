@@ -1,4 +1,4 @@
-export interface ICalendarProps {
+export interface IPollAppProps {
   description: string;
   isDarkTheme: boolean;
   environmentMessage: string;

@@ -1,4 +1,4 @@
-declare interface ICalendarWebPartStrings {
+declare interface ICalendarAppWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -12,7 +12,7 @@ declare interface ICalendarWebPartStrings {
   AppOutlookEnvironment: string;
 }
 
-declare module 'CalendarWebPartStrings' {
-  const strings: ICalendarWebPartStrings;
+declare module 'CalendarAppWebPartStrings' {
+  const strings: ICalendarAppWebPartStrings;
   export = strings;
 }

@@ -8,28 +8,30 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'CalendarWebPartStrings';
-import Calendar from './components/Calendar';
-import { ICalendarProps } from './components/ICalendarProps';
+import * as strings from 'CalendarAppWebPartStrings';
+import CalendarApp from './components/CalendarApp';
+import { ICalendarAppProps } from './components/ICalendarAppProps';
+import '../../../assets/dist/tailwind.css';
 
-export interface ICalendarWebPartProps {
+export interface ICalendarAppWebPartProps {
   description: string;
 }
 
-export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebPartProps> {
+export default class CalendarAppWebPart extends BaseClientSideWebPart<ICalendarAppWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<ICalendarProps> = React.createElement(
-      Calendar,
+    const element: React.ReactElement<ICalendarAppProps> = React.createElement(
+      CalendarApp,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        context: this.context
       }
     );
 
