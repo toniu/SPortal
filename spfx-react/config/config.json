@@ -33,6 +33,14 @@
           "manifest": "./src/webparts/pollApp/PollAppWebPart.manifest.json"
         }
       ]
+    },
+    "profile-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/profile/ProfileWebPart.js",
+          "manifest": "./src/webparts/profile/ProfileWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -42,6 +50,7 @@
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
     "GroupsWebPartStrings": "lib/webparts/groups/loc/{locale}.js",
     "CalendarAppWebPartStrings": "lib/webparts/calendarApp/loc/{locale}.js",
-    "PollAppWebPartStrings": "lib/webparts/pollApp/loc/{locale}.js"
+    "PollAppWebPartStrings": "lib/webparts/pollApp/loc/{locale}.js",
+    "ProfileWebPartStrings": "lib/webparts/profile/loc/{locale}.js"
   }
 }
