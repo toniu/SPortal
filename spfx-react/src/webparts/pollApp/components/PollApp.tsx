@@ -5,9 +5,14 @@ import * as React from 'react';
 import { IPollAppProps } from './IPollAppProps';
 /* Icons */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusSquare } from "@fortawesome/free-solid-svg-icons"
+import { faChartColumn, faPlusSquare } from "@fortawesome/free-solid-svg-icons"
 import { faFilter } from "@fortawesome/free-solid-svg-icons"
 import { faSquarePollVertical } from "@fortawesome/free-solid-svg-icons"
+import { faInfo } from "@fortawesome/free-solid-svg-icons"
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons"
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons"
+import { faSearch } from "@fortawesome/free-solid-svg-icons"
+import { faUser } from "@fortawesome/free-solid-svg-icons"
 
 
 const pollQuestions = [
@@ -109,44 +114,197 @@ const PollApp = (props: IPollAppProps) => {
     /* Populate data into variables which can be used for rendering */
 
     return (
-      <div className="p-2 m-2 bg-gray-300">
-        <div className="block">
-          <div className="py-2 bg-gray-200 border-t-4 border-black rounded-b-lg">
-            <div className="flex">
-              <h2 className="p-2"> my polls </h2>
-              <button type="button" className="p-2 m-2 bg-indigo-700 text-white hover:bg-indigo-600 transition 0.2s rounded-md" >
+      <div className="container p-1 flex">
+        <div className="my-polls m-1 bg-gray-300 border-t-4 border-indigo-600 w-2/5">
+          <div className="flow-root">
+            <h1 className="p-3 float-left font-bold text-base"> my polls </h1>
+            <div className="p-1 m-1 float-right">
+              <button type="button" className="new-poll px-3 py-1 mx-2 rounded-full text-white font-semibold bg-indigo-800 hover:bg-indigo-600 transition 0.2s">
                 <FontAwesomeIcon icon={faPlusSquare} className="mx-1" />
-                New poll
+                new poll
               </button>
-              <button type="button" className="p-2 m-2 text-2xl text-black hover:text-gray-700 transition 0.2s" >
+              <button type="button" className="new-poll p-1 mx-1 rounded-lg text-black text-2xl font-bold hover:text-gray-800 transition 0.2s">
                 <FontAwesomeIcon icon={faFilter} className="mx-1" />
               </button>
             </div>
-            
-            <div className="p-2 m-3 bg-gray-800">
-              <ul className="overflow-scroll p-2">
-                <li className="bg-white flex rounded p-1 text-base">
-                <FontAwesomeIcon icon={faSquarePollVertical} className="mx-1 text-black" />
-                Poll A
-                <div className="m-1 top-0 right-0">
-                  <h3> Uploaded 1h ago </h3>
-                  <div className="m-1">
-                  <FontAwesomeIcon icon={faSquarePollVertical} className="m-1 bg-black text-white" />
-                  <FontAwesomeIcon icon={faSquarePollVertical} className="m-1 bg-indigo-700 text-white" />
-                  <FontAwesomeIcon icon={faSquarePollVertical} className="m-1 bg-pink-900 text-white" />
+          </div>
+          <div className="polls-box p-2 m-2 bg-black bg-opacity-75">
+            <ul className="p-2 overflow-y-scroll h-48">
+              <li className="p-1 m-1 bg-white flow-root">
+                <div className="py-1 mx-1 text-base float-left">
+                  <FontAwesomeIcon icon={faSquarePollVertical} className="mx-2 text-black text-2xl" />
+                  Poll A
+                </div>
+                <div className="px-1 m-1 block float-right">
+                  <span className="py-1 text-black text-sm font-normal">
+                    Uploaded 1h ago
+                  </span>
+                  <div className="text-center">
+                    <button type="button" className="info-poll px-2 mx-1 rounded-full text-white font-semibold bg-black hover:bg-gray-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faInfo} className="mx-1" />
+                    </button>
+                    <button type="button" className="edit-poll px-1 mx-1 rounded-full text-white font-semibold bg-indigo-900 hover:bg-indigo-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faPenToSquare} className="mx-1" />
+                    </button>
+                    <button type="button" className="delete-poll px-1 mx-1 rounded-full text-white font-semibold bg-pink-900 hover:bg-pink-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faTrashCan} className="mx-1" />
+                    </button>
                   </div>
                 </div>
-                </li>
-              </ul>
+              </li>
+              <li className="p-1 m-1 bg-white flow-root">
+                <div className="py-1 mx-1 text-base float-left">
+                  <FontAwesomeIcon icon={faSquarePollVertical} className="mx-2 text-black text-2xl" />
+                  Poll B
+                </div>
+                <div className="px-1 m-1 block float-right">
+                  <span className="py-1 text-black text-sm font-normal">
+                    Uploaded 3h ago
+                  </span>
+                  <div className="text-center">
+                    <button type="button" className="info-poll px-2 mx-1 rounded-full text-white font-semibold bg-black hover:bg-gray-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faInfo} className="mx-1" />
+                    </button>
+                    <button type="button" className="edit-poll px-1 mx-1 rounded-full text-white font-semibold bg-indigo-900 hover:bg-indigo-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faPenToSquare} className="mx-1" />
+                    </button>
+                    <button type="button" className="delete-poll px-1 mx-1 rounded-full text-white font-semibold bg-pink-900 hover:bg-pink-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faTrashCan} className="mx-1" />
+                    </button>
+                  </div>
+                </div>
+              </li>
+              <li className="p-1 m-1 bg-white flow-root">
+                <div className="py-1 mx-1 text-base float-left">
+                  <FontAwesomeIcon icon={faSquarePollVertical} className="mx-2 text-black text-2xl" />
+                  Poll C
+                </div>
+                <div className="px-1 m-1 block float-right">
+                  <span className="py-1 text-black text-sm font-normal">
+                    Uploaded 21h ago
+                  </span>
+                  <div className="text-center">
+                    <button type="button" className="info-poll px-2 mx-1 rounded-full text-white font-semibold bg-black hover:bg-gray-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faInfo} className="mx-1" />
+                    </button>
+                    <button type="button" className="edit-poll px-1 mx-1 rounded-full text-white font-semibold bg-indigo-900 hover:bg-indigo-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faPenToSquare} className="mx-1" />
+                    </button>
+                    <button type="button" className="delete-poll px-1 mx-1 rounded-full text-white font-semibold bg-pink-900 hover:bg-pink-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faTrashCan} className="mx-1" />
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="user-polls m-1 bg-gray-300 border-t-4 border-indigo-600 w-3/5">
+          <div className="flow-root">
+            <h1 className="p-3 float-left font-bold text-base"> user polls </h1>
+            <div className="p-1 m-1 flex float-right">
+
+              <div className="flex h-8 rounded-lg focus-within:shadow-lg bg-white overflow-hidden">
+                <div className="grid place-items-center h-full w-12 text-gray-300">
+                  <FontAwesomeIcon icon={faSearch} className="mx-2 text-black text-xl" />
+                </div>
+
+                <input
+                  className="peer h-full w-full outline-none text-sm text-gray-700 pr-2 focus:text-black"
+                  type="text"
+                  id="search" />
+              </div>
+
+              <button type="button" className="new-poll p-1 mx-1 rounded-lg text-black text-2xl font-bold hover:text-gray-800 transition 0.2s">
+                <FontAwesomeIcon icon={faFilter} className="mx-1" />
+              </button>
             </div>
           </div>
-          <div className="bg-gray-200 border-t-4 border-black rounded-b-lg">
-            <h2 className="p-2"> user polls </h2>
-            <div className="-">
-              <ul className="">
-                <li> . </li>
-              </ul>
-            </div>
+          <div className="polls-box p-2 m-2 bg-black bg-opacity-75">
+            <ul className="p-2 overflow-y-scroll h-48">
+              <li className="p-1 m-1 bg-white flow-root">
+                <div className="py-1 mx-1 text-base flex float-left">
+                  <FontAwesomeIcon icon={faSquarePollVertical} className="mx-2 text-black text-2xl" />
+                  <div className="block">
+                    <span className="p-1 mx-1 font-normal">
+                      Meeting A Poll
+                    </span>
+                    <span className="p-1 block font-normal">
+                      <FontAwesomeIcon icon={faUser} className="mx-2 text-black text-base" />
+                      M.Stevens
+                    </span>
+                  </div>
+                </div>
+                <div className="px-1 m-1 block float-right">
+                  <span className="py-1 text-black text-sm font-normal">
+                    Uploaded 1h ago
+                  </span>
+                  <div className="text-center">
+                    <button type="button" className="info-poll px-2 mx-1 rounded-full text-white font-semibold bg-black hover:bg-gray-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faChartColumn} className="mx-1" />
+                    </button>
+                    <button type="button" className="delete-poll px-1 mx-1 rounded-full text-white font-semibold bg-pink-900 hover:bg-pink-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faTrashCan} className="mx-2" />
+                    </button>
+                  </div>
+                </div>
+              </li>
+              <li className="p-1 m-1 bg-white flow-root">
+                <div className="py-1 mx-1 text-base flex float-left">
+                  <FontAwesomeIcon icon={faSquarePollVertical} className="mx-2 text-black text-2xl" />
+                  <div className="block">
+                    <span className="p-1 mx-1 font-normal">
+                      Meeting B Poll
+                    </span>
+                    <span className="p-1 block font-normal">
+                      <FontAwesomeIcon icon={faUser} className="mx-2 text-black text-base" />
+                      P.Tucker
+                    </span>
+                  </div>
+                </div>
+                <div className="px-1 m-1 block float-right">
+                  <span className="py-1 text-black text-sm font-normal">
+                    Uploaded 1h ago
+                  </span>
+                  <div className="text-center">
+                    <button type="button" className="info-poll px-2 mx-1 rounded-full text-white font-semibold bg-black hover:bg-gray-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faChartColumn} className="mx-1" />
+                    </button>
+                    <button type="button" className="delete-poll px-1 mx-1 rounded-full text-white font-semibold bg-pink-900 hover:bg-pink-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faTrashCan} className="mx-2" />
+                    </button>
+                  </div>
+                </div>
+              </li>
+              <li className="p-1 m-1 bg-white flow-root">
+                <div className="py-1 mx-1 text-base flex float-left">
+                  <FontAwesomeIcon icon={faSquarePollVertical} className="mx-2 text-black text-2xl" />
+                  <div className="block">
+                    <span className="p-1 mx-1 font-normal">
+                      Meeting C Poll
+                    </span>
+                    <span className="p-1 block font-normal">
+                      <FontAwesomeIcon icon={faUser} className="mx-2 text-black text-base" />
+                      D.Andrews
+                    </span>
+                  </div>
+                </div>
+                <div className="px-1 m-1 block float-right">
+                  <span className="py-1 text-black text-sm font-normal">
+                    Uploaded 1h ago
+                  </span>
+                  <div className="text-center">
+                    <button type="button" className="info-poll px-2 mx-1 rounded-full text-white font-semibold bg-black hover:bg-gray-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faChartColumn} className="mx-1" />
+                    </button>
+                    <button type="button" className="delete-poll px-1 mx-1 rounded-full text-white font-semibold bg-pink-900 hover:bg-pink-600 transition 0.2s">
+                      <FontAwesomeIcon icon={faTrashCan} className="mx-2" />
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
