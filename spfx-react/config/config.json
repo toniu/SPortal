@@ -41,6 +41,14 @@
           "manifest": "./src/webparts/profile/ProfileWebPart.manifest.json"
         }
       ]
+    },
+    "dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/dashboard/DashboardWebPart.js",
+          "manifest": "./src/webparts/dashboard/DashboardWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -51,6 +59,7 @@
     "GroupsWebPartStrings": "lib/webparts/groups/loc/{locale}.js",
     "CalendarAppWebPartStrings": "lib/webparts/calendarApp/loc/{locale}.js",
     "PollAppWebPartStrings": "lib/webparts/pollApp/loc/{locale}.js",
-    "ProfileWebPartStrings": "lib/webparts/profile/loc/{locale}.js"
+    "ProfileWebPartStrings": "lib/webparts/profile/loc/{locale}.js",
+    "DashboardWebPartStrings": "lib/webparts/dashboard/loc/{locale}.js"
   }
 }
