@@ -8,25 +8,30 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'ProfileWebPartStrings';
-import Profile from './components/Profile';
-import { IProfileProps } from './components/IProfileProps';
+import * as strings from 'DashboardAppWebPartStrings';
+import DashboardApp from './components/DashboardApp';
+import { IDashboardAppProps } from './components/IDashboardAppProps';
 import '../../../assets/dist/tailwind.css';
 
-export interface IProfileWebPartProps {
+export interface IDashboardAppWebPartProps {
   description: string;
 }
 
-export default class ProfileWebPart extends BaseClientSideWebPart<IProfileWebPartProps> {
+export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboardAppWebPartProps> {
+
+  private _isDarkTheme: boolean = false;
+  private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IProfileProps> = React.createElement(
-      Profile,
+    const element: React.ReactElement<IDashboardAppProps> = React.createElement(
+      DashboardApp,
       {
         description: this.properties.description,
+        isDarkTheme: this._isDarkTheme,
+        environmentMessage: this._environmentMessage,
+        hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        userName: encodeURIComponent('i:0#.f|membership|' + this.context.pageContext.user.loginName),
-        serviceScope: this.context.serviceScope
+        context: this.context
       }
     );
 
@@ -35,7 +40,7 @@ export default class ProfileWebPart extends BaseClientSideWebPart<IProfileWebPar
 
   protected onInit(): Promise<void> {
     return this._getEnvironmentMessage().then(message => {
-      //
+      this._environmentMessage = message;
     });
   }
 
@@ -72,6 +77,7 @@ export default class ProfileWebPart extends BaseClientSideWebPart<IProfileWebPar
       return;
     }
 
+    this._isDarkTheme = !!currentTheme.isInverted;
     const {
       semanticColors
     } = currentTheme;

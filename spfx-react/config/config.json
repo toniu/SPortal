@@ -10,14 +10,6 @@
         }
       ]
     },
-    "groups-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/groups/GroupsWebPart.js",
-          "manifest": "./src/webparts/groups/GroupsWebPart.manifest.json"
-        }
-      ]
-    },
     "calendar-app-web-part": {
       "components": [
         {
@@ -42,19 +34,27 @@
         }
       ]
     },
-    "dashboard-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/dashboard/DashboardWebPart.js",
-          "manifest": "./src/webparts/dashboard/DashboardWebPart.manifest.json"
-        }
-      ]
-    },
     "feed-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/feed/FeedWebPart.js",
           "manifest": "./src/webparts/feed/FeedWebPart.manifest.json"
+        }
+      ]
+    },
+    "groups-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/groups/GroupsWebPart.js",
+          "manifest": "./src/webparts/groups/GroupsWebPart.manifest.json"
+        }
+      ]
+    },
+    "dashboard-app-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/dashboardApp/DashboardAppWebPart.js",
+          "manifest": "./src/webparts/dashboardApp/DashboardAppWebPart.manifest.json"
         }
       ]
     }
@@ -64,11 +64,11 @@
     "FaqWebPartStrings": "lib/webparts/faq/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
-    "GroupsWebPartStrings": "lib/webparts/groups/loc/{locale}.js",
     "CalendarAppWebPartStrings": "lib/webparts/calendarApp/loc/{locale}.js",
     "PollAppWebPartStrings": "lib/webparts/pollApp/loc/{locale}.js",
     "ProfileWebPartStrings": "lib/webparts/profile/loc/{locale}.js",
-    "DashboardWebPartStrings": "lib/webparts/dashboard/loc/{locale}.js",
-    "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js"
+    "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js",
+    "GroupsWebPartStrings": "lib/webparts/groups/loc/{locale}.js",
+    "DashboardAppWebPartStrings": "lib/webparts/dashboardApp/loc/{locale}.js"
   }
 }

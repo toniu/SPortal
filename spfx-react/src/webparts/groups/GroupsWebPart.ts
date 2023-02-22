@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
@@ -19,19 +18,23 @@ export interface IGroupsWebPartProps {
 
 export default class GroupsWebPart extends BaseClientSideWebPart<IGroupsWebPartProps> {
 
+
   public render(): void {
     const element: React.ReactElement<IGroupsProps> = React.createElement(
       Groups,
       {
         description: this.properties.description,
-        spcontext:this.context
+        userDisplayName: this.context.pageContext.user.displayName,
+        spcontext: this.context
       }
     );
+
     ReactDom.render(element, this.domElement);
   }
 
   protected onInit(): Promise<void> {
     return this._getEnvironmentMessage().then(message => {
+      // this._environmentMessage = message;
     });
   }
 
@@ -68,6 +71,7 @@ export default class GroupsWebPart extends BaseClientSideWebPart<IGroupsWebPartP
       return;
     }
 
+    // this._isDarkTheme = !!currentTheme.isInverted;
     const {
       semanticColors
     } = currentTheme;

@@ -1,7 +1,8 @@
+import { ServiceScope } from '@microsoft/sp-core-library'
+
 export interface IProfileProps {
   description: string;
-  isDarkTheme: boolean;
-  environmentMessage: string;
-  hasTeamsContext: boolean;
   userDisplayName: string;
+  userName: string;
+  serviceScope: ServiceScope;
 }
