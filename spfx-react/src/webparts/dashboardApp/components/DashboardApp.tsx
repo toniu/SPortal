@@ -1,14 +1,44 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from 'react';
 import { IDashboardAppProps } from './IDashboardAppProps';
+/* SP/PNP imports */
+import { SPFI } from '@pnp/sp';
+import { getSP } from '../../../pnpjsConfig';
 /* Icons */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFile } from "@fortawesome/free-solid-svg-icons"
 
 export default class DashboardApp extends React.Component<IDashboardAppProps, {}> {
-  public getEventsData() {
-    console.log("hey")
-    return true;
+  private _sp:SPFI;
+
+  constructor(props: IDashboardAppProps) {
+    super(props);
+    /* Get context of SP */
+    this._sp = getSP(props.context);
+  }
+
+  /* Get all items */
+  private getAllEvents = async () => {
+    try {
+      /* Recreate list, columns are messed up at the moment */
+      /* Get list of all events */
+      const events: any[] = await this._sp.web.lists.getByTitle("Events").items();
+
+      console.log("SUCCESS: ", events);
+      
+      /* Get list of all events */
+      /* Filtered list of 3 events max. past today's date */
+      /* Filtered list of 3 events max. after today's date */
+      /* Use filtered lists to present recent meetings and upcoming meetings */
+
+    } catch (e) {
+      console.error("ERROR: ", e);
+    }
+  }
+
+  public async componentDidMount(): Promise<void> {
+    await this.getAllEvents();
   }
 
   public render(): React.ReactElement<IDashboardAppProps> {

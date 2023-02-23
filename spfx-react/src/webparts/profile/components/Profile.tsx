@@ -34,7 +34,7 @@ export class UserProfile implements IUserProfile {
 /* getProfileInfo(ID): to get name, and other information etc. */
 /* getAllStudents(ID): get IDs and randomly select some to present to "discover more" */
 
-export default class Profile extends React.Component<IProfileProps, {userProfileItems: any}> {
+export default class Profile extends React.Component<IProfileProps, { userProfileItems: any }> {
 
   private dataCenterServiceInstance: IDataService;
 
@@ -53,7 +53,7 @@ export default class Profile extends React.Component<IProfileProps, {userProfile
     userProfile.UserProfileProperties = [];
 
     this.state = {
-      userProfileItems: {}
+      userProfileItems: userProfile
     }
   }
 
@@ -97,7 +97,7 @@ export default class Profile extends React.Component<IProfileProps, {userProfile
             <div className="profile-icon flex">
 
               <h1 className="name p-3 text-2xl text-white">
-                {this.state.userProfileItems.LastName}
+                {this.state.userProfileItems.FirstName} {this.state.userProfileItems.LastName}
               </h1>
             </div>
           </div>
@@ -106,10 +106,10 @@ export default class Profile extends React.Component<IProfileProps, {userProfile
           </button>
           <div className="roles p-2">
             <h2 className="p-1 font-light text-xl">
-              MSci Computer Science
+              {this.state.userProfileItems.Title}
             </h2>
             <h3 className="p-1 font-semibold text-base">
-              Artitificial Intelligence
+              {this.state.userProfileItems.Department}
             </h3>
           </div>
           <div className="groups-box p-1 flex">
