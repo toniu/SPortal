@@ -1,10 +1,10 @@
-eventID,eventName,startDate,endDate,hostedBy
-1,Catch-up meeting,01/02/2023 21:00:00,01/02/2023 21:00:00,maggie.fry@rhul.ac.uk
-2,Weekly meeting,03/02/2023 17:00:00,03/02/2023 19:00:00,adelaide.meadows@rhul.ac.uk
-3,Maintenance meeting,05/02/2023 15:00:00,05/02/2023 17:00:00,maggie.fry@rhul.ac.uk
-4,Review meeting,07/02/2023 13:00:00,07/02/2023 15:00:00,adelaide.meadows@rhul.ac.uk
-5,Catch-up meeting,02/03/2023 12:00:00,02/03/2023 13:00:00,paige.trevino@rhul.ac.uk
-6,Weekly meeting,11/02/2023 09:00:00,11/02/2023 11:00:00,maggie.fry@rhul.ac.uk
-7,Evaluation meeting,11/03/2023 13:00:00,11/03/2023 15:00:00,hector.hayes@rhul.ac.uk
-9,Code of Ethics meeting,13/03/2023 13:00:00,13/03/2023 15:00:00,ines.welch@rhul.ac.uk
-10,Review meeting,15/03/2023 13:00:00,15/03/2023 15:00:00,hussein.riddle@rhul.ac.uk
+eventNo,eName,starts,ends,host
+"1","Catch-up meeting","2/1/2023","2/1/2023","maggie.fry@rhul.ac.uk"
+"2","Weekly meeting","2/3/2023","2/1/2023","adelaide.meadows@rhul.ac.uk"
+"3","Maintenance meeting","2/5/2023","2/5/2023","maggie.fry@rhul.ac.uk"
+"4","Review meeting","2/7/2023","2/7/2023","adelaide.meadows@rhul.ac.uk"
+"5","Catch-up meeting","3/7/2023","3/2/2023","paige.trevino@rhul.ac.uk"
+"6","Weekly meeting","2/11/2023","2/11/2023","maggie.fry@rhul.ac.uk"
+"7","Evaluation meeting","3/11/2023","3/11/2023","hector.hayes@rhul.ac.uk"
+"8","Code of Ethics meeting","3/13/2023","3/13/2023","ines.welch@rhul.ac.uk"
+"9","Review meeting","3/15/2023","3/15/2023","hussein.riddle@rhul.ac.uk"
