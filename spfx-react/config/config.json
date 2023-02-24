@@ -57,6 +57,14 @@
           "manifest": "./src/webparts/dashboardApp/DashboardAppWebPart.manifest.json"
         }
       ]
+    },
+    "check-user-group-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/checkUserGroup/CheckUserGroupWebPart.js",
+          "manifest": "./src/webparts/checkUserGroup/CheckUserGroupWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -69,6 +77,7 @@
     "ProfileWebPartStrings": "lib/webparts/profile/loc/{locale}.js",
     "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js",
     "GroupsWebPartStrings": "lib/webparts/groups/loc/{locale}.js",
-    "DashboardAppWebPartStrings": "lib/webparts/dashboardApp/loc/{locale}.js"
+    "DashboardAppWebPartStrings": "lib/webparts/dashboardApp/loc/{locale}.js",
+    "CheckUserGroupWebPartStrings": "lib/webparts/checkUserGroup/loc/{locale}.js"
   }
 }

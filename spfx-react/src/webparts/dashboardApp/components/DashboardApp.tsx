@@ -57,7 +57,14 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, {}
     }
   }
 
-  public getRecentPoll() {
+  public getRecentPoll = async() => {
+    try {
+      const polls: any[] = await this._sp.web.lists.getByTitle("Polls").items.select()();
+      console.log(polls)
+
+    } catch (e) {
+      console.error("ERROR: ", e)
+    }
     return;
   }
 
