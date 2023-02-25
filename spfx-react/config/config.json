@@ -42,14 +42,6 @@
         }
       ]
     },
-    "groups-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/groups/GroupsWebPart.js",
-          "manifest": "./src/webparts/groups/GroupsWebPart.manifest.json"
-        }
-      ]
-    },
     "dashboard-app-web-part": {
       "components": [
         {
@@ -65,6 +57,14 @@
           "manifest": "./src/webparts/checkUserGroup/CheckUserGroupWebPart.manifest.json"
         }
       ]
+    },
+    "group-membership-manager-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/groupMembershipManager/GroupMembershipManagerWebPart.js",
+          "manifest": "./src/webparts/groupMembershipManager/GroupMembershipManagerWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -76,8 +76,8 @@
     "PollAppWebPartStrings": "lib/webparts/pollApp/loc/{locale}.js",
     "ProfileWebPartStrings": "lib/webparts/profile/loc/{locale}.js",
     "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js",
-    "GroupsWebPartStrings": "lib/webparts/groups/loc/{locale}.js",
     "DashboardAppWebPartStrings": "lib/webparts/dashboardApp/loc/{locale}.js",
-    "CheckUserGroupWebPartStrings": "lib/webparts/checkUserGroup/loc/{locale}.js"
+    "CheckUserGroupWebPartStrings": "lib/webparts/checkUserGroup/loc/{locale}.js",
+    "GroupMembershipManagerWebPartStrings": "lib/webparts/groupMembershipManager/loc/{locale}.js"
   }
 }
