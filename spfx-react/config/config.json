@@ -65,6 +65,14 @@
           "manifest": "./src/webparts/groupMembershipManager/GroupMembershipManagerWebPart.manifest.json"
         }
       ]
+    },
+    "group-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/groupManagement/GroupManagementWebPart.js",
+          "manifest": "./src/webparts/groupManagement/GroupManagementWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -78,6 +86,7 @@
     "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js",
     "DashboardAppWebPartStrings": "lib/webparts/dashboardApp/loc/{locale}.js",
     "CheckUserGroupWebPartStrings": "lib/webparts/checkUserGroup/loc/{locale}.js",
-    "GroupMembershipManagerWebPartStrings": "lib/webparts/groupMembershipManager/loc/{locale}.js"
+    "GroupMembershipManagerWebPartStrings": "lib/webparts/groupMembershipManager/loc/{locale}.js",
+    "GroupManagementWebPartStrings": "lib/webparts/groupManagement/loc/{locale}.js"
   }
 }
