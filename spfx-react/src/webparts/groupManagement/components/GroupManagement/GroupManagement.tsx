@@ -86,29 +86,29 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
 
   public _getGroups = (): void => {
     O365GroupService.getMyOwnerGroups().then(groups => {
-      console.log(groups);
+      console.log('Get owner groups: ', groups);
       this.setState({
         ownerGroups: groups.map((item: { id: any; }) => item.id),
         loadCount: this.state.loadCount + 1
       });
-    }).catch(e => console.log(e));
+    }).catch((e: any) => console.log(e));
 
     O365GroupService.getMyMemberGroups().then(groups => {
-      console.log(groups);
+      console.log('Get member groups: ', groups);
       this.setState({
         memberGroups: groups.map(item => item.id),
         loadCount: this.state.loadCount + 1
       });
-    }).catch(e => console.log(e));
+    }).catch((e: any) => console.log(e));
 
     O365GroupService.getGroups().then(groups => {
-      console.log(groups);
+      console.log('Get groups: ', groups);
 
       this.setState({
         isLoading: false,
         groups: groups,
         loadCount: this.state.loadCount + 1
       });
-    }).catch(e => console.log(e));
+    }).catch((e: any) => console.log(e));
   }
 }

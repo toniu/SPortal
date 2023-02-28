@@ -36,11 +36,7 @@
     "webApiPermissionRequests": [
       {
         "resource": "Microsoft Graph",
-        "scope": "Directory.Read.All"
-      },
-      {
-        "resource": "Microsoft Graph",
-        "scope": "GroupMember.ReadWrite.All"
+        "scope": "Group.Read.All"
       },
       {
         "resource": "Microsoft Graph",
@@ -48,7 +44,23 @@
       },
       {
         "resource": "Microsoft Graph",
-        "scope": "People.Read"
+        "scope": "Directory.Read.All"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "Directory.ReadWrite.All"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "Directory.AccessAsUser.All"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "User.Read.All"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "User.ReadWrite.All"
       }
     ]
   },

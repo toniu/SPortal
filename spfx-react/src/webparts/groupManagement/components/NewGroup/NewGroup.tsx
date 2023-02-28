@@ -120,6 +120,7 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
     }
 
     private _getPeoplePickerOwners = (items: IPeoplePickerUserItem[]) => {
+        console.log('People picker owners: ', items)
         this.setState(() => {
             return {
                 ...this.state,
@@ -129,6 +130,7 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
     }
 
     private _getPeoplePickerMembers = (items: IPeoplePickerUserItem[]) => {
+        console.log('People picker members: ', items)
         this.setState(() => {
             return {
                 ...this.state,

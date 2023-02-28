@@ -3,13 +3,19 @@
 import { MSGraphClientV3, HttpClientResponse, HttpClient, IHttpClientOptions } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { IGroup, IGroupCollection, ITeamChannel } from "../models";
-// import { Group } from "@microsoft/microsoft-graph-types";
+/* SP/PNP imports */
+import { SPFI } from '@pnp/sp';
+import { getSP } from '../../../pnpjsConfig';
+import { IItemAddResult } from "@pnp/sp/items";
+import "@pnp/sp/site-users/web"
 
 export class O365GroupService {
+  private _sp:SPFI;
   public context: WebPartContext;
 
   public setup(context: WebPartContext): void {
     this.context = context;
+    this._sp = getSP(context);
   }
 
   public getGroups(): Promise<IGroup[]> {
@@ -151,6 +157,33 @@ export class O365GroupService {
     });
   }
 
+  public async getSomething(): Promise<any> {
+    console.log('-')
+  }
+
+  public async getUserIdWithEmail(email: string): Promise<string> {
+    return new Promise<string>((resolve) => {
+      try {
+        this.context.msGraphClientFactory
+          .getClient('3')
+          .then((client: MSGraphClientV3) => {
+            client
+              .api(`/users/${email}`)
+              .select('id')
+              .get((error: any, response: any, rawResponse?: any) => {
+                if (response) {
+                  console.log('Response: ', response)
+                }
+                resolve(response);
+              }).catch((e: any) => console.log(e))
+          }).catch(e => console.log(e));
+      }
+      catch (error) {
+        console.error(error);
+      }
+    });
+  }
+
   public removeMember(groupId: string): Promise<any> {
     return new Promise<void>((resolve) => {
       this.getUserId().then(userId => {
@@ -236,14 +269,42 @@ export class O365GroupService {
     });
   }
 
-  public createGroup(groupName: string, groupDescription: string, groupVisibility: string, groupOwners: string[], groupMembers: string[]): Promise<void> {
+  public async createGroup(groupName: string, groupDescription: string, groupVisibility: string, groupOwners: string[], groupMembers: string[]): Promise<void> {
     console.log("REQUEST:")
     console.log('group name: ', groupName)
     console.log('group description: ', groupDescription)
     console.log('group visibility: ', groupVisibility)
     console.log('group owners: ', groupOwners)
     console.log('group members: ', groupMembers)
+
+    const users = await this._sp.web.siteUsers();
+    console.log(users)
+
+    await this.getSomething()
+
+    /* Get the IDs of the owners and members of the new group */
+    let ownersIds = []
+    ownersIds = []
+    for (let i = 0; i < groupOwners.length; i++) {
+      const newId = await this.getUserIdWithEmail(groupOwners[i])
+      ownersIds.push(newId)
+    }
+
+    let membersIds = []
+    membersIds = []
+    for (let i = 0; i < groupMembers.length; i++) {
+      const newId = await this.getUserIdWithEmail(groupMembers[i]) 
+      membersIds.push(newId)
+    }
+
+    console.log('OI: ', ownersIds);
+    console.log('MI: ', membersIds);
+
+
     return new Promise<void>((resolve) => {
+      /* Temp */
+
+
       const groupRequest: any = {
         displayName: groupName,
         description: groupDescription,
@@ -253,8 +314,9 @@ export class O365GroupService {
         mailEnabled: true,
         mailNickname: groupName.replace(/\s/g, ""),
         securityEnabled: false,
-        visibility: groupVisibility
+        visibility: groupVisibility,
       };
+      
 
       if (groupOwners && groupOwners.length) {
         groupRequest['owners@odata.bind'] = groupOwners.map(owner => {
@@ -267,6 +329,9 @@ export class O365GroupService {
           return `https://graph.microsoft.com/v1.0/users/${member}`;
         });
       }
+      console.log('Group request: ', groupRequest);
+      console.log('\nGroup Request Owners Bind: ', groupRequest['owners@odata.bind']);
+      console.log('\nGroup Request Members Bind: ', groupRequest['members@odata.bind']);
 
       this.context.msGraphClientFactory
         .getClient('3')
@@ -275,11 +340,82 @@ export class O365GroupService {
             .api("/groups")
             .post(groupRequest)
             .then((groupResponse: any) => {
-              console.log('GR: ', groupResponse);
+              console.log(groupResponse);
               resolve();
             }).catch((e: any) => console.log(e));
         }).catch(e => console.log(e));
+      
     });
+  }
+
+  /**
+   * Creates a new group and adds to Sharepoint Lists, along with its owners and members
+   * @param groupName 
+   * @param groupDescription 
+   * @param groupVisibility 
+   * @param groupOwners 
+   * @param groupMembers 
+   */
+  public createGroupToList = async (groupName: string, groupDescription: string, groupVisibility: string, groupOwners: string[], groupMembers: string[]): Promise<void> => {
+    try {
+      /* ID creation: generated using timestamp */
+      const generatedID =  'g-' + (Date.now() + Math.random()).toString()
+
+      /* Group request */
+      const groupRequest: any = {
+        groupId: generatedID,
+        displayName: groupName,
+        description: groupDescription,
+        groupType: "Unified",
+        mailEnabled: true,
+        mailNickname: groupName.replace(/\s/g, ""),
+        securityEnabled: false,
+        visibility: groupVisibility,
+      };
+
+      /* Get the IDs of the owners and members of the new group */
+      const ownersIds = await groupOwners.map(owner => this.getUserIdWithEmail(owner));
+      const membersIds = await groupMembers.map(owner => this.getUserIdWithEmail(owner));
+      /* - replace once done - */
+
+      /* SP post request to create new group */
+      const iar: IItemAddResult = await this._sp.web.lists.getByTitle("Groups").items.add({groupRequest});
+      console.log(iar)
+
+      /*------ SP post request to add owners of the new group */
+      const [batchedSP, execute] = this._sp.batched();
+      const ownersList = batchedSP.web.lists.getByTitle("GroupOwners");
+      const membersList = batchedSP.web.lists.getByTitle("GroupMembers");
+      let res: any[] = [];
+      res = [];
+
+      /* Add batch for group owners */
+      for (let i = 0; i < groupOwners.length; i++) {
+        ownersList.items.add({
+          groupId: generatedID,
+          ownerId: ownersIds[i]
+        }).then(r => res.push(r))
+        .catch(e => console.log(e));
+      }
+
+      /* Add batch for group members */
+      for (let i = 0; i < groupMembers.length; i++) {
+        membersList.items.add({
+          groupId: generatedID,
+          memberId: membersIds[i]
+        }).then(r => res.push(r))
+        .catch(e => console.log(e));
+      }
+
+      /* Execute batch for owners and members */
+      await execute();
+      console.log('\nFinal response from created group: ')
+      for (let i = 0; i < res.length; i++) {
+        console.log(res[i])
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   public getTeamChannels = async (teamId: any): Promise<ITeamChannel[]> => {

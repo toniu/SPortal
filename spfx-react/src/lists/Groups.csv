@@ -1,7 +1,2 @@
-groupID,groupName
-1,TN3500
-2,SM2301
-3,OE23XU
-4,NM3423
-5,TN1829
-6,VO1232
+groupId,displayName,description,groupType,mailEnabled,mailNickname,securityEnabled,visibility
+,,,,,,,
