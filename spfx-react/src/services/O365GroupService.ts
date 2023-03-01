@@ -2,10 +2,10 @@
 /* eslint-disable no-void */
 import { MSGraphClientV3, HttpClientResponse, HttpClient, IHttpClientOptions } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
-import { IGroup, IGroupCollection, ITeamChannel } from "../models";
+import { IGroup, IGroupCollection, ITeamChannel } from "../webparts/groupManagement/models";
 /* SP/PNP imports */
 import { SPFI } from '@pnp/sp';
-import { getSP } from '../../../pnpjsConfig';
+import { getSP } from '../pnpjsConfig';
 import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web"
 

@@ -10,7 +10,7 @@ import {
 import * as strings from 'GroupManagementWebPartStrings';
 import GroupManagement from './components/GroupManagement/GroupManagement';
 import { IGroupManagementProps } from './components/GroupManagement/IGroupManagementProps';
-import O365GroupService from './services/O365GroupService';
+import O365GroupService from '../../services/O365GroupService';
 
 export interface IGroupManagementWebPartProps {
   flowUrl: string;

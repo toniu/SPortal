@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-void */
 import { ServiceScope, ServiceKey } from "@microsoft/sp-core-library";
-import { IUserProfile } from '../components/IUserProfile';
+import { IUserProfile } from '../webparts/profile/components/IUserProfile';
 import { IDataService } from './IDataService';
 import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 import { PageContext } from '@microsoft/sp-page-context';
@@ -21,18 +21,27 @@ export class UserProfileService implements IDataService {
         });
     }
 
-    public getUserProfileProperties(): Promise<IUserProfile> {
+    public getUserProfileProperties(who: string): Promise<IUserProfile> {
         return new Promise<IUserProfile>((resolve: (itemId: IUserProfile) => void, reject: (error: any) => void): void => {
-            void this.readUserProfile()
+            void this.readUserProfile(who)
                 .then((orgChartItems: IUserProfile): void => {
                     resolve(this.processUserProfile(orgChartItems));
                 });
         });
     }
 
-    private readUserProfile(): Promise<IUserProfile> {
+    private readUserProfile(who: string): Promise<IUserProfile> {
         return new Promise<IUserProfile>((resolve: (itemId: IUserProfile) => void, reject: (error: any) => void): void => {
-            this._spHttpClient.get(`${this._currentWebUrl}/_api/SP.UserProfiles.PeopleManager/getmyproperties`,
+
+            let targetURL = ''
+            if (who === 'me') {
+                /* Get profile properties of myself (the current user) */
+                targetURL = `${this._currentWebUrl}/_api/SP.UserProfiles.PeopleManager/GetMyProperties`
+            } else {
+                /* Get profile properties of another user (the URL would contain the target e.g. 'i:0#.f|membership|zhacXXX@live.rhul.ac.uk' */
+                targetURL = `${this._currentWebUrl}/_api/SP.UserProfiles.PeopleManager/GetPropertiesFor(accountName=@v)?@v='${encodeURIComponent(who)}'`
+            }
+            this._spHttpClient.get(targetURL,
                 SPHttpClient.configurations.v1,
                 {
                     headers: {

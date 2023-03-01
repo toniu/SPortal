@@ -7,8 +7,8 @@ import { IProfileProps } from './IProfileProps';
 import { IProfileState } from './IProfileState'
 import { IUserProfile } from '../components/IUserProfile'
 /* Services */
-import { IDataService } from '../services/IDataService';
-import { UserProfileService } from '../services/UserProfileService';
+import { IDataService } from '../../../services/IDataService';
+import { UserProfileService } from '../../../services/UserProfileService';
 import { ServiceScope } from '@microsoft/sp-core-library'
 /* Icons */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -61,7 +61,8 @@ export default class Profile extends React.Component<IProfileProps, { userProfil
     const serviceScope: ServiceScope = this.props.serviceScope;
     this.dataCenterServiceInstance = serviceScope.consume(UserProfileService.serviceKey);
 
-    this.dataCenterServiceInstance.getUserProfileProperties().then((userProfileItems: IUserProfile) => {
+    this.dataCenterServiceInstance.getUserProfileProperties('me').then((userProfileItems: IUserProfile) => {
+      console.log('Full user properties list: ', userProfileItems)
       for (let i: number = 0; i < userProfileItems.UserProfileProperties.length; i++) {
         if (userProfileItems.UserProfileProperties[i].Key === "FirstName") {
           userProfileItems.FirstName = userProfileItems.UserProfileProperties[i].Value;

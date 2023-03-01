@@ -14,7 +14,7 @@ import { DirectionalHint } from 'office-ui-fabric-react/lib/Callout';
 import { List } from 'office-ui-fabric-react/lib/List';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { IGroup } from "../../models/IGroup";
-import O365GroupService from '../../services/O365GroupService';
+import O365GroupService from '../../../../services/O365GroupService';
 
 interface IGroupListClassObject {
   itemCell: string;

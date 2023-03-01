@@ -9,7 +9,7 @@ import { Label } from 'office-ui-fabric-react/lib/Label';
 import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 import { PeoplePicker, PrincipalType, IPeoplePickerUserItem } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import { MessageBar, MessageBarType, IStackProps, Stack, ActionButton, IIconProps, DefaultButton } from 'office-ui-fabric-react';
-import O365GroupService from '../../services/O365GroupService';
+import O365GroupService from '../../../../services/O365GroupService';
 
 const backIcon: IIconProps = { iconName: 'NavigateBack' };
 

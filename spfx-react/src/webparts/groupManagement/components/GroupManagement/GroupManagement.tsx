@@ -4,7 +4,7 @@ import * as React from 'react';
 import styles from './GroupManagement.module.scss';
 import { IGroupManagementProps } from './IGroupManagementProps';
 import { IGroupManagementState } from './IGroupManagementState';
-import O365GroupService from '../../services/O365GroupService';
+import O365GroupService from '../../../../services/O365GroupService';
 import GroupList from '../GroupList/GroupList';
 import NewGroup from "../NewGroup/NewGroup";
 import { ActionButton, IIconProps } from 'office-ui-fabric-react';
