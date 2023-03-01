@@ -26,7 +26,6 @@ interface IGroupListClassObject {
 }
 
 // Icons
-const teamsIcon: IIconProps = { iconName: 'TeamsLogo' };
 const joinIcon: IIconProps = { iconName: 'Subscribe' };
 const leaveIcon: IIconProps = { iconName: 'Unsubscribe' };
 const manageIcon: IIconProps = { iconName: 'AccountManagement' };
@@ -181,13 +180,6 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
       <div className={classNames.itemCell} data-is-focusable={true}>
         <Image className={classNames.itemImage} src={group.thumbnail} width={50} height={50} imageFit={ImageFit.cover} />
         <div className={classNames.itemContent}>
-          <div className={classNames.itemName}>
-            <a href={group.url} target="_blank" rel="noreferrer">{group.displayName}</a>
-            {
-              group.teamsConnected &&
-              <IconButton iconProps={teamsIcon} title="Open MS Teams" ariaLabel="Open MS Teams" onClick={(event) => { this._openMSTeamsClicked(group.id); }} />
-            }
-          </div>
           <div className={classNames.itemIndex}>{group.visibility}</div>
           <div>{group.description}</div>
         </div>
@@ -225,12 +217,6 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
 
   private _manageGroupClicked = (groupId: string) => {
     window.open("https://admin.microsoft.com/Adminportal/Home?source=applauncher#/groups");
-  }
-
-  private _openMSTeamsClicked = (groupId: string) => {
-    O365GroupService.getTeamChannels(groupId).then(response => {
-      window.open(response[0].webUrl, '_blank');
-    }).catch(e => console.log(e));
   }
 
   private _leaveGroupClicked = (groupId: string, groupName: string) => {

@@ -2,7 +2,7 @@
 /* eslint-disable no-void */
 import { MSGraphClientV3, HttpClientResponse, HttpClient, IHttpClientOptions } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
-import { IGroup, IGroupCollection, ITeamChannel } from "../webparts/groupManagement/models";
+import { IGroup, IGroupCollection } from "../webparts/groupManagement/models";
 /* SP/PNP imports */
 import { SPFI } from '@pnp/sp';
 import { getSP } from '../pnpjsConfig';
@@ -157,33 +157,6 @@ export class O365GroupService {
     });
   }
 
-  public async getSomething(): Promise<any> {
-    console.log('-')
-  }
-
-  public async getUserIdWithEmail(email: string): Promise<string> {
-    return new Promise<string>((resolve) => {
-      try {
-        this.context.msGraphClientFactory
-          .getClient('3')
-          .then((client: MSGraphClientV3) => {
-            client
-              .api(`/users/${email}`)
-              .select('id')
-              .get((error: any, response: any, rawResponse?: any) => {
-                if (response) {
-                  console.log('Response: ', response)
-                }
-                resolve(response);
-              }).catch((e: any) => console.log(e))
-          }).catch(e => console.log(e));
-      }
-      catch (error) {
-        console.error(error);
-      }
-    });
-  }
-
   public removeMember(groupId: string): Promise<any> {
     return new Promise<void>((resolve) => {
       this.getUserId().then(userId => {
@@ -277,29 +250,6 @@ export class O365GroupService {
     console.log('group owners: ', groupOwners)
     console.log('group members: ', groupMembers)
 
-    const users = await this._sp.web.siteUsers();
-    console.log(users)
-
-    await this.getSomething()
-
-    /* Get the IDs of the owners and members of the new group */
-    let ownersIds = []
-    ownersIds = []
-    for (let i = 0; i < groupOwners.length; i++) {
-      const newId = await this.getUserIdWithEmail(groupOwners[i])
-      ownersIds.push(newId)
-    }
-
-    let membersIds = []
-    membersIds = []
-    for (let i = 0; i < groupMembers.length; i++) {
-      const newId = await this.getUserIdWithEmail(groupMembers[i]) 
-      membersIds.push(newId)
-    }
-
-    console.log('OI: ', ownersIds);
-    console.log('MI: ', membersIds);
-
 
     return new Promise<void>((resolve) => {
       /* Temp */
@@ -359,28 +309,35 @@ export class O365GroupService {
   public createGroupToList = async (groupName: string, groupDescription: string, groupVisibility: string, groupOwners: string[], groupMembers: string[]): Promise<void> => {
     try {
       /* ID creation: generated using timestamp */
-      const generatedID =  'g-' + (Date.now() + Math.random()).toString()
-
-      /* Group request */
+      const generatedGroupId =  'g-' + (Date.now() + Math.random()).toString()
+      /* 
+      GROUP REQUEST COLUMNS:
+        Title: the generated group ID
+        field_1: Group name
+        field_2: Group description
+        field_3: Group type
+        field_4: Mail enabled?
+        field_5: Mail nickname
+        field_6: Security enabled?
+        field_7: Group visibility
+      };
+      */
       const groupRequest: any = {
-        groupId: generatedID,
-        displayName: groupName,
-        description: groupDescription,
-        groupType: "Unified",
-        mailEnabled: true,
-        mailNickname: groupName.replace(/\s/g, ""),
-        securityEnabled: false,
-        visibility: groupVisibility,
+        Title: generatedGroupId,
+        field_1: groupName,
+        field_2: groupDescription,
+        field_3: "Unified",
+        field_4: true,
+        field_5: groupName.replace(/\s/g, ""),
+        field_6: false,
+        field_7: groupVisibility,
       };
 
-      /* Get the IDs of the owners and members of the new group */
-      const ownersIds = await groupOwners.map(owner => this.getUserIdWithEmail(owner));
-      const membersIds = await groupMembers.map(owner => this.getUserIdWithEmail(owner));
-      /* - replace once done - */
+      console.log('Creating new group of request ', groupRequest)
 
       /* SP post request to create new group */
-      const iar: IItemAddResult = await this._sp.web.lists.getByTitle("Groups").items.add({groupRequest});
-      console.log(iar)
+      const iar: IItemAddResult = await this._sp.web.lists.getByTitle("Groups").items.add(groupRequest);
+      console.log('Group created...\n', iar)
 
       /*------ SP post request to add owners of the new group */
       const [batchedSP, execute] = this._sp.batched();
@@ -389,20 +346,30 @@ export class O365GroupService {
       let res: any[] = [];
       res = [];
 
-      /* Add batch for group owners */
+      /* Add SP batch for adding group owners */
       for (let i = 0; i < groupOwners.length; i++) {
+        /* 
+        GROUP OWNER REQUEST COLUMNS:
+        Title: the generated group ID
+        field_1: the email of group owner
+        */
         ownersList.items.add({
-          groupId: generatedID,
-          ownerId: ownersIds[i]
+          Title: generatedGroupId,
+          field_1: groupOwners[i]
         }).then(r => res.push(r))
         .catch(e => console.log(e));
       }
 
-      /* Add batch for group members */
+      /* Add SP batch for adding group members */
       for (let i = 0; i < groupMembers.length; i++) {
+        /* 
+        GROUP MEMBER REQUEST COLUMNS:
+        Title: the generated group ID
+        field_1: the email of group member
+        */
         membersList.items.add({
-          groupId: generatedID,
-          memberId: membersIds[i]
+          Title: generatedGroupId,
+          field_1: groupMembers[i]
         }).then(r => res.push(r))
         .catch(e => console.log(e));
       }
@@ -416,37 +383,6 @@ export class O365GroupService {
     } catch (e) {
       console.log(e);
     }
-  }
-
-  public getTeamChannels = async (teamId: any): Promise<ITeamChannel[]> => {
-    return new Promise<ITeamChannel[]>((resolve) => {
-      try {
-        this.context.msGraphClientFactory
-          .getClient('3')
-          .then((client: MSGraphClientV3) => {
-            client
-              .api(`teams/${teamId}/channels`)
-              .get((error: any, channelsResponse: any) => {
-                // // Prepare the output array
-                // var teamChannels: Array<ITeamChannel> = new Array<ITeamChannel>();
-
-                // // Map the response to the output array
-                // channelsResponse.value.map((item: any) => {
-                //   teamChannels.push({
-                //     id: item.id,
-                //     displayName: item.displayName,
-                //     description: item.description,
-                //     webUrl: item.webUrl
-                //   });
-                // });
-
-                resolve(channelsResponse.value);
-              });
-          }).catch(e => console.log(e));
-      } catch (error) {
-        console.log('Error getting channels for team ' + teamId, error);
-      }
-    });
   }
 }
 
