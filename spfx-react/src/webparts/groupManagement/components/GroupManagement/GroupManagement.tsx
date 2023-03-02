@@ -22,6 +22,7 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
       ownerGroups: [],
       memberGroups: [],
       showNewGroupScreen: false,
+      showEditGroupScreen: false,
       loadCount: 0
     };
   }
@@ -31,31 +32,31 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
       <div className={styles.groupManagement}>
         <div className={styles.container}>
           <div className={styles.row}>
-              {
-                this.state.loadCount === 3 && !this.state.showNewGroupScreen
-                  ?
-                  <p>
-                    <h1 className={styles.headerMsgStyle}>O365 Groups Manager</h1>
-                    <GroupList flowUrl={this.props.flowUrl} items={this.state.groups} ownerGroups={this.state.ownerGroups} memberGroups={this.state.memberGroups}  />
-                    <br/>
-                    <ActionButton className={styles.newHeaderLinkStyle} iconProps={addGroupIcon} allowDisabledFocus onClick={this.showNewGroupScreen}>
-                      New Group
-                    </ActionButton>
-                  </p>
-                  : 
-                  !this.state.showNewGroupScreen &&
-                  <Spinner label="Loading Groups..." />
-              }
-              {
-                this.state.showNewGroupScreen &&
-                <div>
-                  <div className={styles.row}>
-                    <div className={styles.headerStyle}>
-                      <NewGroup returnToMainPage={this.showMainScreen} context={this.props.context} />
-                    </div>
+            {
+              this.state.loadCount === 3 && !this.state.showNewGroupScreen
+                ?
+                <p>
+                  <h1 className={styles.headerMsgStyle}>Group management</h1>
+                  <GroupList flowUrl={this.props.flowUrl} items={this.state.groups} ownerGroups={this.state.ownerGroups} memberGroups={this.state.memberGroups} />
+                  <br />
+                  <ActionButton className={styles.newHeaderLinkStyle} iconProps={addGroupIcon} allowDisabledFocus onClick={this.showNewGroupScreen}>
+                    New Group
+                  </ActionButton>
+                </p>
+                :
+                !this.state.showNewGroupScreen &&
+                <Spinner label="Loading Groups..." />
+            }
+            {
+              this.state.showNewGroupScreen &&
+              <div>
+                <div className={styles.row}>
+                  <div className={styles.headerStyle}>
+                    <NewGroup returnToMainPage={this.showMainScreen} context={this.props.context} />
                   </div>
                 </div>
-              }
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -85,22 +86,6 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
   }
 
   public _getGroups = (): void => {
-    O365GroupService.getMyOwnerGroups().then(groups => {
-      console.log('Get owner groups: ', groups);
-      this.setState({
-        ownerGroups: groups.map((item: { id: any; }) => item.id),
-        loadCount: this.state.loadCount + 1
-      });
-    }).catch((e: any) => console.log(e));
-
-    O365GroupService.getMyMemberGroups().then(groups => {
-      console.log('Get member groups: ', groups);
-      this.setState({
-        memberGroups: groups.map(item => item.id),
-        loadCount: this.state.loadCount + 1
-      });
-    }).catch((e: any) => console.log(e));
-
     O365GroupService.getGroups().then(groups => {
       console.log('Get groups: ', groups);
 
@@ -109,6 +94,22 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
         groups: groups,
         loadCount: this.state.loadCount + 1
       });
+
+      O365GroupService.getMyOwnerGroups(groups).then(groups => {
+        console.log('Get owner groups: ', groups);
+        this.setState({
+          ownerGroups: groups.map((item: { id: any; }) => item.id),
+          loadCount: this.state.loadCount + 1
+        });
+      }).catch((e: any) => console.log(e));
+
+      O365GroupService.getMyMemberGroups(groups).then(groups => {
+        console.log('Get member groups: ', groups);
+        this.setState({
+          memberGroups: groups.map(item => item.id),
+          loadCount: this.state.loadCount + 1
+        });
+      }).catch((e: any) => console.log(e));
     }).catch((e: any) => console.log(e));
   }
 }

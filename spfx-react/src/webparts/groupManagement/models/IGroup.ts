@@ -4,6 +4,7 @@ export interface IGroup {
     displayName: string;
     description?: string;
     visibility?: string;
+    SPId: number;
     url?: string;
     thumbnail?: string;
     userRole?: string;

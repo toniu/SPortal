@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
@@ -33,7 +34,7 @@ export default class GroupManagementWebPart extends BaseClientSideWebPart<IGroup
   protected onInit(): Promise<void> {
     return super.onInit().then(() => {
       O365GroupService.setup(this.context);
-    });
+    }).catch((e) => console.log(e));
   }
 
   protected onDispose(): void {

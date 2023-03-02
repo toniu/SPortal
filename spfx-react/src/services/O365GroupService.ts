@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-void */
-import { MSGraphClientV3, HttpClientResponse, HttpClient, IHttpClientOptions } from "@microsoft/sp-http";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
-import { IGroup, IGroupCollection } from "../webparts/groupManagement/models";
+import { IGroup } from "../webparts/groupManagement/models";
 /* SP/PNP imports */
 import { SPFI } from '@pnp/sp';
 import { getSP } from '../pnpjsConfig';
@@ -10,292 +9,132 @@ import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web"
 
 export class O365GroupService {
-  private _sp:SPFI;
+  private _sp: SPFI;
   public context: WebPartContext;
+  private userEmail: string;
 
-  public setup(context: WebPartContext): void {
+  public async setup(context: WebPartContext): Promise<void> {
     this.context = context;
     this._sp = getSP(context);
+    
+    /* Get email of current user */
+    this.userEmail = await (await this._sp.web.currentUser()).UserPrincipalName
   }
 
-  public getGroups(): Promise<IGroup[]> {
-    return new Promise<IGroup[]>((resolve) => {
-      try {
-        // Prepare the output array
-        const o365groups: Array<IGroup> = new Array<IGroup>();
-
-        this.context.msGraphClientFactory
-          .getClient('3')
-          .then((client: MSGraphClientV3) => {
-            client
-              .api("/groups?$filter=groupTypes/any(c:c eq 'Unified')")
-              .get((error: any, groups: IGroupCollection) => {
-                // Map the response to the output array
-                if (groups) {
-                  groups.value.map((item: any) => {
-                    o365groups.push({
-                      id: item.id,
-                      displayName: item.displayName,
-                      description: item.description,
-                      visibility: item.visibility,
-                      teamsConnected: item.resourceProvisioningOptions.indexOf("Team") > -1 ? true : false
-                    });
-                  });
-                }
-
-                resolve(o365groups);
-              }).catch((e: any) => console.log(e));
-          }).catch(e => console.log(e));
-      } catch (error) {
-        console.error(error);
+  public addMemberToGroup = async (groupId: string, who: string): Promise<void> => {
+    try {
+      /* Set email parameter to current user, if current user is trying to join a group
+      otherwise use email of selected user to remove from an existing group */
+      if (who === 'me') {
+        who = this.userEmail
       }
-    });
+      const newMemberRequest: any = {
+        Title: groupId,
+        field_1: who,
+      };
+      const iar: IItemAddResult = await this._sp.web.lists.getByTitle("GroupMembers").items.add(newMemberRequest);
+      console.log(`New member ${who} added to group ID ${groupId}...\n`, iar)
+    } catch (e) {
+      console.log(e)
+    }
   }
 
-  public async getMyMemberGroups(): Promise<IGroup[]> {
-    return new Promise<IGroup[]>((resolve) => {
-      try {
-        // Prepare the output array
-        const o365groups: Array<IGroup> = new Array<IGroup>();
-
-        void this.context.msGraphClientFactory
-          .getClient('3')
-          .then((client: MSGraphClientV3) => {
-            void client
-              .api("/me/memberOf/$/microsoft.graph.group?$filter=groupTypes/any(a:a eq 'unified')")
-              .get((_error: any, groups: IGroupCollection) => {
-                // Map the response to the output array
-                if (groups) {
-                  groups.value.map((item: any) => {
-                    o365groups.push({
-                      id: item.id,
-                      displayName: item.displayName,
-                      description: item.description,
-                      visibility: item.visibility
-                    });
-                  });
-                }
-
-                resolve(o365groups);
-              }).catch((e: any) => console.log(e));
-          });
-      } catch (error) {
-        console.error(error);
+  public removeMemberFromGroup = async (groupId: string, who: string): Promise<void> =>{
+    try {
+      /* Set email parameter to current user, if current user is trying to join a group
+      otherwise use email of selected user to remove from an existing group */
+      if (who === 'me') {
+        who = this.userEmail
       }
-    });
-  }
+      /* Retrieve the Sharepoint list ID (required to delete item with) */
+      const groupMembers = await this._sp.web.lists.getByTitle("GroupMembers").items();
+      /* Use filer to find the item with the groupId and the member email */
+      groupMembers.filter(item => item.Title === groupId && item.field_1 === who)
 
-  public getMyOwnerGroups(): Promise<any> {
-    return new Promise<any>((resolve) => {
-      try {
-        // Prepare the output array
-        const o365groups: Array<IGroup> = new Array<IGroup>();
-
-        this.context.msGraphClientFactory
-          .getClient('3')
-          .then((client: MSGraphClientV3) => {
-            client
-              .api("/me/ownedObjects/$/microsoft.graph.group")
-              .get((error: any, groups: any, rawResponse: any) => {
-                // Map the response to the output array
-                if (groups) {
-                  groups.value.map((item: any) => {
-                    o365groups.push({
-                      id: item.id,
-                      displayName: item.displayName,
-                      description: item.description,
-                      visibility: item.visibility
-                    });
-                  });
-                }
-
-                resolve(o365groups);
-              }).catch((e: any) => console.log(e));
-          }).catch(e => console.log(e));
-      } catch (error) {
-        console.error(error);
+      /* If item is found */
+      if (groupMembers[0]) {
+        /* Delete using the Sharepoint list item ID (note: this is different to the groupId) */
+        await this._sp.web.lists.getByTitle("GroupMembers").items.getById(groupMembers[0].ID).delete();
+        console.log(`Member ${this.userEmail} removed from group ID ${groupId}...\n`)
+      } else {
+        console.log('Delete request failed - no member to remove')
       }
-    });
-  }
 
-  public addMember(groupId: string): Promise<any> {
-    return new Promise<void>((resolve) => {
-      this.context.msGraphClientFactory
-        .getClient('3')
-        .then((client: MSGraphClientV3) => {
-          client
-            .api(`/groups/${groupId}/members/$ref`)
-            .post(`{ "@odata.id": "https://graph.microsoft.com/v1.0/users/${this.context.pageContext.user.loginName}" }`)
-            .then((addMemberResponse: any) => {
-              if (addMemberResponse === undefined) {
-                resolve();
-              }
-              else {
-                throw new Error(`Error occured while joining the Group`);
-              }
-            });
-        }).catch(e => console.log(e));
-    });
-  }
-
-  public getUserId(): Promise<string> {
-    return new Promise<string>((resolve) => {
-      try {
-        this.context.msGraphClientFactory
-          .getClient('3')
-          .then((client: MSGraphClientV3) => {
-            client
-              .api(`/me/id`)
-              .get((error: any, userId: any) => {
-                resolve(userId.value);
-              });
-          }).catch(e => console.log(e));
-      }
-      catch (error) {
-        console.error(error);
-      }
-    });
-  }
-
-  public removeMember(groupId: string): Promise<any> {
-    return new Promise<void>((resolve) => {
-      this.getUserId().then(userId => {
-        this.context.msGraphClientFactory
-          .getClient('3')
-          .then((client: MSGraphClientV3) => {
-            client
-              .api(`/groups/${groupId}/members/${userId}/$ref`)
-              .delete((error: any, response: any, rawResponse: any) => {
-                if (rawResponse.status === 204) {
-                  resolve(response);
-                }
-                else {
-                  throw new Error(`Error occured while leaving the Group`);
-                }
-              });
-          }).catch(e => console.log(e));
-      }).catch(e => console.log(e));
-    });
-  }
-
-  public requestToJoinPrivateGroup(flowUrl: string, groupId: string, groupName: string, groupUrl: string): Promise<any> {
-
-    const body: string = JSON.stringify({
-      'groupId': groupId,
-      'groupName': groupName,
-      'groupUrl': groupUrl,
-      'requestorName': this.context.pageContext.user.displayName,
-      'requestorEmail': this.context.pageContext.user.email
-    });
-
-    const requestHeaders: Headers = new Headers();
-    requestHeaders.append('Content-type', 'application/json');
-
-    const httpClientOptions: IHttpClientOptions = {
-      body: body,
-      headers: requestHeaders
-    };
-
-    return this.context.httpClient.post(
-      flowUrl,
-      HttpClient.configurations.v1,
-      httpClientOptions)
-      .then((response: HttpClientResponse): Promise<HttpClientResponse> => {
-        return response.json();
-      });
+    } catch(e) {
+      console.log(e)
+    }
   }
 
   public getGroupLink(groups: IGroup): Promise<any> {
     return new Promise<any>((resolve) => {
       try {
-        this.context.msGraphClientFactory
-          .getClient('3')
-          .then((client: MSGraphClientV3) => {
-            client
-              .api(`/groups/${groups.id}/sites/root/weburl`)
-              .get((error: any, group: any) => {
-                resolve(group);
-              });
-          }).catch(e => console.log(e));
+        console.log(groups)
       } catch (error) {
         console.error(error);
       }
     });
   }
 
-  public getGroupThumbnail(groups: IGroup): Promise<any> {
-    return new Promise<any>((resolve) => {
+  public getGroups = async (): Promise<IGroup[]> => {
+    /* Get items from SP list Groups */
+    const groups = await this._sp.web.lists.getByTitle("Groups").items()
+    return new Promise<IGroup[]>((resolve) => {
       try {
-        this.context.msGraphClientFactory
-          .getClient('3')
-          .then((client: MSGraphClientV3) => {
-            client
-              .api(`/groups/${groups.id}/photos/48x48/$value`)
-              .responseType('blob')
-              .get((error: any, group: any) => {
-                resolve(window.URL.createObjectURL(group));
-              });
-          }).catch(e => console.log(e));
+        const o365groups: Array<IGroup> = new Array<IGroup>();
+
+        /* Push each group item into O365Groups list */
+        groups.map((item: any) => {
+          o365groups.push({
+            id: item.Title,
+            displayName: item.field_1,
+            description: item.field_2,
+            visibility: item.field_7,
+            SPId: item.ID
+          });
+        });
+
+        resolve(o365groups);
+
       } catch (error) {
         console.error(error);
       }
     });
   }
 
-  public async createGroup(groupName: string, groupDescription: string, groupVisibility: string, groupOwners: string[], groupMembers: string[]): Promise<void> {
-    console.log("REQUEST:")
-    console.log('group name: ', groupName)
-    console.log('group description: ', groupDescription)
-    console.log('group visibility: ', groupVisibility)
-    console.log('group owners: ', groupOwners)
-    console.log('group members: ', groupMembers)
+  public getMyMemberGroups = async (groups: IGroup[]): Promise<IGroup[]> => {
+    try {
+      /* Get items from SP list Groups */
+      const allGroupMembers = await this._sp.web.lists.getByTitle("GroupMembers").items()
 
+      /* Filtered list of group members list where the user is a member */
+      let groupMembers = allGroupMembers.filter(item => item.field_1.toLowerCase() === this.userEmail.toLowerCase())
+      /* Map to only have the list of the group IDs where user is a member of */
+      groupMembers = groupMembers.map(item => item.Title)
 
-    return new Promise<void>((resolve) => {
-      /* Temp */
+      /* Filter groups to only include groups that include the group IDs of the groups the user is a member of */
+      groups = groups.filter(group => groupMembers.indexOf(group.id) >= 0)
+    } catch (e) {
+      console.log(e)
+    }
+    return groups;
+  }
 
+  public getMyOwnerGroups = async (groups: IGroup[]): Promise<IGroup[]> => {
+    try {
+      /* Get items from SP list Groups */
+      const allGroupOwners = await this._sp.web.lists.getByTitle("GroupOwners").items()
 
-      const groupRequest: any = {
-        displayName: groupName,
-        description: groupDescription,
-        groupTypes: [
-          "Unified"
-        ],
-        mailEnabled: true,
-        mailNickname: groupName.replace(/\s/g, ""),
-        securityEnabled: false,
-        visibility: groupVisibility,
-      };
-      
+      /* Filtered list of group owners list where the user is a owner */
+      let groupOwners = allGroupOwners.filter(item => item.field_1.toLowerCase() === this.userEmail.toLowerCase())
+      /* Map to only have the list of the group IDs where user is a owner of */
+      groupOwners = groupOwners.map(item => item.Title)
 
-      if (groupOwners && groupOwners.length) {
-        groupRequest['owners@odata.bind'] = groupOwners.map(owner => {
-          return `https://graph.microsoft.com/v1.0/users/${owner}`;
-        });
-      }
-
-      if (groupMembers && groupMembers.length) {
-        groupRequest['members@odata.bind'] = groupMembers.map(member => {
-          return `https://graph.microsoft.com/v1.0/users/${member}`;
-        });
-      }
-      console.log('Group request: ', groupRequest);
-      console.log('\nGroup Request Owners Bind: ', groupRequest['owners@odata.bind']);
-      console.log('\nGroup Request Members Bind: ', groupRequest['members@odata.bind']);
-
-      this.context.msGraphClientFactory
-        .getClient('3')
-        .then((client: MSGraphClientV3) => {
-          client
-            .api("/groups")
-            .post(groupRequest)
-            .then((groupResponse: any) => {
-              console.log(groupResponse);
-              resolve();
-            }).catch((e: any) => console.log(e));
-        }).catch(e => console.log(e));
-      
-    });
+      /* Filter groups to only include groups that include the group IDs of the groups the user is a member of */
+      groups = groups.filter(group => groupOwners.indexOf(group.id) >= 0)
+    } catch (e) {
+      console.log(e)
+    }
+    return groups;
   }
 
   /**
@@ -306,10 +145,10 @@ export class O365GroupService {
    * @param groupOwners 
    * @param groupMembers 
    */
-  public createGroupToList = async (groupName: string, groupDescription: string, groupVisibility: string, groupOwners: string[], groupMembers: string[]): Promise<void> => {
+  public createGroup = async (groupName: string, groupDescription: string, groupVisibility: string, groupOwners: string[], groupMembers: string[]): Promise<void> => {
     try {
       /* ID creation: generated using timestamp */
-      const generatedGroupId =  'g-' + (Date.now() + Math.random()).toString()
+      const generatedGroupId = 'g-' + (Date.now() + Math.random()).toString()
       /* 
       GROUP REQUEST COLUMNS:
         Title: the generated group ID
@@ -357,7 +196,7 @@ export class O365GroupService {
           Title: generatedGroupId,
           field_1: groupOwners[i]
         }).then(r => res.push(r))
-        .catch(e => console.log(e));
+          .catch(e => console.log(e));
       }
 
       /* Add SP batch for adding group members */
@@ -371,7 +210,7 @@ export class O365GroupService {
           Title: generatedGroupId,
           field_1: groupMembers[i]
         }).then(r => res.push(r))
-        .catch(e => console.log(e));
+          .catch(e => console.log(e));
       }
 
       /* Execute batch for owners and members */

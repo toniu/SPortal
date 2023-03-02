@@ -29,7 +29,6 @@ interface IGroupListClassObject {
 const joinIcon: IIconProps = { iconName: 'Subscribe' };
 const leaveIcon: IIconProps = { iconName: 'Unsubscribe' };
 const manageIcon: IIconProps = { iconName: 'AccountManagement' };
-const requestToJoinIcon: IIconProps = { iconName: 'SecurityGroup' };
 
 // List style
 const theme: ITheme = getTheme();
@@ -126,7 +125,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
               <TeachingBubble
                 calloutProps={{ directionalHint: DirectionalHint.bottomLeftEdge }}
                 isWide={true}
-                hasCloseIcon={true}
+                hasCloseButton={true}
                 closeButtonAriaLabel="Close"
                 target={this._menuButtonElement}
                 onDismiss={this._onDismiss}
@@ -151,20 +150,8 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
         }
       })
     ));
-
-    this._getGroupThumbnails(groups);
   }
 
-  public _getGroupThumbnails = (groups: any): void => {
-    groups.map((groupItem: IGroup) => (
-      O365GroupService.getGroupThumbnail(groupItem).then(grouptb => {
-        console.log(grouptb);
-        this.setState(prevState => ({
-          groups: prevState.groups.map(group => group.id === groupItem.id ? { ...group, thumbnail: grouptb } : group)
-        }));
-      })
-    ));
-  }
 
   private _onFilterChanged = (_: any, text: string): void => {
     this.setState({
@@ -199,12 +186,6 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
             <IconButton iconProps={joinIcon} title="Join Group" ariaLabel="Join Group" onClick={(event) => { this._joinGroupClicked(group.id, group.displayName); }} />
           </span>
         }
-        {
-          group.visibility === "Private" && group.userRole === "" && this.props.flowUrl !== undefined &&
-          <span className="ms-TeachingBubbleBasicExample-buttonArea" ref={menuButton => (this._menuButtonElement = menuButton!)}>
-            <IconButton iconProps={requestToJoinIcon} title="Request to Join Group" ariaLabel="Request to Join Group" onClick={(event) => { this._requestJoinGroupClicked(group.id, group.displayName, group.url); }} />
-          </span>
-        }
       </div>
     );
   }
@@ -216,11 +197,11 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
   }
 
   private _manageGroupClicked = (groupId: string) => {
-    window.open("https://admin.microsoft.com/Adminportal/Home?source=applauncher#/groups");
+    console.log('Switch to edit group')
   }
 
   private _leaveGroupClicked = (groupId: string, groupName: string) => {
-    O365GroupService.removeMember(groupId).then(response => {
+    O365GroupService.removeMemberFromGroup(groupId, 'me').then(response => {
       this.setState(prevState => ({
         groups: prevState.groups.map(group => group.id === groupId ? { ...group, userRole: "" } : group),
         isTeachingBubbleVisible: true,
@@ -230,23 +211,12 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
   }
 
   private _joinGroupClicked = (groupId: string, groupName: string) => {
-    O365GroupService.addMember(groupId).then(response => {
+    O365GroupService.addMemberToGroup(groupId, 'me').then(response => {
       this.setState(prevState => ({
         groups: prevState.groups.map(group => group.id === groupId ? { ...group, userRole: "Member" } : group),
         isTeachingBubbleVisible: true,
         techingBubbleMessage: 'You have joined the group: ' + groupName
       }));
-    }).catch(e => console.log(e));
-  }
-
-  private _requestJoinGroupClicked = (groupId: string, groupName: string, groupUrl: string) => {
-    this.setState({
-      isTeachingBubbleVisible: true,
-      techingBubbleMessage: 'Request sent to join the private group: ' + groupName
-    });
-
-    O365GroupService.requestToJoinPrivateGroup(this.props.flowUrl, groupId, groupName, groupUrl).then(response => {
-      console.log(response);
     }).catch(e => console.log(e));
   }
 }

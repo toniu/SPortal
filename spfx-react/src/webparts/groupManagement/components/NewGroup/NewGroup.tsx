@@ -154,7 +154,7 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
     private createNewGroup = () => {
         try {
             console.log('CG State: ', this.state)
-            O365GroupService.createGroupToList(this.state.name, this.state.description, this.state.visibility, this.state.owners, this.state.members).catch(e => this.handleGroupError(e));
+            O365GroupService.createGroup(this.state.name, this.state.description, this.state.visibility, this.state.owners, this.state.members).catch(e => this.handleGroupError(e));
 
             this.setState({
                 message: "Group " + this.state.name + " is created successfully!",
