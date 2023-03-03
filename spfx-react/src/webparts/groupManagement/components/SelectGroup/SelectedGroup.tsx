@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
 import styles from '../GroupManagement/GroupManagement.module.scss';
-import { INewGroupProps } from './INewGroupProps';
-import { INewGroupState } from './INewGroupState';
+import { ISelectedGroupProps } from './ISelectedGroupProps'; 
+import { ISelectedGroupState } from './ISelectedGroupState';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Label } from 'office-ui-fabric-react/lib/Label';
 import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
@@ -18,9 +18,9 @@ const verticalStackProps: IStackProps = {
     tokens: { childrenGap: 20 }
 };
 
-export default class NewGroup extends React.Component<INewGroupProps, INewGroupState> {
+export default class SelectedGroup extends React.Component<ISelectedGroupProps, ISelectedGroupState> {
 
-    constructor(props: INewGroupProps) {
+    constructor(props: ISelectedGroupProps) {
         super(props);
 
         this.state = {
@@ -33,7 +33,7 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
         };
     }
 
-    public render(): React.ReactElement<INewGroupProps> {
+    public render(): React.ReactElement<ISelectedGroupProps> {
         return (
             <div className={styles.groupManagement}>
                 <div className={styles.container}>
@@ -41,7 +41,7 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
                     <div className={styles.row}>
                         <div className={styles.headerStyle}>
                             <h1 className={styles.headerMsgStyle}>
-                                <span>Add New Group</span>
+                                <span>Group ...</span>
                                 <ActionButton className={styles.newHeaderLinkStyle} iconProps={backIcon} allowDisabledFocus onClick={this.props.returnToMainPage}>
                                     Back to listing
                                 </ActionButton>

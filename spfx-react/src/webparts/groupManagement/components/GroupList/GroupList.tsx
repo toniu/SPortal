@@ -8,13 +8,16 @@ import { IGroupListState } from './IGroupListState';
 import { FocusZone, FocusZoneDirection } from 'office-ui-fabric-react/lib/FocusZone';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Image, ImageFit } from 'office-ui-fabric-react/lib/Image';
-import { IconButton, IIconProps } from 'office-ui-fabric-react';
+import { DefaultButton, DialogFooter, DialogType, IconButton, IIconProps, PrimaryButton } from 'office-ui-fabric-react';
 import { TeachingBubble } from 'office-ui-fabric-react/lib/TeachingBubble';
 import { DirectionalHint } from 'office-ui-fabric-react/lib/Callout';
+import { AnimatedDialog } from "@pnp/spfx-controls-react/lib/AnimatedDialog";
 import { List } from 'office-ui-fabric-react/lib/List';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { IGroup } from "../../models/IGroup";
-import O365GroupService from '../../../../services/O365GroupService';
+import UserGroupService from '../../../../services/UserGroupService';
+/* Tailwind import */
+import '../../../../../assets/dist/tailwind.css';
 
 interface IGroupListClassObject {
   itemCell: string;
@@ -29,6 +32,7 @@ interface IGroupListClassObject {
 const joinIcon: IIconProps = { iconName: 'Subscribe' };
 const leaveIcon: IIconProps = { iconName: 'Unsubscribe' };
 const manageIcon: IIconProps = { iconName: 'AccountManagement' };
+const deleteIcon: IIconProps = { iconName: 'Delete' };
 
 // List style
 const theme: ITheme = getTheme();
@@ -102,11 +106,14 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
 
     this.state = {
       filterText: '',
+      showDialog: false,
+      selectedGroup: null,
       isTeachingBubbleVisible: false,
       groups: this._originalItems
     };
 
-    this._onRenderCell = this._onRenderCell.bind(this);
+    this._onRenderUserGroupCell = this._onRenderUserGroupCell.bind(this);
+    this._onRenderExistingGroupCell = this._onRenderExistingGroupCell.bind(this);
     this._onDismiss = this._onDismiss.bind(this);
     this._getGroupLinks(this._originalItems);
   }
@@ -117,9 +124,33 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
 
     return (
       <div className={styles.groupContainer}>
+        {
+          <AnimatedDialog
+              hidden={!this.state.showDialog}
+              onDismiss={() => { this.setState({ showDialog: false }); }}
+              dialogContentProps={{type: DialogType.normal, title: 'Delete group', subText: 'Confirmation to delete group?'}}
+              modalProps={{isDarkOverlay: true}}
+              dialogAnimationInType='fadeInDown'
+              dialogAnimationOutType='fadeOutDown'
+              >
+                  <DialogFooter>
+                      <PrimaryButton onClick={() => { this._manageDeleteGroup(true) }} text="Yes" />
+                      <DefaultButton onClick={() => { this._manageDeleteGroup(false) }} text="No" />
+                  </DialogFooter>
+          </AnimatedDialog>
+        }
+        <TextField label={'Filter by name' + resultCountText} onChange={this._onFilterChanged} />
         <FocusZone direction={FocusZoneDirection.vertical}>
-          <TextField label={'Filter by name' + resultCountText} onChange={this._onFilterChanged} />
-          <List items={groups} onRenderCell={this._onRenderCell} />
+          <div className="flex p-1">
+            <div className="owner-groups p-2 w-1/2">
+            <h2 className="p-1 text-base text-black font-normal border-b-2 border-gray-400"> my groups </h2>
+              <List items={groups.filter(group => group.userRole === "Member" || group.userRole === "Owner")} onRenderCell={this._onRenderUserGroupCell} />
+            </div>
+            <div className="member-groups p-2 w-1/2">
+              <h2 className="p-1 text-base text-black font-normal border-b-2 border-gray-400"> existing groups </h2>
+              <List items={groups.filter(group => group.userRole === "")} onRenderCell={this._onRenderExistingGroupCell} />
+            </div>
+          </div>
           {this.state.isTeachingBubbleVisible ? (
             <div>
               <TeachingBubble
@@ -142,7 +173,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
 
   public _getGroupLinks = (groups: any): void => {
     groups.map((groupItem: IGroup) => (
-      O365GroupService.getGroupLink(groupItem).then(groupUrl => {
+      UserGroupService.getGroupLink(groupItem).then(groupUrl => {
         if (groupUrl !== null) {
           this.setState(prevState => ({
             groups: prevState.groups.map(group => group.id === groupItem.id ? { ...group, url: groupUrl.value } : group)
@@ -162,7 +193,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     this._getGroupLinks(this.state.groups);
   }
 
-  private _onRenderCell(group: IGroup, index: number | undefined): JSX.Element {
+  private _onRenderUserGroupCell(group: IGroup, index: number | undefined): JSX.Element {
     return (
       <div className={classNames.itemCell} data-is-focusable={true}>
         <Image className={classNames.itemImage} src={group.thumbnail} width={50} height={50} imageFit={ImageFit.cover} />
@@ -172,7 +203,10 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
         </div>
         {
           group.userRole === "Owner" &&
-          <IconButton iconProps={manageIcon} title="Manage Group" ariaLabel="Manage Group" onClick={(event) => { this._manageGroupClicked(group.id); }} />
+          <div className="flex">
+            <IconButton iconProps={manageIcon} title="Manage Group" ariaLabel="Manage Group" onClick={(event) => { this._manageGroupClicked(group); }} />
+            <IconButton iconProps={deleteIcon} title="Delete Group" ariaLabel="Delete Group" onClick={(event) => { this._deleteGroupClicked(group); }} />
+          </div>
         }
         {
           group.userRole === "Member" &&
@@ -180,6 +214,18 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
             <IconButton iconProps={leaveIcon} title="Leave Group" ariaLabel="Leave Group" onClick={(event) => { this._leaveGroupClicked(group.id, group.displayName); }} />
           </span>
         }
+      </div>
+    );
+  }
+
+  private _onRenderExistingGroupCell(group: IGroup, index: number | undefined): JSX.Element {
+    return (
+      <div className={classNames.itemCell} data-is-focusable={true}>
+        <Image className={classNames.itemImage} src={group.thumbnail} width={50} height={50} imageFit={ImageFit.cover} />
+        <div className={classNames.itemContent}>
+          <div className={classNames.itemIndex}>{group.visibility}</div>
+          <div>{group.description}</div>
+        </div>
         {
           group.visibility === "Public" && group.userRole === "" &&
           <span className="ms-TeachingBubbleBasicExample-buttonArea" ref={menuButton => (this._menuButtonElement = menuButton!)}>
@@ -196,12 +242,53 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     });
   }
 
-  private _manageGroupClicked = (groupId: string) => {
+  private _manageGroupClicked = (group: any) => {
     console.log('Switch to edit group')
   }
 
+  private _deleteGroupClicked = (group: any) => {
+    this.setState({
+      selectedGroup: group,
+      showDialog: true
+    });
+  }
+
+  private _manageDeleteGroup = (confirm: boolean) => {
+    this.setState({
+      showDialog: false
+    });
+
+    /* If option is yes */
+    if (confirm) {
+      const groupId = this.state.selectedGroup.id
+      const groupName = this.state.selectedGroup.displayName
+      UserGroupService.deleteGroup(groupId).then(response => {
+        /* Filter out the deleted group */
+        this._originalItems = this.state.groups.filter(group => group.id !== groupId)
+        this.setState({
+          groups: this._originalItems
+        })
+        
+        /* Re-check groups with map function and show confirmation message */
+        this.setState(prevState => ({
+          groups: prevState.groups.map(group => group.id === groupId ? { ...group, userRole: "" } : group),
+          isTeachingBubbleVisible: true,
+          techingBubbleMessage: 'You have deleted group: ' + groupName
+        }));
+
+        this.forceUpdate();
+    
+      }).catch(e => console.log(e));
+    }
+
+    /* Back to default: no group to delete now */
+    this.setState({
+      selectedGroup: null
+    });
+  }
+
   private _leaveGroupClicked = (groupId: string, groupName: string) => {
-    O365GroupService.removeMemberFromGroup(groupId, 'me').then(response => {
+    UserGroupService.removeMembersFromGroup(groupId, 'me').then(response => {
       this.setState(prevState => ({
         groups: prevState.groups.map(group => group.id === groupId ? { ...group, userRole: "" } : group),
         isTeachingBubbleVisible: true,
@@ -211,7 +298,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
   }
 
   private _joinGroupClicked = (groupId: string, groupName: string) => {
-    O365GroupService.addMemberToGroup(groupId, 'me').then(response => {
+    UserGroupService.addMembersToGroup(groupId, 'me').then(response => {
       this.setState(prevState => ({
         groups: prevState.groups.map(group => group.id === groupId ? { ...group, userRole: "Member" } : group),
         isTeachingBubbleVisible: true,

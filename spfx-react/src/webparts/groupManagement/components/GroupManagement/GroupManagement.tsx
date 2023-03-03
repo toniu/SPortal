@@ -4,9 +4,10 @@ import * as React from 'react';
 import styles from './GroupManagement.module.scss';
 import { IGroupManagementProps } from './IGroupManagementProps';
 import { IGroupManagementState } from './IGroupManagementState';
-import O365GroupService from '../../../../services/O365GroupService';
+import UserGroupService from '../../../../services/UserGroupService';
 import GroupList from '../GroupList/GroupList';
 import NewGroup from "../NewGroup/NewGroup";
+import SelectedGroup from "../SelectGroup/SelectedGroup";
 import { ActionButton, IIconProps } from 'office-ui-fabric-react';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 
@@ -22,7 +23,7 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
       ownerGroups: [],
       memberGroups: [],
       showNewGroupScreen: false,
-      showEditGroupScreen: false,
+      showSelectedGroupScreen: false,
       loadCount: 0
     };
   }
@@ -57,6 +58,16 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
                 </div>
               </div>
             }
+            {
+              this.state.showSelectedGroupScreen &&
+              <div>
+                <div className={styles.row}>
+                  <div className={styles.headerStyle}>
+                    <SelectedGroup returnToMainPage={this.showMainScreen} context={this.props.context} />
+                  </div>
+                </div>
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -67,7 +78,18 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
     this.setState(() => {
       return {
         ...this.state,
-        showNewGroupScreen: true
+        showNewGroupScreen: true,
+        showSelectedGroupScreen: false
+      };
+    });
+  }
+
+  public showSelectedGroupScreen = () => {
+    this.setState(() => {
+      return {
+        ...this.state,
+        showNewGroupScreen: false,
+        showSelectedGroupScreen: true
       };
     });
   }
@@ -76,7 +98,8 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
     this.setState(() => {
       return {
         ...this.state,
-        showNewGroupScreen: false
+        showNewGroupScreen: false,
+        showSelectedGroupScreen: false
       };
     });
   }
@@ -86,7 +109,7 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
   }
 
   public _getGroups = (): void => {
-    O365GroupService.getGroups().then(groups => {
+    UserGroupService.getGroups().then(groups => {
       console.log('Get groups: ', groups);
 
       this.setState({
@@ -95,7 +118,7 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
         loadCount: this.state.loadCount + 1
       });
 
-      O365GroupService.getMyOwnerGroups(groups).then(groups => {
+      UserGroupService.getMyOwnerGroups(groups).then(groups => {
         console.log('Get owner groups: ', groups);
         this.setState({
           ownerGroups: groups.map((item: { id: any; }) => item.id),
@@ -103,7 +126,7 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
         });
       }).catch((e: any) => console.log(e));
 
-      O365GroupService.getMyMemberGroups(groups).then(groups => {
+      UserGroupService.getMyMemberGroups(groups).then(groups => {
         console.log('Get member groups: ', groups);
         this.setState({
           memberGroups: groups.map(item => item.id),

@@ -11,7 +11,7 @@ import {
 import * as strings from 'GroupManagementWebPartStrings';
 import GroupManagement from './components/GroupManagement/GroupManagement';
 import { IGroupManagementProps } from './components/GroupManagement/IGroupManagementProps';
-import O365GroupService from '../../services/O365GroupService';
+import UserGroupService from '../../services/UserGroupService';
 
 export interface IGroupManagementWebPartProps {
   flowUrl: string;
@@ -33,7 +33,7 @@ export default class GroupManagementWebPart extends BaseClientSideWebPart<IGroup
 
   protected onInit(): Promise<void> {
     return super.onInit().then(() => {
-      O365GroupService.setup(this.context);
+      UserGroupService.setup(this.context);
     }).catch((e) => console.log(e));
   }
 
