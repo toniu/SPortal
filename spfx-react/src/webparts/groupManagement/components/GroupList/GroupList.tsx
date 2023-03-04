@@ -15,6 +15,7 @@ import { AnimatedDialog } from "@pnp/spfx-controls-react/lib/AnimatedDialog";
 import { List } from 'office-ui-fabric-react/lib/List';
 import { ITheme, mergeStyleSets, getTheme, getFocusStyle } from 'office-ui-fabric-react/lib/Styling';
 import { IGroup } from "../../models/IGroup";
+import ViewGroup from "../ViewGroup/ViewGroup"
 import UserGroupService from '../../../../services/UserGroupService';
 /* Tailwind import */
 import '../../../../../assets/dist/tailwind.css';
@@ -108,6 +109,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
       filterText: '',
       showDialog: false,
       selectedGroup: null,
+      showSelectedGroup: false,
       isTeachingBubbleVisible: false,
       groups: this._originalItems
     };
@@ -126,49 +128,75 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
       <div className={styles.groupContainer}>
         {
           <AnimatedDialog
-              hidden={!this.state.showDialog}
-              onDismiss={() => { this.setState({ showDialog: false }); }}
-              dialogContentProps={{type: DialogType.normal, title: 'Delete group', subText: 'Confirmation to delete group?'}}
-              modalProps={{isDarkOverlay: true}}
-              dialogAnimationInType='fadeInDown'
-              dialogAnimationOutType='fadeOutDown'
-              >
-                  <DialogFooter>
-                      <PrimaryButton onClick={() => { this._manageDeleteGroup(true) }} text="Yes" />
-                      <DefaultButton onClick={() => { this._manageDeleteGroup(false) }} text="No" />
-                  </DialogFooter>
+            hidden={!this.state.showDialog}
+            onDismiss={() => { this.setState({ showDialog: false }); }}
+            dialogContentProps={{ type: DialogType.normal, title: 'Delete group', subText: 'Confirmation to delete group?' }}
+            modalProps={{ isDarkOverlay: true }}
+            dialogAnimationInType='fadeInDown'
+            dialogAnimationOutType='fadeOutDown'
+          >
+            <DialogFooter>
+              <PrimaryButton onClick={() => { this._manageDeleteGroup(true) }} text="Yes" />
+              <DefaultButton onClick={() => { this._manageDeleteGroup(false) }} text="No" />
+            </DialogFooter>
           </AnimatedDialog>
         }
-        <TextField label={'Filter by name' + resultCountText} onChange={this._onFilterChanged} />
-        <FocusZone direction={FocusZoneDirection.vertical}>
-          <div className="flex p-1">
-            <div className="owner-groups p-2 w-1/2">
-            <h2 className="p-1 text-base text-black font-normal border-b-2 border-gray-400"> my groups </h2>
-              <List items={groups.filter(group => group.userRole === "Member" || group.userRole === "Owner")} onRenderCell={this._onRenderUserGroupCell} />
-            </div>
-            <div className="member-groups p-2 w-1/2">
-              <h2 className="p-1 text-base text-black font-normal border-b-2 border-gray-400"> existing groups </h2>
-              <List items={groups.filter(group => group.userRole === "")} onRenderCell={this._onRenderExistingGroupCell} />
+        {
+          !this.state.showSelectedGroup &&
+          <>
+            <TextField label={'Filter by name' + resultCountText} onChange={this._onFilterChanged} />
+            <FocusZone direction={FocusZoneDirection.vertical}>
+              <div className="flex p-1">
+                <div className="owner-groups p-2 w-1/2">
+                  <h2 className="p-1 text-base text-black font-normal border-b-2 border-gray-400"> my groups </h2>
+                  <List items={groups.filter(group => group.userRole === "Member" || group.userRole === "Owner")} onRenderCell={this._onRenderUserGroupCell} />
+                </div>
+                <div className="member-groups p-2 w-1/2">
+                  <h2 className="p-1 text-base text-black font-normal border-b-2 border-gray-400"> existing groups </h2>
+                  <List items={groups.filter(group => group.userRole === "")} onRenderCell={this._onRenderExistingGroupCell} />
+                </div>
+              </div>
+              {this.state.isTeachingBubbleVisible ? (
+                <div>
+                  <TeachingBubble
+                    calloutProps={{ directionalHint: DirectionalHint.bottomLeftEdge }}
+                    isWide={true}
+                    hasCloseButton={true}
+                    closeButtonAriaLabel="Close"
+                    target={this._menuButtonElement}
+                    onDismiss={this._onDismiss}
+                    headline="Manage O365 Groups"
+                  >
+                    {this.state.techingBubbleMessage}
+                  </TeachingBubble>
+                </div>
+              ) : null}
+            </FocusZone>
+          </>
+        }
+        {
+          this.state.showSelectedGroup &&
+          <div>
+            <div className={styles.row}>
+              <div className={styles.headerStyle}>
+                <ViewGroup returnToMainPage={this.mainPageGroups} selectedGroup={this.state.selectedGroup} context={this.props.context} />
+              </div>
             </div>
           </div>
-          {this.state.isTeachingBubbleVisible ? (
-            <div>
-              <TeachingBubble
-                calloutProps={{ directionalHint: DirectionalHint.bottomLeftEdge }}
-                isWide={true}
-                hasCloseButton={true}
-                closeButtonAriaLabel="Close"
-                target={this._menuButtonElement}
-                onDismiss={this._onDismiss}
-                headline="Manage O365 Groups"
-              >
-                {this.state.techingBubbleMessage}
-              </TeachingBubble>
-            </div>
-          ) : null}
-        </FocusZone>
+        }
+
       </div>
     );
+  }
+
+  public mainPageGroups = () => {
+    this.setState(() => {
+      return {
+        ...this.state,
+        selectedGroup: null,
+        showSelectedGroup: false,
+      };
+    });
   }
 
   public _getGroupLinks = (groups: any): void => {
@@ -243,7 +271,31 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
   }
 
   private _manageGroupClicked = (group: any) => {
-    console.log('Switch to edit group')
+    this.setState({
+      selectedGroup: group,
+    });
+
+    const members = UserGroupService.getPeopleOfGroup(group.id, 'members').then(response => {
+      console.log('Manage this group now!')
+    }).catch((e: any) => console.log(e));
+
+    const owners = UserGroupService.getPeopleOfGroup(group.id, 'owners').then(response => {
+      console.log('Manage this group now!')
+    }).catch((e: any) => console.log(e));
+
+    /* Set new properties to pass as a prop into the React component used to edit/view group */
+    const groupDetails = {
+      id: group.id,
+      name: group.displayName,
+      description: group.description,
+      visibility: group.visibility,
+      originalOwners: owners,
+      originalMembers: members
+    }
+
+    this.setState({
+      selectedGroup: groupDetails,
+    });
   }
 
   private _deleteGroupClicked = (group: any) => {
@@ -268,7 +320,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
         this.setState({
           groups: this._originalItems
         })
-        
+
         /* Re-check groups with map function and show confirmation message */
         this.setState(prevState => ({
           groups: prevState.groups.map(group => group.id === groupId ? { ...group, userRole: "" } : group),
@@ -277,7 +329,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
         }));
 
         this.forceUpdate();
-    
+
       }).catch(e => console.log(e));
     }
 

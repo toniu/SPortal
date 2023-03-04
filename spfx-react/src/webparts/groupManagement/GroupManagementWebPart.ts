@@ -33,7 +33,7 @@ export default class GroupManagementWebPart extends BaseClientSideWebPart<IGroup
 
   protected onInit(): Promise<void> {
     return super.onInit().then(() => {
-      UserGroupService.setup(this.context);
+      UserGroupService.setup(this.context, this.context.serviceScope);
     }).catch((e) => console.log(e));
   }
 

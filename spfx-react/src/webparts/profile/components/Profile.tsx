@@ -61,7 +61,7 @@ export default class Profile extends React.Component<IProfileProps, { userProfil
     const serviceScope: ServiceScope = this.props.serviceScope;
     this.dataCenterServiceInstance = serviceScope.consume(UserProfileService.serviceKey);
 
-    this.dataCenterServiceInstance.getUserProfileProperties('me').then((userProfileItems: IUserProfile) => {
+    this.dataCenterServiceInstance.getUserProfileProperties('i:0#.f|membership|zhac031@live.rhul.ac.uk').then((userProfileItems: IUserProfile) => {
       console.log('Full user properties list: ', userProfileItems)
       for (let i: number = 0; i < userProfileItems.UserProfileProperties.length; i++) {
         if (userProfileItems.UserProfileProperties[i].Key === "FirstName") {

@@ -7,7 +7,6 @@ import { IGroupManagementState } from './IGroupManagementState';
 import UserGroupService from '../../../../services/UserGroupService';
 import GroupList from '../GroupList/GroupList';
 import NewGroup from "../NewGroup/NewGroup";
-import SelectedGroup from "../SelectGroup/SelectedGroup";
 import { ActionButton, IIconProps } from 'office-ui-fabric-react';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 
@@ -23,7 +22,6 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
       ownerGroups: [],
       memberGroups: [],
       showNewGroupScreen: false,
-      showSelectedGroupScreen: false,
       loadCount: 0
     };
   }
@@ -38,7 +36,7 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
                 ?
                 <p>
                   <h1 className={styles.headerMsgStyle}>Group management</h1>
-                  <GroupList flowUrl={this.props.flowUrl} items={this.state.groups} ownerGroups={this.state.ownerGroups} memberGroups={this.state.memberGroups} />
+                  <GroupList flowUrl={this.props.flowUrl} items={this.state.groups} ownerGroups={this.state.ownerGroups} memberGroups={this.state.memberGroups} context={this.props.context}/>
                   <br />
                   <ActionButton className={styles.newHeaderLinkStyle} iconProps={addGroupIcon} allowDisabledFocus onClick={this.showNewGroupScreen}>
                     New Group
@@ -58,16 +56,6 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
                 </div>
               </div>
             }
-            {
-              this.state.showSelectedGroupScreen &&
-              <div>
-                <div className={styles.row}>
-                  <div className={styles.headerStyle}>
-                    <SelectedGroup returnToMainPage={this.showMainScreen} context={this.props.context} />
-                  </div>
-                </div>
-              </div>
-            }
           </div>
         </div>
       </div>
@@ -80,16 +68,6 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
         ...this.state,
         showNewGroupScreen: true,
         showSelectedGroupScreen: false
-      };
-    });
-  }
-
-  public showSelectedGroupScreen = () => {
-    this.setState(() => {
-      return {
-        ...this.state,
-        showNewGroupScreen: false,
-        showSelectedGroupScreen: true
       };
     });
   }

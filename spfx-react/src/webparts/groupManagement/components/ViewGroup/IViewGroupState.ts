@@ -1,11 +1,11 @@
 import { MessageBarType } from 'office-ui-fabric-react';
 
-export interface ISelectedGroupState {
+export interface IViewGroupState {
     name: string;
     description: string;
     visibility: string;
-    owners: string[];
-    members: string[];
+    originalOwners: string[];
+    originalMembers: string[];
     showMessageBar: boolean;
     messageType?: MessageBarType;
     message?: string;

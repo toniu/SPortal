@@ -1,3 +1,4 @@
+import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { IGroup } from "../../models/IGroup";
 
 export interface IGroupListProps {
@@ -5,4 +6,5 @@ export interface IGroupListProps {
     items?: IGroup[];
     ownerGroups?: string[];
     memberGroups?: string[];
+    context: WebPartContext;
 }

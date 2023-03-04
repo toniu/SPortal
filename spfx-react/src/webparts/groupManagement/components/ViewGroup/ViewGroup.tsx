@@ -2,14 +2,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
 import styles from '../GroupManagement/GroupManagement.module.scss';
-import { ISelectedGroupProps } from './ISelectedGroupProps'; 
-import { ISelectedGroupState } from './ISelectedGroupState';
+import { IViewGroupProps } from './IViewGroupProps'; 
+import { IViewGroupState } from './IViewGroupState';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Label } from 'office-ui-fabric-react/lib/Label';
 import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 import { PeoplePicker, PrincipalType, IPeoplePickerUserItem } from "@pnp/spfx-controls-react/lib/PeoplePicker";
-import { MessageBar, MessageBarType, IStackProps, Stack, ActionButton, IIconProps, DefaultButton } from 'office-ui-fabric-react';
-import UserGroupService from '../../../../services/UserGroupService';
+import { MessageBar, IStackProps, Stack, ActionButton, IIconProps, DefaultButton } from 'office-ui-fabric-react';
 
 const backIcon: IIconProps = { iconName: 'NavigateBack' };
 
@@ -18,22 +17,22 @@ const verticalStackProps: IStackProps = {
     tokens: { childrenGap: 20 }
 };
 
-export default class SelectedGroup extends React.Component<ISelectedGroupProps, ISelectedGroupState> {
+export default class ViewGroup extends React.Component<IViewGroupProps, IViewGroupState> {
 
-    constructor(props: ISelectedGroupProps) {
+    constructor(props: IViewGroupProps) {
         super(props);
 
         this.state = {
-            name: '',
-            description: '',
-            visibility: 'Public',
-            owners: [],
-            members: [],
+            name: props.selectedGroup.displayName,
+            description: props.selectedGroup.description,
+            visibility: props.selectedGroup.visibility,
+            originalOwners: props.selectedGroup.originalOwners,
+            originalMembers: props.selectedGroup.originalMembers,
             showMessageBar: false
         };
     }
 
-    public render(): React.ReactElement<ISelectedGroupProps> {
+    public render(): React.ReactElement<IViewGroupProps> {
         return (
             <div className={styles.groupManagement}>
                 <div className={styles.container}>
@@ -41,7 +40,7 @@ export default class SelectedGroup extends React.Component<ISelectedGroupProps, 
                     <div className={styles.row}>
                         <div className={styles.headerStyle}>
                             <h1 className={styles.headerMsgStyle}>
-                                <span>Group ...</span>
+                                <span>{this.state.name}</span>
                                 <ActionButton className={styles.newHeaderLinkStyle} iconProps={backIcon} allowDisabledFocus onClick={this.props.returnToMainPage}>
                                     Back to listing
                                 </ActionButton>
@@ -152,25 +151,6 @@ export default class SelectedGroup extends React.Component<ISelectedGroupProps, 
     }
 
     private createNewGroup = () => {
-        try {
-            console.log('CG State: ', this.state)
-            UserGroupService.createGroup(this.state.name, this.state.description, this.state.visibility, this.state.owners, this.state.members).catch(e => this.handleGroupError(e));
-
-            this.setState({
-                message: "Group " + this.state.name + " is created successfully!",
-                showMessageBar: true,
-                messageType: MessageBarType.success
-            });
-        } catch (error) {
-            this.handleGroupError(error)
-        }
-    }
-
-    private handleGroupError = (error: string) => {
-        this.setState({
-            message: "Group " + this.state.name + " creation failed with error: " + error,
-            showMessageBar: true,
-            messageType: MessageBarType.error
-        });
+        console.log('temp')
     }
 }

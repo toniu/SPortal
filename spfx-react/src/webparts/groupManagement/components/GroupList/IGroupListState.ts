@@ -5,6 +5,7 @@ export interface IGroupListState {
     filterText?: string;
     showDialog: boolean;
     selectedGroup: any;
+    showSelectedGroup: boolean;
     isTeachingBubbleVisible?: boolean;
     techingBubbleMessage?: string;
     groups?: IGroup[];

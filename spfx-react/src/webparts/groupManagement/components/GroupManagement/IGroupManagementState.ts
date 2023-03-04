@@ -6,6 +6,5 @@ export interface IGroupManagementState {
     ownerGroups: string[];
     memberGroups: string[];
     showNewGroupScreen: boolean;
-    showSelectedGroupScreen: boolean;
     loadCount: number;
 }

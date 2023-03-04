@@ -2,6 +2,13 @@
 /* eslint-disable no-void */
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { IGroup } from "../webparts/groupManagement/models";
+/* Services */
+import { IDataService } from '../services/IDataService';
+import { UserProfileService } from '../services/UserProfileService';
+
+import { ServiceScope } from '@microsoft/sp-core-library'
+import { IUserProfile } from '../webparts/profile/components/IUserProfile'
+
 /* SP/PNP imports */
 import { SPFI } from '@pnp/sp';
 import { getSP } from '../pnpjsConfig';
@@ -11,10 +18,13 @@ import "@pnp/sp/site-users/web"
 export class UserGroupService {
   private _sp: SPFI;
   public context: WebPartContext;
+  public serviceScope: ServiceScope;
   private userEmail: string;
+  private dataCenterServiceInstance: IDataService;
 
-  public async setup(context: WebPartContext): Promise<void> {
+  public async setup(context: WebPartContext, serviceScope: ServiceScope): Promise<void> {
     this.context = context;
+    this.serviceScope = serviceScope;
     this._sp = getSP(context);
 
     /* Get email of current user */
@@ -91,6 +101,55 @@ export class UserGroupService {
       console.log(e)
     }
     return groups;
+  }
+
+  public getPeopleOfGroup = async (groupId: string, roleToGet: string): Promise<any> => {
+    try {
+      /* Retrieve the all members OR owners with specific group ID */
+      let groupPeople: string | any[] = []
+      if (roleToGet === 'members') {
+        /* Get members of the group */
+        groupPeople = await this._sp.web.lists.getByTitle("GroupMembers").items.filter(`Title eq '${groupId}'`)()
+      } else {
+        /* Get owners of the group */
+        groupPeople = await this._sp.web.lists.getByTitle("GroupOwners").items.filter(`Title eq '${groupId}'`)()
+      }
+
+      this.dataCenterServiceInstance = this.serviceScope.consume(UserProfileService.serviceKey);
+
+      /* Retrieve first name and last name using user profile service */
+      
+      const peopleData: { email: any; firstName: string; lastName: string; }[] = []
+      
+      /* Use data service to get the user properties required i.e. first and last name of the users */
+      for (let i = 0; i < groupPeople.length; i++) {
+        /* Context: the internal field name field_1 means the member/owner email */
+        this.dataCenterServiceInstance.getUserProfileProperties(`i:0#.f|membership|${groupPeople[i].field_1}`).then((userProfileItems: IUserProfile) => {
+        
+        let userFirstName = ''
+        let userLastName = ''
+        /* Retrieve the values from the user profile properties: first and last name needed */
+        for (let property = 0; property < userProfileItems.UserProfileProperties.length; property++) {
+          if (userProfileItems.UserProfileProperties[property].Key === 'FirstName') {
+            userFirstName = userProfileItems.UserProfileProperties[property].Value
+          }
+          if (userProfileItems.UserProfileProperties[property].Key === 'LastName') {
+            userLastName = userProfileItems.UserProfileProperties[property].Value
+          }
+        }
+
+        peopleData.push({email: groupPeople[i].field_1, firstName: userFirstName, lastName: userLastName})
+       }).catch((e) => console.log(e));
+      }
+
+      console.log(peopleData)
+      return peopleData
+      
+      /* Make array of users with their information i.e. email, first name, last name */
+    } catch (e) {
+      console.log(e)
+      return null;
+    }
   }
 
   public addMembersToGroup = async (groupId: string, memberEmails: any): Promise<void> => {
@@ -292,7 +351,7 @@ export class UserGroupService {
 
       /* Update group details */
       const groups = this._sp.web.lists.getByTitle("Groups");
-      const i = await groups.items.getById(spGroupID).update({updateRequest});
+      const i = await groups.items.getById(spGroupID).update({ updateRequest });
       console.log(i)
 
       /* Batch update for adding or removing members from group */
