@@ -117,7 +117,6 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     this._onRenderUserGroupCell = this._onRenderUserGroupCell.bind(this);
     this._onRenderExistingGroupCell = this._onRenderExistingGroupCell.bind(this);
     this._onDismiss = this._onDismiss.bind(this);
-    this._getGroupLinks(this._originalItems);
   }
 
   public render(): React.ReactElement<IGroupListProps> {
@@ -194,21 +193,9 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
       return {
         ...this.state,
         selectedGroup: null,
-        showSelectedGroup: false,
+        showSelectedGroup: false
       };
     });
-  }
-
-  public _getGroupLinks = (groups: any): void => {
-    groups.map((groupItem: IGroup) => (
-      UserGroupService.getGroupLink(groupItem).then(groupUrl => {
-        if (groupUrl !== null) {
-          this.setState(prevState => ({
-            groups: prevState.groups.map(group => group.id === groupItem.id ? { ...group, url: groupUrl.value } : group)
-          }));
-        }
-      })
-    ));
   }
 
 
@@ -218,7 +205,6 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
       groups: text ? this._originalItems.filter(item => item.displayName.toLowerCase().indexOf(text.toLowerCase()) >= 0) : this._originalItems
     });
 
-    this._getGroupLinks(this.state.groups);
   }
 
   private _onRenderUserGroupCell(group: IGroup, index: number | undefined): JSX.Element {
@@ -232,7 +218,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
         {
           group.userRole === "Owner" &&
           <div className="flex">
-            <IconButton iconProps={manageIcon} title="Manage Group" ariaLabel="Manage Group" onClick={(event) => { this._manageGroupClicked(group); }} />
+            <IconButton iconProps={manageIcon} title="Manage Group" ariaLabel="Manage Group" onClick={async (event) => { await this._manageGroupClicked(group); }} />
             <IconButton iconProps={deleteIcon} title="Delete Group" ariaLabel="Delete Group" onClick={(event) => { this._deleteGroupClicked(group); }} />
           </div>
         }
@@ -270,32 +256,34 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     });
   }
 
-  private _manageGroupClicked = (group: any) => {
-    this.setState({
-      selectedGroup: group,
-    });
+  private _manageGroupClicked = async (group: any) => {
+    console.log('Manage group selected', group)
+    let members: any[] = []
+    let owners: any[] = []
 
-    const members = UserGroupService.getPeopleOfGroup(group.id, 'members').then(response => {
-      console.log('Manage this group now!')
-    }).catch((e: any) => console.log(e));
-
-    const owners = UserGroupService.getPeopleOfGroup(group.id, 'owners').then(response => {
-      console.log('Manage this group now!')
-    }).catch((e: any) => console.log(e));
+    /* Retrieve members and owners */
+    members = await UserGroupService.getGroupUsers(group.id, 'members')
+    owners = await UserGroupService.getGroupUsers(group.id, 'owners')
 
     /* Set new properties to pass as a prop into the React component used to edit/view group */
     const groupDetails = {
       id: group.id,
+      spId: group.SPId,
       name: group.displayName,
       description: group.description,
       visibility: group.visibility,
-      originalOwners: owners,
-      originalMembers: members
+      owners: owners,
+      members: members
     }
 
-    this.setState({
+    console.log('Group details from viewed group: ', groupDetails);
+
+    await this.setState({
       selectedGroup: groupDetails,
+      showSelectedGroup: true
     });
+
+    this.forceUpdate()
   }
 
   private _deleteGroupClicked = (group: any) => {
@@ -303,13 +291,11 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
       selectedGroup: group,
       showDialog: true
     });
+
+    this.forceUpdate()
   }
 
   private _manageDeleteGroup = (confirm: boolean) => {
-    this.setState({
-      showDialog: false
-    });
-
     /* If option is yes */
     if (confirm) {
       const groupId = this.state.selectedGroup.id
@@ -328,15 +314,16 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
           techingBubbleMessage: 'You have deleted group: ' + groupName
         }));
 
-        this.forceUpdate();
-
       }).catch(e => console.log(e));
     }
 
     /* Back to default: no group to delete now */
     this.setState({
+      showDialog: false,
       selectedGroup: null
     });
+
+    this.forceUpdate();
   }
 
   private _leaveGroupClicked = (groupId: string, groupName: string) => {
@@ -347,6 +334,8 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
         techingBubbleMessage: 'You have left the group: ' + groupName
       }));
     }).catch(e => console.log(e));
+
+    this.forceUpdate();
   }
 
   private _joinGroupClicked = (groupId: string, groupName: string) => {
@@ -357,5 +346,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
         techingBubbleMessage: 'You have joined the group: ' + groupName
       }));
     }).catch(e => console.log(e));
+
+    this.forceUpdate();
   }
 }

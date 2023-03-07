@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Represents attributes of an O365 Group
 export interface IGroup {
     id: string;

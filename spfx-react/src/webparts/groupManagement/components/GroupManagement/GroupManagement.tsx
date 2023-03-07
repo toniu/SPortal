@@ -70,6 +70,8 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
         showSelectedGroupScreen: false
       };
     });
+
+    this.forceUpdate()
   }
 
   public showMainScreen = () => {
@@ -80,6 +82,8 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
         showSelectedGroupScreen: false
       };
     });
+
+    this.forceUpdate()
   }
 
   public componentDidMount(): void {

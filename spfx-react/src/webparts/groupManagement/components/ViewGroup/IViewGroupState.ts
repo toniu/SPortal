@@ -1,12 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MessageBarType } from 'office-ui-fabric-react';
 
 export interface IViewGroupState {
+    id: any;
+    spId: any;
     name: string;
     description: string;
     visibility: string;
-    originalOwners: string[];
-    originalMembers: string[];
+    owners: any[];
+    members: any[];
     showMessageBar: boolean;
+    originalState: any;
     messageType?: MessageBarType;
     message?: string;
 }

@@ -103,53 +103,52 @@ export class UserGroupService {
     return groups;
   }
 
-  public getPeopleOfGroup = async (groupId: string, roleToGet: string): Promise<any> => {
+  public getGroupUsers = async (groupId: string, roleToGet: string): Promise<any> => {
+    let groupUsers: string | any[] = []
+    /* Retrieve the all members OR owners with specific group ID */
     try {
-      /* Retrieve the all members OR owners with specific group ID */
-      let groupPeople: string | any[] = []
       if (roleToGet === 'members') {
         /* Get members of the group */
-        groupPeople = await this._sp.web.lists.getByTitle("GroupMembers").items.filter(`Title eq '${groupId}'`)()
+        groupUsers = await this._sp.web.lists.getByTitle("GroupMembers").items.filter(`Title eq '${groupId}'`)()
       } else {
         /* Get owners of the group */
-        groupPeople = await this._sp.web.lists.getByTitle("GroupOwners").items.filter(`Title eq '${groupId}'`)()
+        groupUsers = await this._sp.web.lists.getByTitle("GroupOwners").items.filter(`Title eq '${groupId}'`)()
       }
-
-      this.dataCenterServiceInstance = this.serviceScope.consume(UserProfileService.serviceKey);
-
-      /* Retrieve first name and last name using user profile service */
-      
-      const peopleData: { email: any; firstName: string; lastName: string; }[] = []
-      
-      /* Use data service to get the user properties required i.e. first and last name of the users */
-      for (let i = 0; i < groupPeople.length; i++) {
-        /* Context: the internal field name field_1 means the member/owner email */
-        this.dataCenterServiceInstance.getUserProfileProperties(`i:0#.f|membership|${groupPeople[i].field_1}`).then((userProfileItems: IUserProfile) => {
-        
-        let userFirstName = ''
-        let userLastName = ''
-        /* Retrieve the values from the user profile properties: first and last name needed */
-        for (let property = 0; property < userProfileItems.UserProfileProperties.length; property++) {
-          if (userProfileItems.UserProfileProperties[property].Key === 'FirstName') {
-            userFirstName = userProfileItems.UserProfileProperties[property].Value
-          }
-          if (userProfileItems.UserProfileProperties[property].Key === 'LastName') {
-            userLastName = userProfileItems.UserProfileProperties[property].Value
-          }
-        }
-
-        peopleData.push({email: groupPeople[i].field_1, firstName: userFirstName, lastName: userLastName})
-       }).catch((e) => console.log(e));
-      }
-
-      console.log(peopleData)
-      return peopleData
-      
-      /* Make array of users with their information i.e. email, first name, last name */
     } catch (e) {
       console.log(e)
-      return null;
     }
+
+    return new Promise<any>((resolve) => {
+
+        this.dataCenterServiceInstance = this.serviceScope.consume(UserProfileService.serviceKey);
+
+        /* Retrieve first name and last name using user profile service */
+        const usersData: { email: any; firstName: string; lastName: string; }[] = []
+
+        /* Use data service to get the user properties required i.e. first and last name of the users */
+        for (let i = 0; i < groupUsers.length; i++) {
+          /* Context: the internal field name field_1 means the member/owner email */
+          this.dataCenterServiceInstance.getUserProfileProperties(`i:0#.f|membership|${groupUsers[i].field_1}`).then((userProfileItems: IUserProfile) => {
+
+            let userFirstName = ''
+            let userLastName = ''
+            /* Retrieve the values from the user profile properties: first and last name needed */
+            for (let property = 0; property < userProfileItems.UserProfileProperties.length; property++) {
+              if (userProfileItems.UserProfileProperties[property].Key === 'FirstName') {
+                userFirstName = userProfileItems.UserProfileProperties[property].Value
+              }
+              if (userProfileItems.UserProfileProperties[property].Key === 'LastName') {
+                userLastName = userProfileItems.UserProfileProperties[property].Value
+              }
+            }
+
+            /* Add the retrieved email, first name and last name to list */
+            usersData.push({ email: groupUsers[i].field_1, firstName: userFirstName, lastName: userLastName })
+          }).catch((e) => console.log(e));
+        }
+
+        resolve(usersData);
+    });
   }
 
   public addMembersToGroup = async (groupId: string, memberEmails: any): Promise<void> => {
@@ -165,9 +164,9 @@ export class UserGroupService {
         memberEmails.push(this.userEmail)
       }
       /* Retrieve the Sharepoint list ID (required to delete item with) */
-      const groupMembers = await this._sp.web.lists.getByTitle("GroupMembers").items();
+      const spList = await this._sp.web.lists.getByTitle("GroupMembers").items();
       /* Use filter to find the items with the groupId and the member emails to add */
-      groupMembers.filter(item => item.Title === groupId && memberEmails.indexOf(item.field_1) >= 0)
+      const groupMembers = spList.filter(item => item.Title === groupId && memberEmails.indexOf(item.field_1) >= 0)
 
       /*------ SP batch post request to remove selected members of group */
       /* If item is found */
@@ -215,9 +214,9 @@ export class UserGroupService {
         memberEmails.push(this.userEmail)
       }
       /* Retrieve the Sharepoint list ID (required to delete item with) */
-      const groupMembers = await this._sp.web.lists.getByTitle("GroupMembers").items();
+      const spList = await this._sp.web.lists.getByTitle("GroupMembers").items();
       /* Use filter to find the items with the groupId and the member emails to delete */
-      groupMembers.filter(item => item.Title === groupId && memberEmails.indexOf(item.field_1) >= 0)
+      const groupMembers = spList.filter(item => item.Title === groupId && memberEmails.indexOf(item.field_1) >= 0)
 
       /*------ SP batch post request to remove selected members of group */
       /* If item is found */
@@ -351,8 +350,8 @@ export class UserGroupService {
 
       /* Update group details */
       const groups = this._sp.web.lists.getByTitle("Groups");
-      const i = await groups.items.getById(spGroupID).update({ updateRequest });
-      console.log(i)
+      const isUpdated = await groups.items.getById(spGroupID).update(updateRequest);
+      console.log(isUpdated)
 
       /* Batch update for adding or removing members from group */
       if (membersToAdd.length > 0) {
@@ -361,6 +360,8 @@ export class UserGroupService {
       if (membersToRemove.length > 0) {
         await this.removeMembersFromGroup(groupId, membersToRemove)
       }
+
+      console.log('Edit group service done!')
 
     } catch (e) {
       console.log(e)
