@@ -11,6 +11,8 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'ProfileWebPartStrings';
 import Profile from './components/Profile';
 import { IProfileProps } from './components/IProfileProps';
+/* Services */
+import UserGroupService from '../../services/UserGroupService';
 import '../../../assets/dist/tailwind.css';
 
 export interface IProfileWebPartProps {
@@ -26,7 +28,8 @@ export default class ProfileWebPart extends BaseClientSideWebPart<IProfileWebPar
         description: this.properties.description,
         userDisplayName: this.context.pageContext.user.displayName,
         userName: encodeURIComponent('i:0#.f|membership|' + this.context.pageContext.user.loginName),
-        serviceScope: this.context.serviceScope
+        serviceScope: this.context.serviceScope,
+        context: this.context
       }
     );
 
@@ -34,37 +37,9 @@ export default class ProfileWebPart extends BaseClientSideWebPart<IProfileWebPar
   }
 
   protected onInit(): Promise<void> {
-    return this._getEnvironmentMessage().then(message => {
-      //
-    });
-  }
-
-
-
-  private _getEnvironmentMessage(): Promise<string> {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
-      return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then(context => {
-          let environmentMessage: string = '';
-          switch (context.app.host.name) {
-            case 'Office': // running in Office
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOffice : strings.AppOfficeEnvironment;
-              break;
-            case 'Outlook': // running in Outlook
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
-              break;
-            case 'Teams': // running in Teams
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
-              break;
-            default:
-              throw new Error('Unknown host');
-          }
-
-          return environmentMessage;
-        });
-    }
-
-    return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
+    return super.onInit().then(async () => {
+      await UserGroupService.setup(this.context, this.context.serviceScope);
+    }).catch((e) => console.log(e));
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IUserProfile {
+    Id: string;
     FirstName: string;
     LastName: string;
     Email: string;

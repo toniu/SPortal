@@ -100,7 +100,7 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
         loadCount: this.state.loadCount + 1
       });
 
-      UserGroupService.getMyOwnerGroups(groups).then(groups => {
+      UserGroupService.getMyOwnerGroups(groups, 'me').then(groups => {
         console.log('Get owner groups: ', groups);
         this.setState({
           ownerGroups: groups.map((item: { id: any; }) => item.id),
@@ -108,7 +108,7 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
         });
       }).catch((e: any) => console.log(e));
 
-      UserGroupService.getMyMemberGroups(groups).then(groups => {
+      UserGroupService.getMyMemberGroups(groups, 'me').then(groups => {
         console.log('Get member groups: ', groups);
         this.setState({
           memberGroups: groups.map(item => item.id),

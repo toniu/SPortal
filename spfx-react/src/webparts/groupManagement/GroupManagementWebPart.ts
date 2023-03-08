@@ -11,6 +11,7 @@ import {
 import * as strings from 'GroupManagementWebPartStrings';
 import GroupManagement from './components/GroupManagement/GroupManagement';
 import { IGroupManagementProps } from './components/GroupManagement/IGroupManagementProps';
+/* Services */
 import UserGroupService from '../../services/UserGroupService';
 
 export interface IGroupManagementWebPartProps {

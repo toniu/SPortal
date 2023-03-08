@@ -26,6 +26,7 @@ export class UserGroupService {
     this.context = context;
     this.serviceScope = serviceScope;
     this._sp = getSP(context);
+    console.log('SP check on setup', this._sp)
 
     /* Get email of current user */
     this.userEmail = await (await this._sp.web.currentUser()).UserPrincipalName
@@ -43,7 +44,9 @@ export class UserGroupService {
 
   public getGroups = async (): Promise<IGroup[]> => {
     /* Get items from SP list Groups */
+    console.log('SP check', this._sp)
     const groups = await this._sp.web.lists.getByTitle("Groups").items()
+
     return new Promise<IGroup[]>((resolve) => {
       try {
         const spGroups: Array<IGroup> = new Array<IGroup>();
@@ -67,13 +70,18 @@ export class UserGroupService {
     });
   }
 
-  public getMyMemberGroups = async (groups: IGroup[]): Promise<IGroup[]> => {
+  public getMyMemberGroups = async (groups: IGroup[], email: string): Promise<IGroup[]> => {
     try {
+      /* If the email is the current user then set it as that */
+      if (email === 'me') {
+        email = this.userEmail
+      }
+
       /* Get items from SP list Groups */
       const allGroupMembers = await this._sp.web.lists.getByTitle("GroupMembers").items()
 
       /* Filtered list of group members list where the user is a member */
-      let groupMembers = allGroupMembers.filter(item => item.field_1.toLowerCase() === this.userEmail.toLowerCase())
+      let groupMembers = allGroupMembers.filter(item => item.field_1.toLowerCase() === email.toLowerCase())
       /* Map to only have the list of the group IDs where user is a member of */
       groupMembers = groupMembers.map(item => item.Title)
 
@@ -85,13 +93,18 @@ export class UserGroupService {
     return groups;
   }
 
-  public getMyOwnerGroups = async (groups: IGroup[]): Promise<IGroup[]> => {
+  public getMyOwnerGroups = async (groups: IGroup[], email: string): Promise<IGroup[]> => {
     try {
+      /* If the email is the current user then set it as that */
+      if (email === 'me') {
+        email = this.userEmail
+      }
+      
       /* Get items from SP list Groups */
       const allGroupOwners = await this._sp.web.lists.getByTitle("GroupOwners").items()
 
       /* Filtered list of group owners list where the user is a owner */
-      let groupOwners = allGroupOwners.filter(item => item.field_1.toLowerCase() === this.userEmail.toLowerCase())
+      let groupOwners = allGroupOwners.filter(item => item.field_1.toLowerCase() === email.toLowerCase())
       /* Map to only have the list of the group IDs where user is a owner of */
       groupOwners = groupOwners.map(item => item.Title)
 
