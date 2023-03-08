@@ -13,7 +13,6 @@ import { UserProfileService } from '../../../services/UserProfileService';
 import { ServiceScope } from '@microsoft/sp-core-library'
 /* Icons */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt } from "@fortawesome/free-solid-svg-icons"
 import { faUser } from "@fortawesome/free-solid-svg-icons"
 import { faUserGroup } from "@fortawesome/free-solid-svg-icons"
 import { faPeopleGroup } from "@fortawesome/free-solid-svg-icons"
@@ -116,9 +115,6 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
               </h1>
             </div>
           </div>
-          <button type="button" className="editProfile p-3 float-right text-black text-2xl hover:text-gray-700 transition 0.2s" >
-            <FontAwesomeIcon icon={faPencilAlt} className="mx-1" />
-          </button>
           <div className="roles p-2">
             <h2 className="p-1 font-light text-xl">
               {this.state.userProfileItems.Title}
@@ -157,9 +153,16 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
           <ul className="suggestions-box p-1">
             {renderUsersToDiscover}
           </ul>
-          <button type="button" className="p-3 text-black font-light hover:font-bold transition 0.1s">
-            See more...
+          {
+            this.state.currentUser === this.state.loggedInUser &&
+            <br/>
+          }
+          {
+            this.state.currentUser !== this.state.loggedInUser &&
+            <button type="button" onClick={() => this._returnToOriginalUser()} className="p-3 text-black font-light hover:font-bold transition 0.1s">
+            Return to home user
           </button>
+          }
         </div>
       </div>
     );
@@ -178,52 +181,77 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
       /* Only retrieve properties if the user actually exists */
       if (userProfileItems.UserProfileProperties !== null && userProfileItems.UserProfileProperties !== undefined) {
         console.log('Check dis out: does it align?', email, userProfileItems)
-        const profileChosen = this.defaultProfile
 
         for (let i: number = 0; i < userProfileItems.UserProfileProperties.length; i++) {
 
           if (userProfileItems.UserProfileProperties[i].Key === "msOnline-ObjectId") {
-            profileChosen.Id = userProfileItems.UserProfileProperties[i].Value;
+            userProfileItems.Id = userProfileItems.UserProfileProperties[i].Value;
           }
 
           if (userProfileItems.UserProfileProperties[i].Key === "FirstName") {
-            profileChosen.FirstName = userProfileItems.UserProfileProperties[i].Value;
+            userProfileItems.FirstName = userProfileItems.UserProfileProperties[i].Value;
           }
 
           if (userProfileItems.UserProfileProperties[i].Key === "LastName") {
-            profileChosen.LastName = userProfileItems.UserProfileProperties[i].Value;
+            userProfileItems.LastName = userProfileItems.UserProfileProperties[i].Value;
           }
 
           if (userProfileItems.UserProfileProperties[i].Key === "UserName") {
-            profileChosen.Email = userProfileItems.UserProfileProperties[i].Value.toLowerCase();
+            userProfileItems.Email = userProfileItems.UserProfileProperties[i].Value.toLowerCase();
           }
 
           if (userProfileItems.UserProfileProperties[i].Key === "WorkPhone") {
-            profileChosen.WorkPhone = userProfileItems.UserProfileProperties[i].Value;
+            userProfileItems.WorkPhone = userProfileItems.UserProfileProperties[i].Value;
           }
 
           if (userProfileItems.UserProfileProperties[i].Key === "Department") {
-            profileChosen.Department = userProfileItems.UserProfileProperties[i].Value;
+            userProfileItems.Department = userProfileItems.UserProfileProperties[i].Value;
           }
 
           if (userProfileItems.UserProfileProperties[i].Key === "PictureURL") {
-            profileChosen.PictureURL = userProfileItems.UserProfileProperties[i].Value;
+            userProfileItems.PictureURL = userProfileItems.UserProfileProperties[i].Value;
           }
         }
-        console.log('Next users profile items: ', profileChosen)
+        console.log('Next users profile items: ', userProfileItems)
 
-        /* Cases: either getting current user's properties or properties of a user to discover */
-        if (!discover && ((profileChosen.Email === this.state.loggedInUser) || (profileChosen.Email === this.state.currentUser))) {
-          /* Update state to have properties of current user */
-          this.setState({userProfileItems: profileChosen})
-        } else {
-          /* Update state to have the properties of a user to discover */
+        /* Don't display users with blank first names or last names in suggestion box */
+        if (userProfileItems.FirstName.trim().length > 0 && userProfileItems.LastName.trim().length > 0) {
+          /* Cases: either getting current user's properties or properties of a user to discover */
+          if (!discover) {
+            this.setState({ usersToDiscover: [] })
+            console.log('UTD Length after SET', this.state.usersToDiscover.length)
+            /* Update state to have properties of current user */
 
-          const currentUsersToDiscover = this.state.usersToDiscover
-          if (currentUsersToDiscover.length < 3) {
-            currentUsersToDiscover.push(profileChosen)
-            this.setState({usersToDiscover: currentUsersToDiscover})
+            const newProfile = new UserProfile();
+            newProfile.Id = userProfileItems.Id;
+            newProfile.FirstName = userProfileItems.FirstName;
+            newProfile.LastName = userProfileItems.LastName;
+            newProfile.Email = userProfileItems.Email;
+            newProfile.Title = userProfileItems.Title;
+            newProfile.WorkPhone = userProfileItems.WorkPhone;
+            newProfile.DisplayName = userProfileItems.DisplayName;
+            newProfile.Department = userProfileItems.Department;
+            newProfile.PictureURL = userProfileItems.PictureURL;
+            newProfile.UserProfileProperties = userProfileItems.UserProfileProperties;
+
+            /* Call current user's groups */
+            this._getGroups(newProfile.Email)
+            /* Suggest some users to discover based on selected user's page */
+            this._getUsersToDiscover(newProfile.Email)
+
+            this.setState({ currentUser: newProfile.Email, userProfileItems: newProfile })
+
+            /* Ignore the discovered user if it is the logged in user themself */
+          } else if (userProfileItems.Email !== this.state.loggedInUser) {
+            /* Update state to have the properties of a user to discover */
+            const currentUsersToDiscover = this.state.usersToDiscover
+            console.log('Discovering the length, ', currentUsersToDiscover.length)
+            if (currentUsersToDiscover.length < 3) {
+              currentUsersToDiscover.push(userProfileItems)
+              this.setState({ usersToDiscover: currentUsersToDiscover })
+            }
           }
+          this.forceUpdate()
         }
       }
     }).catch((e) => console.log(e));
@@ -251,7 +279,10 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     }).catch((e: any) => console.log(e));
   }
 
-  public _getUsersToDiscover = async (email: string): Promise<void> => {
+  public _getUsersToDiscover = (email: string): void => {
+    /* Initialise array */
+    this.setState({ usersToDiscover: [] })
+
     if (email === 'me') {
       email = this.state.loggedInUser
     }
@@ -285,13 +316,11 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     userCodeRange = shuffleArray(userCodeRange)
     const zhacCodeRanges = userCodeRange.map(c => pad((c + zhacNumber), 3))
 
-    /* List of user profiles to suggest to visit */
-    this.setState({usersToDiscover: []})
-
     /* Variables for iterator */
     let i = 0
 
     /* Some ZHAC-XXX codes might be out of range or invalid so check through the range at least */
+    console.log('This state UTD: ', this.state.usersToDiscover)
     while (this.state.usersToDiscover.length < 3 && i < zhacCodeRanges.length) {
       /* Three users to discover finally found */
       console.log(zhacCodeRanges[i], `i:0#.f|membership|zhac${zhacCodeRanges[i]}@live.rhul.ac.uk`)
@@ -305,14 +334,20 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
   public _clickNewProfile = (profile: IUserProfile) => {
     /* Set state to new clicked profile of another user */
     this.setState({ currentUser: profile.Email, userProfileItems: profile })
-
     console.log('Profile clicked: ', profile)
     /* Call user properties when state has changed */
-    this._getUserProperties(profile.Email, false)
-    /* Call current user's groups */
-    this._getGroups(profile.Email)
-    /* Suggest some users to discover based on selected user's page */
-    this._getUsersToDiscover(profile.Email)
+    this._getUserProperties(`i:0#.f|membership|${profile.Email}`, false)
+    this.forceUpdate()
+  }
+
+  public _returnToOriginalUser = () => {
+    /* Set state to new clicked profile of another user */
+    this.setState({ currentUser: this.state.loggedInUser})
+    console.log('Return to user: ', this.state.loggedInUser)
+    /* Call user properties when state has changed */
+    this._getUserProperties('me', false)
+    this.forceUpdate()
+
   }
 }
 
