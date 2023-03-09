@@ -73,6 +73,14 @@
           "manifest": "./src/webparts/groupManagement/GroupManagementWebPart.manifest.json"
         }
       ]
+    },
+    "poll-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/pollManagement/PollManagementWebPart.js",
+          "manifest": "./src/webparts/pollManagement/PollManagementWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -87,6 +95,7 @@
     "DashboardAppWebPartStrings": "lib/webparts/dashboardApp/loc/{locale}.js",
     "CheckUserGroupWebPartStrings": "lib/webparts/checkUserGroup/loc/{locale}.js",
     "GroupMembershipManagerWebPartStrings": "lib/webparts/groupMembershipManager/loc/{locale}.js",
-    "GroupManagementWebPartStrings": "lib/webparts/groupManagement/loc/{locale}.js"
+    "GroupManagementWebPartStrings": "lib/webparts/groupManagement/loc/{locale}.js",
+    "PollManagementWebPartStrings": "lib/webparts/pollManagement/loc/{locale}.js"
   }
 }
