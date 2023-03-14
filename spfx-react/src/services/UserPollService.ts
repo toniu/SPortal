@@ -163,7 +163,7 @@ export class UserPollService {
 
     /*-- MODIFIED --*/
 
-    public igetPolls = async (): Promise<any> => {
+    public igetPolls = async (questions?: any[]): Promise<any> => {
         /* Get items from polls */
         const polls = await this._polls.items()
         console.log('Polls, ', polls)
@@ -229,7 +229,7 @@ export class UserPollService {
 
         return new Promise<boolean>((resolve) => {
             try {
-                const responsesByUser = pollResponses.filter((pR: any) => pR.userEmail.lower() === this.currentUser.Email)
+                const responsesByUser = pollResponses.filter((pR: any) => pR.userEmail.toLowerCase() === this.currentUser.Email.toLowerCase())
                 if (responsesByUser.length > 0) {
                     resolve(true)
                 } else {
@@ -241,7 +241,7 @@ export class UserPollService {
         });
     }
 
-    public isubmitResponseToPoll = async (pollId: string, userResponse: string): Promise<void> => {
+    public isubmitResponseToPoll = async (userResponse: IResponseDetails): Promise<void> => {
         try {
             /* SP List PollResponses fields:
             Title,
@@ -249,9 +249,9 @@ export class UserPollService {
             field_2: Response */
 
             const responseRequest: any = {
-                Title: pollId,
-                field_1: this.currentUser.Email,
-                field_2: userResponse
+                Title: userResponse.QuestionID,
+                field_1: userResponse.UserEmail,
+                field_2: userResponse.PollResponse
             }
 
             const iar: IItemAddResult = await this._pollResponses.items.add(responseRequest)
@@ -375,17 +375,6 @@ export class UserPollService {
 
       /* Finally remove all responses from poll */
       await this.iremoveResponsesFromPoll(pollId, pollResponses)
-    }
-
-    public icalculateResponses = async (pollId: string): Promise<any> => {
-        return new Promise<any>((resolve) => {
-            try {
-                const temp = ''
-                resolve(temp)
-            } catch (e) {
-                console.error(e);
-            }
-        }); 
     }
 }
 

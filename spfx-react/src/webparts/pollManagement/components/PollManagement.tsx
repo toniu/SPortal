@@ -34,7 +34,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
       pollResponse: [],
 
       /* -- */
-      enableSubmit: true,
+      enableSubmit: false,
       enableChoices: true,
       showOptions: false,
       showProgress: false,
@@ -50,11 +50,31 @@ export default class PollManagement extends React.Component<IPollManagementProps
 
     this.disQuestionId = ''
     this.displayQuestion = null
-    console.log( this.disQuestionId,this.displayQuestion)
+    console.log(this.disQuestionId, this.displayQuestion)
   }
 
   public componentDidMount = async (): Promise<void> => {
     await this._getPolls();
+  }
+
+  public componentDidUpdate = async (prevProps: IPollManagementProps): Promise<void> => {
+    /* If the poll questions or enable poll based on date changed */
+    if (prevProps.pollQuestions !== this.props.pollQuestions || prevProps.pollBasedOnDate !== this.props.pollBasedOnDate) {
+      this.setState({
+        pollResponse: [],
+        currentPoll: {},
+      }, () => this._getPolls());
+      // this.getQuestions(this.props.pollQuestions);
+    }
+
+    /* If the chart type has changed: re-render results */
+    if (prevProps.chartType !== this.props.chartType) {
+      const newPollAnalytics: IPollAnalyticsInfo = this.state.PollAnalytics;
+      newPollAnalytics.ChartType = this.props.chartType;
+      this.setState({
+        PollAnalytics: newPollAnalytics
+      }, this._bindResponseAnalytics);
+    }
   }
 
   public _onChange = (ev: any, option: any, isMultiSel: boolean): void => {
@@ -63,11 +83,11 @@ export default class PollManagement extends React.Component<IPollManagementProps
     const userResponse: IResponseDetails = {
       QuestionID: this.state.currentPoll.Id,
       UserEmail: this.props.currentUserInfo.Email,
-      PollResponse: ''
+      PollResponse: option.key
     }
 
     if (prevUserResponse.length > 0) {
-      const fillRes = this._getUserResponse(prevUserResponse);
+      const fillRes = this._getCurrentUserResponse(prevUserResponse);
       if (fillRes.length > 0) {
         fillRes[0].PollResponse = option.key
       } else {
@@ -77,8 +97,10 @@ export default class PollManagement extends React.Component<IPollManagementProps
       prevUserResponse.push(userResponse)
     }
 
+    console.log('Changed! new response: ', prevUserResponse)
     this.setState({
       ...this.state,
+      enableSubmit: true,
       pollResponse: prevUserResponse
     });
   }
@@ -87,7 +109,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
     let selKey: string = "";
     if (this.state.pollResponse && this.state.pollResponse.length > 0) {
       const userResponses = this.state.pollResponse;
-      const userRes = this._getUserResponse(userResponses);
+      const userRes = this._getCurrentUserResponse(userResponses);
       if (userRes.length > 0) {
         selKey = userRes[0].PollResponse;
       }
@@ -95,16 +117,81 @@ export default class PollManagement extends React.Component<IPollManagementProps
     return selKey;
   }
 
-  public _submitVote = (poll: any): void => {
+  public _submitVote = async (): Promise<void> => {
     try {
       console.log('Submit with current state', this.state)
-      //UserPollService.isubmitResponseToPoll(poll.id, this.state.pollResponse).catch((e: any) => console.log(e));
+
+      /* Initial state before checking if response exists */
+      this.setState({
+        ...this.state,
+        enableSubmit: false,
+        enableChoices: false,
+        showSubmissionProgress: false,
+        isError: false,
+        MsgContent: '',
+        showMessage: false
+      });
+
+      const existingUR = this._getCurrentUserResponse(this.state.pollResponse);
+      /* Error: response does not exist / is invalid */
+      if (existingUR.length <= 0) {
+        this.setState({
+          MsgContent: strings.SubmitValidationMessage,
+          isError: true,
+          showMessage: true,
+          enableSubmit: true,
+          enableChoices: true
+        })
+      } else {
+        /* Submission progress.. */
+        this.setState({
+          ...this.state,
+          enableSubmit: false,
+          enableChoices: false,
+          showSubmissionProgress: true,
+          isError: false,
+          MsgContent: '',
+          showMessage: false
+        });
+
+        /* Valid response: call service to finally submit poll response
+        as well as viewing the poll results */
+
+        try {
+          console.log('Poll submitted!', this.state.pollResponse[0])
+          await UserPollService.isubmitResponseToPoll(this.state.pollResponse[0]).catch((e: any) => console.log(e));
+
+          this.setState({
+            ...this.state,
+            showSubmissionProgress: false,
+            showMessage: true,
+            isError: false,
+            MsgContent: (this.props.SuccessfullVoteSubmissionMsg && this.props.SuccessfullVoteSubmissionMsg.trim()) ?
+              this.props.SuccessfullVoteSubmissionMsg.trim() : strings.SuccessfullVoteSubmission,
+            showChartProgress: true
+          }, this._getUserResponses);
+
+        } catch (e) {
+          console.log(e)
+          this.setState({
+            ...this.state,
+            enableSubmit: true,
+            enableChoices: true,
+            showSubmissionProgress: false,
+            showMessage: true,
+            isError: true,
+            MsgContent: strings.FailedVoteSubmission
+          })
+        }
+      }
+
+
     } catch (e) {
       console.log(e)
     }
   }
 
-  public _getUserResponse(userResponse: any): any {
+  public _getCurrentUserResponse(userResponse: any): any {
     const retUR: IResponseDetails[] = userResponse.filter((res: any) => { return res.UserEmail === this.props.currentUserInfo.Email; });
     return retUR;
   }
@@ -114,14 +201,12 @@ export default class PollManagement extends React.Component<IPollManagementProps
 
     /* */
 
-    /* */
-
     UserPollService.igetPolls().then(polls => {
       /* Set state code [...]: isLoading, polls, loadCount */
       console.log('Polls: ', polls)
 
       /* Only polls that are owned by the current user */
-      
+
       /* Set default value of using date or not */
       for (let i = 0; i < polls.length; i++) {
         polls[i].UseDate = this.props.pollBasedOnDate
@@ -193,7 +278,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
   public _bindPolls = (): void => {
     this.setState({
       showProgress: (this.state.polls.length > 0) ? true : false,
-      enableSubmit: true,
+      enableSubmit: false,
 
       showOptions: false,
       showChart: false,
@@ -203,14 +288,15 @@ export default class PollManagement extends React.Component<IPollManagementProps
       isError: false,
       MsgContent: "",
       showSubmissionProgress: false
-    }, this._getUserReponses)
+    }, this._getUserResponses)
   }
 
-  public _getUserReponses = async (): Promise<void> => {
+  public _getUserResponses = async (): Promise<void> => {
     const usersResponses = await UserPollService.igetPollResponses((this.state.currentPoll.Id) ? this.state.currentPoll.Id : this.disQuestionId);
-    
-    /* Check if the user has already submitted a reesponse to the current poll */
-    const fillResponses = _.filter(usersResponses, (o) => { return o.UserID === this.props.currentUserInfo.ID; })
+
+    console.log('Getting them URs: ', usersResponses)
+    /* Check if the user has already submitted a response to the current poll */
+    const fillResponses = _.filter(usersResponses, (uR) => { return uR.UserEmail.toLowerCase() === this.props.currentUserInfo.Email.toLowerCase(); })
 
     console.log('GUR: ', fillResponses)
     if (fillResponses.length > 0) {
@@ -220,10 +306,11 @@ export default class PollManagement extends React.Component<IPollManagementProps
         showChart: true,
         showOptions: false,
         showProgress: false,
-        pollResponse: usersResponses
-      })
+        pollResponse: usersResponses,
+        currentPollResponse: fillResponses[0].PollResponse
+      }, this._bindResponseAnalytics)
     } else {
-      /* Show poll and options */
+      /* Continue to show poll and options */
       this.setState({
         showProgress: false,
         showOptions: true,
@@ -233,7 +320,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
     }
   }
 
-  public bindResponseAnalytics = (): void => {
+  public _bindResponseAnalytics = (): void => {
     const { currentPoll } = this.state;
     const tmpUserResponse: any = this.state.pollResponse;
 
@@ -242,7 +329,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
       const pChoices: string[] = currentPoll.Choices.split(',');
       const finalData: any[] = [];
 
-      const tempData: any = _.countBy(tmpUserResponse, 'Response')
+      const tempData: any = _.countBy(tmpUserResponse, 'PollResponse')
 
       pChoices.map((label) => {
         if (tempData[label.trim()] === undefined) {
@@ -257,6 +344,8 @@ export default class PollManagement extends React.Component<IPollManagementProps
         PollResponse: finalData
       };
 
+      console.log('Show Poll analytics!: ', pollAnalytics)
+
       this.setState({
         showProgress: false,
         showOptions: false,
@@ -264,7 +353,6 @@ export default class PollManagement extends React.Component<IPollManagementProps
         showChart: true,
         PollAnalytics: pollAnalytics
       })
-
     }
   }
 

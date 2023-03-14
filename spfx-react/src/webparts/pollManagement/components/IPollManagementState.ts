@@ -21,7 +21,7 @@ export interface IPollManagementState {
 	showMessage: boolean,
 	isError: boolean,
 	MsgContent: string,
-	showSubmissionProgress: false,
+	showSubmissionProgress: boolean,
 	currentPollResponse: string
 
 }
