@@ -1,10 +1,13 @@
 export interface IResponseDetails {
-    UserID: string;
-    UserDisplayName: string;
+    QuestionID: string;
+    UserEmail: string;
+    PollResponse: string;
+
+    UserID?: string;
+    UserDisplayName?: string;
     UserLoginName?: string;
-    PollResponse?: string;
     PollMultiResponse?: string[];
-    PollQuestion: string;
-    PollQuestionId: string;
-    IsMulti: boolean;
+    PollQuestion?: string;
+    PollQuestionId?: string;
+    IsMulti?: boolean;
 }

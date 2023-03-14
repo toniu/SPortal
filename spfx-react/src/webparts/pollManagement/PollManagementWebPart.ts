@@ -19,6 +19,7 @@ import { IPollManagementProps } from './components/IPollManagementProps';
 import UserPollService from '../../services/UserPollService';
 import { IUserInfo } from './models';
 import { ChartType } from '@pnp/spfx-controls-react/lib/ChartControl';
+import '../../../assets/dist/tailwind.css';
 
 
 export interface IPollManagementWebPartProps {
@@ -36,7 +37,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
 
     protected async onInit(): Promise<void> {
       return super.onInit().then(async () => {
-        UserPollService.setup(this.context);
+        await UserPollService.setup(this.context);
         this.userinfo = await UserPollService.getCurrentUserInfo();
       }).catch((e) => console.log(e));
     }
@@ -72,7 +73,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
         return Version.parse('1.0');
     }
 
-    private openPropertyPane = (): void => {
+    private openPropertyPane = async (): Promise<void> => {
         this.context.propertyPane.open();
     }
 
@@ -150,7 +151,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
                                         },
                                         {
                                             id: "QMultiChoice",
-                                            title: strings.MultiChoice_Title,
+                                            title: strings.Q_Visibility_Title,
                                             type: CustomCollectionFieldType.boolean,
                                             defaultValue: false
                                         },

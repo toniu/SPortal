@@ -41,6 +41,7 @@ define([], function() {
     "Q_Options_Title": "Choices",
     "Q_Options_Placeholder": "Choices separated by comma",
     "MultiChoice_Title": "Multi Selection",
+    "Q_Visibility_Title": "Active",
     "Q_StartDate_Title": "Start Date",
     "Q_EndDate_Title": "End Date"
   }

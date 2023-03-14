@@ -36,7 +36,7 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, {}
       console.log('EA', eventsBefore)
 
       /* Filtered list of 3 events max. after today's date */
-      let eventsAfter = events.filter(event => Date.parse(event.field_3) >= today);
+      let eventsAfter: any = events.filter(event => Date.parse(event.field_3) >= today);
       eventsAfter = eventsAfter.slice(Math.max(eventsAfter.length - 3, 0))
       console.log('EA', eventsAfter)
       /* Format the dates of the recent and upcoming events */

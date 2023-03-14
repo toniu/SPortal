@@ -11,6 +11,7 @@ import OptionsContainer from './OptionsContainer/OptionsContainer';
 import MessageContainer from './MessageContainer/MessageContainer';
 import QuickPollChart from './ChartContainer/QuickPollChart';
 import { IQuestionDetails, IResponseDetails, IPollAnalyticsInfo } from '../models';
+// Models: IResponseDetails, IPollAnalyticsInfo
 import UserPollService from '../../../services/UserPollService';
 import { MessageScope } from '../../../common/enumHelper';
 import * as _ from 'lodash';
@@ -19,14 +20,20 @@ import * as moment from 'moment';
 export default class PollManagement extends React.Component<IPollManagementProps, IPollManagementState> {
   private disQuestionId: string;
   private displayQuestion: IQuestionDetails;
+
   constructor(props: IPollManagementProps) {
     super(props);
     this.state = {
-      listExists: false,
-      PollQuestions: [],
-      UserResponse: [],
-      displayQuestionId: "",
-      displayQuestion: null,
+      polls: [],
+      ownerPolls: [],
+      isLoading: true,
+      loadCount: 0,
+      currentPoll: {},
+      activePolls: [],
+      apIndex: 0,
+      pollResponse: [],
+
+      /* -- */
       enableSubmit: true,
       enableChoices: true,
       showOptions: false,
@@ -40,87 +47,154 @@ export default class PollManagement extends React.Component<IPollManagementProps
       showSubmissionProgress: false,
       currentPollResponse: ""
     };
+
+    this.disQuestionId = ''
+    this.displayQuestion = null
+    console.log( this.disQuestionId,this.displayQuestion)
   }
 
-  public componentDidMount = (): void => {
-    this.checkAndCreateList().catch((e: any) => console.log(e));
+  public componentDidMount = async (): Promise<void> => {
+    await this._getPolls();
   }
 
-  public componentDidUpdate = (prevProps: IPollManagementProps): void => {
-    if (prevProps.pollQuestions !== this.props.pollQuestions || prevProps.pollBasedOnDate !== this.props.pollBasedOnDate) {
+  public _onChange = (ev: any, option: any, isMultiSel: boolean): void => {
+    const prevUserResponse = this.state.pollResponse;
+
+    const userResponse: IResponseDetails = {
+      QuestionID: this.state.currentPoll.Id,
+      UserEmail: this.props.currentUserInfo.Email,
+      PollResponse: ''
+    }
+
+    if (prevUserResponse.length > 0) {
+      const fillRes = this._getUserResponse(prevUserResponse);
+      if (fillRes.length > 0) {
+        fillRes[0].PollResponse = option.key
+      } else {
+        prevUserResponse.push(userResponse)
+      }
+    } else {
+      prevUserResponse.push(userResponse)
+    }
+
+    this.setState({
+      ...this.state,
+      pollResponse: prevUserResponse
+    });
+  }
+
+  private _getSelectedKey = (): string => {
+    let selKey: string = "";
+    if (this.state.pollResponse && this.state.pollResponse.length > 0) {
+      const userResponses = this.state.pollResponse;
+      const userRes = this._getUserResponse(userResponses);
+      if (userRes.length > 0) {
+        selKey = userRes[0].PollResponse;
+      }
+    }
+    return selKey;
+  }
+
+  public _submitVote = (poll: any): void => {
+    try {
+      console.log('Submit with current state', this.state)
+      //UserPollService.isubmitResponseToPoll(poll.id, this.state.pollResponse).catch((e: any) => console.log(e));
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public _getUserResponse(userResponse: any): any {
+    const retUR: IResponseDetails[] = userResponse.filter((res: any) => { return res.UserEmail === this.props.currentUserInfo.Email; });
+    return retUR;
+  }
+
+  public _getPolls = async (): Promise<void> => {
+    const userInfo = await UserPollService.getCurrentUserInfo()
+
+    /* */
+
+    /* */
+
+    UserPollService.igetPolls().then(polls => {
+      /* Set state code [...]: isLoading, polls, loadCount */
+      console.log('Polls: ', polls)
+
+      /* Only polls that are owned by the current user */
+      
+      /* Set default value of using date or not */
+      for (let i = 0; i < polls.length; i++) {
+        polls[i].UseDate = this.props.pollBasedOnDate
+      }
+      const ownerPolls = polls.filter((poll: any) => poll.Owner === userInfo.Email)
+
+      console.log('Polls owned by YOU: ', ownerPolls)
+
+      this.disQuestionId = this._checkActivePolls(ownerPolls)
       this.setState({
-        UserResponse: [],
-        displayQuestion: null,
-        displayQuestionId: ''
-      }, () => {
-        this.getQuestions(this.props.pollQuestions);
-      });
-    }
-    if (prevProps.chartType !== this.props.chartType) {
-      const newPollAnalytics: IPollAnalyticsInfo = this.state.PollAnalytics;
-      newPollAnalytics.ChartType = this.props.chartType;
-      this.setState({
-        PollAnalytics: newPollAnalytics
-      }, this.bindResponseAnalytics);
-    }
+        isLoading: false,
+        polls: polls,
+        ownerPolls: ownerPolls,
+        loadCount: this.state.loadCount + 1
+      }, this._bindPolls)
+    }).catch((e: any) => console.log(e));
+
   }
 
-  private async checkAndCreateList(): Promise<void> {
-    const listCreated = await UserPollService.checkListExists();
-    if (listCreated) {
-      this.setState({ listExists: true }, () => {
-        this.getQuestions();
-      });
-    }
-  }
+  public _checkActivePolls = (polls: any): any => {
+    let activePolls: any[] = []
+    console.log('Checking polls from ', polls)
 
-  private getQuestions = (questions?: any[]): void => {
-    const pquestions: IQuestionDetails[] = [];
-    const tmpQuestions: any[] = (questions) ? questions : (this.props.pollQuestions) ? this.props.pollQuestions : [];
-    if (tmpQuestions && tmpQuestions.length > 0) {
-      tmpQuestions.map((question) => {
-        pquestions.push({
-          Id: question.uniqueId,
-          DisplayName: question.QTitle,
-          Choices: question.QOptions,
-          UseDate: question.QUseDate,
-          StartDate: new Date(question.QStartDate),
-          EndDate: new Date(question.QEndDate),
-          MultiChoice: question.QMultiChoice,
-          SortIdx: question.sortIdx
-        });
-      });
-    }
-    this.disQuestionId = this.getDisplayQuestionID(pquestions);
-    this.setState({ PollQuestions: pquestions, displayQuestionId: this.disQuestionId, displayQuestion: this.displayQuestion }, this.bindPolls);
-  }
-
-  private getDisplayQuestionID = (questions?: any[]): any => {
-    let filQuestions: any[] = [];
-    if (questions.length > 0) {
+    if (polls.length > 0) {
       if (this.props.pollBasedOnDate) {
-        filQuestions = _.filter(questions, (o) => { return moment().startOf('date') >= moment(o.StartDate) && moment(o.EndDate) >= moment().startOf('date'); });
+        /* Case 1: the scheduled polls option is ENABLED */
+        /* Active polls should be public and within the time frame */
+        activePolls = _.filter(polls, (o) => { return o.Visibility === 'Public' && moment().startOf('date') >= moment(o.StartDate) && moment(o.EndDate) >= moment().startOf('date'); });
       } else {
-        filQuestions = _.orderBy(questions, ['SortIdx'], ['asc']);
-        this.displayQuestion = filQuestions[0];
-        return filQuestions[0].Id;
+        /* Case 2: the schedule polls option is DISABLED */
+        /* Active polls should be public */
+        const orderedPolls = _.orderBy(polls, ['SortIdx'], ['asc']);
+        activePolls = orderedPolls.filter((poll: any) => poll.Visibility === 'Public')
+        this.displayQuestion = activePolls[0];
+
+        this.setState({
+          activePolls: activePolls,
+          currentPoll: activePolls[this.state.apIndex]
+        })
+
+        console.log('... to active polls: ', activePolls)
+
+        return activePolls[0].Id
       }
-      if (filQuestions.length > 0) {
-        filQuestions = _.orderBy(filQuestions, ['SortIdx'], ['asc']);
-        this.displayQuestion = filQuestions[0];
-        return filQuestions[0].Id;
-      } else {
-        this.displayQuestion = null;
+
+      if (activePolls.length > 0) {
+        activePolls = _.orderBy(activePolls, ['SortIdx'], ['asc']);
+        this.displayQuestion = activePolls[0];
+
+        this.setState({
+          activePolls: activePolls,
+          currentPoll: activePolls[this.state.apIndex]
+        }, this._bindPolls)
+
+        console.log('... to active polls: ', activePolls)
+
+        return activePolls[0].Id;
       }
     }
+
+    this.setState({
+      activePolls: [],
+      currentPoll: {}
+    }, this._bindPolls)
+
     return '';
   }
 
-  private bindPolls = (): void => {
+  public _bindPolls = (): void => {
     this.setState({
-      showProgress: (this.state.PollQuestions.length > 0) ? true : false,
+      showProgress: (this.state.polls.length > 0) ? true : false,
       enableSubmit: true,
-      enableChoices: true,
+
       showOptions: false,
       showChart: false,
       showChartProgress: false,
@@ -129,121 +203,27 @@ export default class PollManagement extends React.Component<IPollManagementProps
       isError: false,
       MsgContent: "",
       showSubmissionProgress: false
-    }, this.getAllUsersResponse);
+    }, this._getUserReponses)
   }
 
-  private _onChange = (ev: any, option: any, isMultiSel: boolean): void => {
-    const prevUserResponse = this.state.UserResponse;
-    const userResponse: IResponseDetails = {
-      PollQuestionId: this.state.displayQuestion.Id,
-      PollQuestion: this.state.displayQuestion.DisplayName,
-      PollResponse: !isMultiSel ? option.key : '',
-      UserID: this.props.currentUserInfo.ID,
-      UserDisplayName: this.props.currentUserInfo.DisplayName,
-      UserLoginName: this.props.currentUserInfo.LoginName,
-      PollMultiResponse: isMultiSel ? option.key : [],
-      IsMulti: isMultiSel
-    };
-    if (prevUserResponse.length > 0) {
-      const filRes = this.getUserResponse(prevUserResponse);
-      if (filRes.length > 0) {
-        if (!isMultiSel) {
-          filRes[0].PollResponse = option.key
-        } else {
-          filRes[0].PollMultiResponse = option.key
-        }
-      } else {
-        prevUserResponse.push(userResponse);
-      }
-    } else {
-      prevUserResponse.push(userResponse);
-    }
-    this.setState({
-      ...this.state,
-      UserResponse: prevUserResponse
-    });
-  }
+  public _getUserReponses = async (): Promise<void> => {
+    const usersResponses = await UserPollService.igetPollResponses((this.state.currentPoll.Id) ? this.state.currentPoll.Id : this.disQuestionId);
+    
+    /* Check if the user has already submitted a reesponse to the current poll */
+    const fillResponses = _.filter(usersResponses, (o) => { return o.UserID === this.props.currentUserInfo.ID; })
 
-  private _getSelectedKey = (): string => {
-    let selKey: string = "";
-    if (this.state.UserResponse && this.state.UserResponse.length > 0) {
-      const userResponses = this.state.UserResponse;
-      const userRes = this.getUserResponse(userResponses);
-      if (userRes.length > 0) {
-        selKey = userRes[0].PollResponse;
-      }
-    }
-    return selKey;
-  }
-
-  private _submitVote = async (): Promise<void> => {
-    this.setState({
-      ...this.state,
-      enableSubmit: false,
-      enableChoices: false,
-      showSubmissionProgress: false,
-      isError: false,
-      MsgContent: '',
-      showMessage: false
-    });
-    const curUserRes = this.getUserResponse(this.state.UserResponse);
-    if (curUserRes.length <= 0) {
-      this.setState({
-        MsgContent: strings.SubmitValidationMessage,
-        isError: true,
-        showMessage: true,
-        enableSubmit: true,
-        enableChoices: true,
-      });
-    } else {
-      this.setState({
-        ...this.state,
-        enableSubmit: false,
-        enableChoices: false,
-        showSubmissionProgress: true,
-        isError: false,
-        MsgContent: '',
-        showMessage: false
-      });
-      try {
-        await UserPollService.submitResponse(curUserRes[0]);
-        this.setState({
-          ...this.state,
-          showSubmissionProgress: false,
-          showMessage: true,
-          isError: false,
-          MsgContent: (this.props.SuccessfullVoteSubmissionMsg && this.props.SuccessfullVoteSubmissionMsg.trim()) ?
-            this.props.SuccessfullVoteSubmissionMsg.trim() : strings.SuccessfullVoteSubmission,
-          showChartProgress: true
-        }, this.getAllUsersResponse);
-      } catch (err) {
-        console.log(err);
-        this.setState({
-          ...this.state,
-          enableSubmit: true,
-          enableChoices: true,
-          showSubmissionProgress: false,
-          showMessage: true,
-          isError: true,
-          MsgContent: strings.FailedVoteSubmission
-        });
-      }
-    }
-  }
-
-  private getAllUsersResponse = async (): Promise<void> => {
-    const usersResponse = await UserPollService.getPollResponse((this.state.displayQuestionId) ? this.state.displayQuestionId : this.disQuestionId);
-    const filRes = _.filter(usersResponse, (o) => { return o.UserID === this.props.currentUserInfo.ID; });
-    if (filRes.length > 0) {
+    console.log('GUR: ', fillResponses)
+    if (fillResponses.length > 0) {
+      /* Show chart results */
       this.setState({
         showChartProgress: true,
         showChart: true,
         showOptions: false,
         showProgress: false,
-        UserResponse: usersResponse,
-        currentPollResponse: filRes[0].Response ? filRes[0].Response : filRes[0].MultiResponse.join(',')
-      }, this.bindResponseAnalytics);
+        pollResponse: usersResponses
+      })
     } else {
+      /* Show poll and options */
       this.setState({
         showProgress: false,
         showOptions: true,
@@ -253,131 +233,115 @@ export default class PollManagement extends React.Component<IPollManagementProps
     }
   }
 
-  private bindResponseAnalytics = (): void => {
-    const { displayQuestion } = this.state;
-    const tmpUserResponse: any = this.state.UserResponse;
+  public bindResponseAnalytics = (): void => {
+    const { currentPoll } = this.state;
+    const tmpUserResponse: any = this.state.pollResponse;
+
+    /* Check that response exists */
     if (tmpUserResponse && tmpUserResponse.length > 0) {
-      let tempData: any;
-      const qChoices: string[] = displayQuestion.Choices.split(',');
+      const pChoices: string[] = currentPoll.Choices.split(',');
       const finalData: any[] = [];
-      if (!displayQuestion.MultiChoice) {
-        tempData = _.countBy(tmpUserResponse, 'Response');
-      } else {
-        const data: any[] = [];
-        tmpUserResponse.map((res: any) => {
-          if (res.MultiResponse && res.MultiResponse.length > 0) {
-            res.MultiResponse.map((finres: any) => {
-              data.push({
-                "UserID": res.UserID,
-                "Response": finres.trim()
-              });
-            });
-          }
-        });
-        tempData = _.countBy(data, 'Response');
-      }
-      qChoices.map((label) => {
+
+      const tempData: any = _.countBy(tmpUserResponse, 'Response')
+
+      pChoices.map((label) => {
         if (tempData[label.trim()] === undefined) {
           finalData.push(0);
         } else finalData.push(tempData[label.trim()]);
       });
+
       const pollAnalytics: IPollAnalyticsInfo = {
         ChartType: this.props.chartType,
-        Labels: qChoices,
-        Question: displayQuestion.DisplayName,
+        Labels: pChoices,
+        Question: currentPoll.DisplayName,
         PollResponse: finalData
       };
+
       this.setState({
         showProgress: false,
         showOptions: false,
         showChartProgress: false,
         showChart: true,
         PollAnalytics: pollAnalytics
-      });
+      })
+
     }
   }
 
-  private getUserResponse(UserResponses: IResponseDetails[]): IResponseDetails[] {
-    const retUserResponse: IResponseDetails[] = UserResponses.filter((res) => { return res.UserID === this.props.currentUserInfo.ID; });
-    return retUserResponse;
+
+  public _checkSubmitted = async (poll: any): Promise<boolean> => {
+    /* Has the user already voted in this particular poll? */
+    const voted = await UserPollService.checkSubmitted(poll.id)
+    return voted
   }
 
+
   public render(): React.ReactElement<IPollManagementProps> {
-    const { pollQuestions, BtnSubmitVoteText, ResponseMsgToUser, NoPollMsg } = this.props;
-    const { showProgress, enableChoices, showSubmissionProgress, showChartProgress, PollQuestions, showMessage, MsgContent, isError,
-      showOptions, showChart, PollAnalytics, currentPollResponse, enableSubmit, listExists, displayQuestion } = this.state;
-    const showConfig: boolean = (!pollQuestions || pollQuestions.length <= 0 && (!PollQuestions || PollQuestions.length <= 0)) ? true : false;
-    const userResponseCaption: string = (ResponseMsgToUser && ResponseMsgToUser.trim()) ? ResponseMsgToUser.trim() : strings.DefaultResponseMsgToUser;
-    const submitButtonText: string = (BtnSubmitVoteText && BtnSubmitVoteText.trim()) ? BtnSubmitVoteText.trim() : strings.BtnSumbitVote;
-    const nopollmsg: string = (NoPollMsg && NoPollMsg.trim()) ? NoPollMsg.trim() : strings.NoPollMsgDefault;
+    const showConfig = false
     return (
       <div className={styles.pollManagement}>
-        {!listExists ? (
-          <ProgressIndicator label={strings.ListCreationText} description={strings.PlsWait} />
-        ) : (
-            <>
-              {showConfig &&
-                <Placeholder iconName='Edit'
-                  iconText={strings.PlaceholderIconText}
-                  description={strings.PlaceholderDescription}
-                  buttonLabel={strings.PlaceholderButtonLabel}
-                  onConfigure={this.props.openPropertyPane} />
-              }
-              {showProgress && !showChart &&
-                <ProgressIndicator label={strings.QuestionLoadingText} description={strings.PlsWait} />
-              }
-              {!displayQuestion && !showConfig &&
-                <MessageContainer MessageScope={MessageScope.Info} Message={nopollmsg} />
-              }
-              {PollQuestions && PollQuestions.length > 0 && showOptions && displayQuestion &&
-                <div className="ms-Grid" dir="ltr">
-                  <div className="ms-Grid-row">
-                    <div className="ms-Grid-col ms-lg12 ms-md12 ms-sm12">
-                      <div className="ms-textAlignLeft ms-font-m-plus ms-fontWeight-semibold">
-                        {displayQuestion.DisplayName}
-                      </div>
-                    </div>
+        <>
+          {this.state.activePolls.length === 0 &&
+            <Placeholder iconName='Edit'
+              iconText={'Configure poll'}
+              description={'No active polls available'}
+              buttonLabel={'Configure poll'}
+              onConfigure={this.props.openPropertyPane}
+            />
+          }
+          {this.state.showProgress && !this.state.showChart &&
+            <ProgressIndicator label={strings.QuestionLoadingText} description={strings.PlsWait} />
+          }
+          {!this.state.currentPoll && !showConfig &&
+            <MessageContainer MessageScope={MessageScope.Info} Message={'No poll'} />
+          }
+          {this.state.showOptions && this.state.currentPoll &&
+            <div className="ms-Grid" dir="ltr">
+              <div className="ms-Grid-row">
+                <div className="ms-Grid-col ms-lg12 ms-md12 ms-sm12">
+                  <div className="ms-textAlignLeft ms-font-m-plus ms-fontWeight-semibold">
+                    {this.state.currentPoll.DisplayName}
                   </div>
-                  <div className="ms-Grid-row">
-                    <div className="ms-Grid-col ms-lg12 ms-md12 ms-sm12">
-                      <div className="ms-textAlignLeft ms-font-m-plus ms-fontWeight-semibold">
-                        <OptionsContainer disabled={!enableChoices} multiSelect={displayQuestion.MultiChoice}
-                          selectedKey={this._getSelectedKey}
-                          options={displayQuestion.Choices}
-                          label="Pick One"
-                          onChange={this._onChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="ms-Grid-row">
-                    <div className="ms-Grid-col ms-lg12 ms-md12 ms-sm12">
-                      <div className="ms-textAlignCenter ms-font-m-plus ms-fontWeight-semibold">
-                        <PrimaryButton disabled={!enableSubmit} text={submitButtonText}
-                          onClick={this._submitVote.bind(this)} />
-                      </div>
-                    </div>
-                  </div>
-                  {showSubmissionProgress && !showChartProgress &&
-                    <ProgressIndicator label={strings.SubmissionLoadingText} description={strings.PlsWait} />
-                  }
                 </div>
+              </div>
+              <div className="ms-Grid-row">
+                <div className="ms-Grid-col ms-lg12 ms-md12 ms-sm12">
+                  <div className="ms-textAlignLeft ms-font-m-plus ms-fontWeight-semibold">
+                    <OptionsContainer disabled={!this.state.enableChoices}
+                      selectedKey={this._getSelectedKey}
+                      options={this.state.currentPoll.Choices}
+                      label="Pick One"
+                      onChange={this._onChange}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="ms-Grid-row">
+                <div className="ms-Grid-col ms-lg12 ms-md12 ms-sm12">
+                  <div className="ms-textAlignCenter ms-font-m-plus ms-fontWeight-semibold">
+                    <PrimaryButton disabled={!this.state.enableSubmit} text={'Submit'}
+                      onClick={this._submitVote.bind(this)} />
+                  </div>
+                </div>
+              </div>
+              {this.state.showSubmissionProgress && !this.state.showChartProgress &&
+                <ProgressIndicator label={strings.SubmissionLoadingText} description={strings.PlsWait} />
               }
-              {showMessage && MsgContent &&
-                <MessageContainer MessageScope={(isError) ? MessageScope.Failure : MessageScope.Success} Message={MsgContent} />
-              }
-              {showChartProgress && !showChart &&
-                <ProgressIndicator label="Loading the Poll analytics" description="Getting all the responses..." />
-              }
-              {showChart &&
-                <>
-                  <QuickPollChart PollAnalytics={PollAnalytics} />
-                  <MessageContainer MessageScope={MessageScope.Info} Message={`${userResponseCaption}: ${currentPollResponse}`} />
-                </>
-              }
+            </div>
+          }
+          {this.state.showMessage && this.state.MsgContent &&
+            <MessageContainer MessageScope={(this.state.isError) ? MessageScope.Failure : MessageScope.Success} Message={this.state.MsgContent} />
+          }
+          {this.state.showChartProgress && !this.state.showChart &&
+            <ProgressIndicator label="Loading the Poll analytics" description="Getting all the responses..." />
+          }
+          {this.state.showChart &&
+            <>
+              <QuickPollChart PollAnalytics={this.state.PollAnalytics} />
+              <MessageContainer MessageScope={MessageScope.Info} Message={`${'Caption'}: ${this.state.currentPollResponse}`} />
             </>
-          )
-        }
+          }
+        </>
       </div>
     );
   }

@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
 import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
-import { List } from 'office-ui-fabric-react/lib/List';
-import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { IOptionsContainerProps } from './IOptionsContainerProps';
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
 
 export interface IOptionsContainerState {
     selChoices?: string[];
@@ -19,21 +17,14 @@ export default class OptionsContainer extends React.Component<IOptionsContainerP
     }
 
     public render(): JSX.Element {
-        const { disabled, multiSelect } = this.props;
+        const { disabled } = this.props;
         return (
             <div>
-                {multiSelect ? (
-                    <div style={{ paddingTop: "15px" }}>
-                        <List items={this.getOptions()} onRenderCell={this._onRenderCell} />
-                    </div>
-                ) : (
-                        <ChoiceGroup disabled={disabled}
-                            selectedKey={this._getSelectedKey()}
-                            options={this.onRenderChoiceOptions()} required={true} label=""
-                            onChange={this._onChange}
-                        />
-                    )
-                }
+                <ChoiceGroup disabled={disabled}
+                    selectedKey={this._getSelectedKey()}
+                    options={this.onRenderChoiceOptions()} required={true} label=""
+                    onChange={this._onChange}
+                />
             </div>
         );
     }
@@ -47,16 +38,6 @@ export default class OptionsContainer extends React.Component<IOptionsContainerP
             });
         } else tempChoices.push(this.props.options);
         return tempChoices;
-    }
-
-    private _onRenderCell = (item: any): JSX.Element => {
-        if (item && item.length > 0) {
-            return (
-                <div style={{ marginBottom: "15px" }}>
-                    <Checkbox label={item} onChange={this._makeChangeHandler(item)} />
-                </div>
-            );
-        }
     }
 
     private onRenderChoiceOptions(): IChoiceGroupOption[] {
@@ -85,23 +66,6 @@ export default class OptionsContainer extends React.Component<IOptionsContainerP
 
     private _onChange = (ev: React.FormEvent<HTMLInputElement>, option: any): void => {
         this.props.onChange(ev, option, false);
-    }
-
-    private _makeChangeHandler = (item: string): any => {
-        return (ev: any, checked: boolean) => this._onCheckboxChange(ev, checked, item);
-    }
-
-    private _onCheckboxChange = (ev: any, isChecked: boolean, item: string): void => {
-        let finalSel: string[] = this.state.selChoices;
-        if (finalSel.length > 0) {
-            if (isChecked) {
-                finalSel.push(item);
-            } else finalSel = _.filter(finalSel, (o) => { return o !== item; });
-        } else {
-            if (isChecked) finalSel.push(item);
-        }
-        this.setState({ selChoices: finalSel });
-        this.props.onChange(ev, { key: finalSel }, true);
     }
 
 }

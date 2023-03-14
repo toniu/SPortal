@@ -4,6 +4,5 @@ export interface IOptionsContainerProps {
   selectedKey?: () => string;
   options: string;
   label?: string;
-  multiSelect: boolean;
   onChange?: (ev: any, option: any, isMultiSel: boolean) => void;
 }

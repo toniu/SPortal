@@ -38,6 +38,7 @@ declare interface IPollManagementWebPartStrings {
   Q_Title_Placeholder: string;
   Q_Options_Title: string;
   Q_Options_Placeholder: string;
+  Q_Visibility_Title: string;
   MultiChoice_Title: string;
   Q_StartDate_Title: string;
   Q_EndDate_Title: string;
