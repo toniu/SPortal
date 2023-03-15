@@ -3,6 +3,7 @@ import { IUserInfo } from "../models";
 import { ChartType } from "@pnp/spfx-controls-react/lib/ChartControl";
 
 export interface IPollManagementProps {
+  initialQuestions?: any[];
   pollQuestions: any[];
   SuccessfullVoteSubmissionMsg: string;
   ResponseMsgToUser: string;

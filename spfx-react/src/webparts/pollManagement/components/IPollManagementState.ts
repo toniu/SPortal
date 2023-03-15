@@ -3,6 +3,7 @@
 
 export interface IPollManagementState {
 	polls: any[]
+	prevPolls: any[],
 	ownerPolls: any[],
 	isLoading: boolean,
 	loadCount: number,

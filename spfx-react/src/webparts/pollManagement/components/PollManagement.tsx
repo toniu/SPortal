@@ -25,6 +25,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
     super(props);
     this.state = {
       polls: [],
+      prevPolls: this.props.pollQuestions,
       ownerPolls: [],
       isLoading: true,
       loadCount: 0,
@@ -58,9 +59,96 @@ export default class PollManagement extends React.Component<IPollManagementProps
   }
 
   public componentDidUpdate = async (prevProps: IPollManagementProps): Promise<void> => {
+
     /* If the poll questions or enable poll based on date changed */
     if (prevProps.pollQuestions !== this.props.pollQuestions || prevProps.pollBasedOnDate !== this.props.pollBasedOnDate) {
+      console.log('Update fired for props or poll based on date')
+
+      /* Check if any new polls should be created or deleted - based on saved changes */
+      const pollsBefore = this.state.prevPolls;
+      const pollsAfter = this.props.pollQuestions;
+
+      const includesPoll = (p: any, polls: any[]): boolean => {
+        for (let i = 0; i < polls.length; i++) {
+          if (polls[i].uniqueId === p.uniqueId) {
+            return true;
+          }
+        }
+        return false
+      }
+
+      const pollsToCreate = pollsAfter.filter((p: any) => !includesPoll(p, pollsBefore))
+      const pollsToDelete = pollsBefore.filter((p: any) => !includesPoll(p, pollsAfter))
+
+      console.log('Poll BEFORE: ', pollsBefore)
+      console.log('Poll AFTER: ', pollsAfter)
+      console.log('\nPolls to ADD: ', pollsToCreate)
+      console.log('Polls to REMOVE: ', pollsToDelete)
+
+      /* Are there any new polls to create based on saved changes? */
+      if (pollsToCreate.length > 0) {
+        for (let i = 0; i < pollsToCreate.length; i++) {
+          console.log('PTC: ', pollsToCreate[i])
+          await UserPollService.icreatePoll(pollsToCreate[i].uniqueId,
+            pollsToCreate[i].QTitle,
+            pollsToCreate[i].QOptions,
+            /* SP List Context: visibility: 'Public' -> true; 'Private' -> false */
+            pollsToCreate[i].Visibility !== null ? (pollsToCreate[i].Visibility === true ? 'Public' : 'Private' ) : 'Private',
+            pollsToCreate[i].QStartDate,
+            pollsToCreate[i].QEndDate)
+        }
+      }
+
+      /* Are there any polls to delete based on saved changes? */
+      if (pollsToDelete.length > 0) {
+        for (let i = 0; i < pollsToDelete.length; i++) {
+          await UserPollService.ideletePoll(pollsToDelete[i].uniqueId)
+        }
+      }
+
+      /* Check if any polls require updating */
+      const epBefore = pollsBefore.filter((p: any) => !includesPoll(p, pollsToDelete))
+      const epAfter = pollsAfter.filter((p: any) => !includesPoll(p, pollsToCreate))
+
+      console.log('\nExisting polls BEFORE: ', epBefore)
+      console.log('\nExisting polls AFTER: ', epAfter)
+
+      /* Only checking the polls that were already in the list */
+      for (let i = 0; i < epAfter.length; i++) {
+        let shouldChange = false;
+        const newStartDate = epBefore[i].StartDate
+        const newEndDate = epBefore[i].EndDate
+
+        /* Check for property change in start date */
+        if (new Date(epAfter[i].QStartDate).getTime() !== new Date(epBefore[i].QStartDate).getTime()) {
+          shouldChange = true
+          console.log('StartDate Changed for item ', i, ': ', epBefore[i].QStartDate, ' to ', epAfter[i].QStartDate)
+        }
+
+        /* Check for property change in end date */
+        if (new Date(epAfter[i].QEndDate).getTime() !== new Date(epBefore[i].QEndDate).getTime()) {
+          shouldChange = true
+          console.log('EndDate changed for item', i, ': ', epBefore[i].QEndDate, ' to ', epAfter[i].QEndDate)
+        }
+
+        /* Check for property change in visibility */
+        if (epAfter[i].Visibility !== epBefore[i].Visibility) {
+          shouldChange = true
+          console.log('Visibility changed for item', i)
+        }
+
+        /* Finally call method to update any details */
+        if (shouldChange) {
+          await UserPollService.ieditPoll(epAfter[i].uniqueId,
+            epAfter[i].Visibility !== null ? (epAfter[i].Visibility === true ? 'Public' : 'Private' ) : 'Private',
+            newStartDate,
+            newEndDate)
+        }
+      }
+
+
       this.setState({
+        prevPolls: pollsAfter,
         pollResponse: [],
         currentPoll: {},
       }, () => this._getPolls());
@@ -69,6 +157,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
 
     /* If the chart type has changed: re-render results */
     if (prevProps.chartType !== this.props.chartType) {
+      console.log('Update fired for chart')
       const newPollAnalytics: IPollAnalyticsInfo = this.state.PollAnalytics;
       newPollAnalytics.ChartType = this.props.chartType;
       this.setState({

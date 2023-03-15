@@ -34,11 +34,14 @@ export interface IPollManagementWebPartProps {
 
 export default class PollManagementWebPart extends BaseClientSideWebPart<IPollManagementWebPartProps> {
     private userinfo: IUserInfo = null;
+    private initialPolls: any[];
 
     protected async onInit(): Promise<void> {
       return super.onInit().then(async () => {
         await UserPollService.setup(this.context);
         this.userinfo = await UserPollService.getCurrentUserInfo();
+
+        this.initialPolls = await this.getInitialPolls();
       }).catch((e) => console.log(e));
     }
 
@@ -46,6 +49,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
         const element: React.ReactElement<IPollManagementProps> = React.createElement(
             PollManagement,
             {
+                initialQuestions: this.initialPolls,
                 pollQuestions: this.properties.pollQuestions,
                 SuccessfullVoteSubmissionMsg: this.properties.MsgAfterSubmission,
                 ResponseMsgToUser: this.properties.ResponseMsgToUser,
@@ -75,6 +79,37 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
 
     private openPropertyPane = async (): Promise<void> => {
         this.context.propertyPane.open();
+    }
+
+    private getInitialPolls = async (): Promise<any> => {
+        /* Get polls */
+        const polls = await UserPollService.igetPolls();
+        console.log('Polls in webpart: ', polls)
+
+        const ownerPolls = polls.filter((poll: any) => poll.Owner.toLowerCase() === this.userinfo.Email.toLowerCase())
+        console.log('My polls in webpart: ', ownerPolls)
+
+        const pollAsProps: any = []
+        for (let i = 0; i < ownerPolls.length; i++) {
+            pollAsProps.push({
+                uniqueId: ownerPolls[i].Id,
+                QEndDate: ownerPolls[i].EndDate,
+                QOptions: ownerPolls[i].Choices,
+                QStartDate: ownerPolls[i].StartDate,
+                QTitle: ownerPolls[i].DisplayName,
+                /* SP List Context: visibility: 'Public' -> true; 'Private' -> false */
+                QVisibility: ownerPolls[i].Visibility !== null ? (ownerPolls[i].Visibility === 'Public' ? true : false ) : false,
+                QDisabled: true,
+                sortIdx: (i + 1)
+            })
+        }
+        /* Set as values */
+        console.log('Current questions props: ', pollAsProps)
+
+        const initialPollProps: IPollManagementWebPartProps = this.properties
+        initialPollProps.pollQuestions = pollAsProps
+        
+        return pollAsProps
     }
 
     protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
@@ -119,6 +154,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
                                                                 placeholder: strings.Q_Title_Placeholder,
                                                                 key: itemId,
                                                                 value: value,
+                                                                disabled: item.QDisabled ?  item.QDisabled : false,
                                                                 onChange: (event: React.FormEvent<HTMLTextAreaElement>) => {
                                                                     onUpdate(field.id, event.currentTarget.value);
                                                                 },
@@ -141,6 +177,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
                                                                 placeholder: strings.Q_Options_Placeholder,
                                                                 key: itemId,
                                                                 value: value,
+                                                                disabled: item.QDisabled ?  item.QDisabled : false,
                                                                 onChange: (event: React.FormEvent<HTMLTextAreaElement>) => {
                                                                     onUpdate(field.id, event.currentTarget.value);
                                                                 },
@@ -150,10 +187,11 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
                                             }
                                         },
                                         {
-                                            id: "QMultiChoice",
+                                            id: "QVisibility",
                                             title: strings.Q_Visibility_Title,
                                             type: CustomCollectionFieldType.boolean,
-                                            defaultValue: false
+                                            defaultValue: false,
+
                                         },
                                         {
                                             id: "QStartDate",

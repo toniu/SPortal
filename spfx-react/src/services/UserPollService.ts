@@ -299,10 +299,8 @@ export class UserPollService {
         }
     }
 
-    public icreatePoll = async (pollQuestion: string, options: string, visibility: string, startDate: any, endDate: any): Promise<void> => {
+    public icreatePoll = async (pollUniqueID: string, pollQuestion: string, options: string, visibility: string, startDate: any, endDate: any): Promise<void> => {
         /* Add poll into polls */
-        /* ID creation: generated using timestamp */
-        const generatedPollId = 'p-' + (Date.now() + Math.random()).toString()
 
         /* POLL REQUEST COLUMNS:
             Title: the generated poll ID
@@ -315,7 +313,7 @@ export class UserPollService {
         };
         */
         const pollRequest: any = {
-            Title: generatedPollId,
+            Title: pollUniqueID,
             field_1: pollQuestion,
             field_2: options,
             field_3: visibility,
@@ -331,23 +329,31 @@ export class UserPollService {
         console.log('Poll created...\n', iar)
     }
 
-    public ieditPoll = async (spPollID: number, pollId: string, visibility: string, startDate: any, endDate: any): Promise<void> => {
+    public ieditPoll = async (pollId: string, visibility: string, startDate: any, endDate: any): Promise<void> => {
         /* User only has the ability to change the visibility of poll, or the start and end date */
         try {
+            const pollToEdit = await this._polls.items.filter(`Title eq '${pollId}'`)()
+            console.log('PTD', pollToEdit)
             /* In context to internal fields
             field_3: the poll visibility
             field_4: the start date
             field_5: the end date
             */
+
+            
             const updateRequest: any = {
                 field_3: visibility,
                 field_4: startDate,
                 field_5: endDate
             }
 
-            /* Update group details */
-            const isUpdated = await this._polls.items.getById(spPollID).update(updateRequest);
-            console.log(isUpdated)
+            /* Update poll details */
+            if (pollToEdit[0]) {
+                const isUpdated = await this._polls.items.getById(pollToEdit[0].ID).update(updateRequest);
+                console.log(isUpdated)
+            } else {
+                console.log('Edit request failed - no poll to edit')
+            }
 
             console.log('Edit poll service done!')
         } catch (e) {
