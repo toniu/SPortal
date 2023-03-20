@@ -7,8 +7,7 @@ import { IGroupListProps } from './IGroupListProps';
 import { IGroupListState } from './IGroupListState';
 import { FocusZone, FocusZoneDirection } from 'office-ui-fabric-react/lib/FocusZone';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
-import { Image, ImageFit } from 'office-ui-fabric-react/lib/Image';
-import { DefaultButton, DialogFooter, DialogType, IconButton, IIconProps, PrimaryButton } from 'office-ui-fabric-react';
+import { DefaultButton, DialogFooter, DialogType, Icon, IconButton, IIconProps, PrimaryButton } from 'office-ui-fabric-react';
 import { TeachingBubble } from 'office-ui-fabric-react/lib/TeachingBubble';
 import { DirectionalHint } from 'office-ui-fabric-react/lib/Callout';
 import { AnimatedDialog } from "@pnp/spfx-controls-react/lib/AnimatedDialog";
@@ -210,10 +209,17 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
   private _onRenderUserGroupCell(group: IGroup, index: number | undefined): JSX.Element {
     return (
       <div className={classNames.itemCell} data-is-focusable={true}>
-        <Image className={classNames.itemImage} src={group.thumbnail} width={50} height={50} imageFit={ImageFit.cover} />
+        {
+          group.userRole ==="Owner" &&
+          <Icon className="p-1 m-1 text-xl" iconName='PartyLeader' />
+        }
+        {
+          group.userRole ==="Member" &&
+          <Icon className="p-1 m-1 text-xl" iconName='Group' />
+        }
         <div className={classNames.itemContent}>
           <div className={classNames.itemIndex}>{group.visibility}</div>
-          <div>{group.description}</div>
+          <div className="font-semibold">{group.displayName}</div>
         </div>
         {
           group.userRole === "Owner" &&
@@ -235,10 +241,10 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
   private _onRenderExistingGroupCell(group: IGroup, index: number | undefined): JSX.Element {
     return (
       <div className={classNames.itemCell} data-is-focusable={true}>
-        <Image className={classNames.itemImage} src={group.thumbnail} width={50} height={50} imageFit={ImageFit.cover} />
+        <Icon className="p-1 m-1 text-xl" iconName='Group' />
         <div className={classNames.itemContent}>
           <div className={classNames.itemIndex}>{group.visibility}</div>
-          <div>{group.description}</div>
+          <div>{group.displayName}</div>
         </div>
         {
           group.visibility === "Public" && group.userRole === "" &&

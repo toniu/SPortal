@@ -13,6 +13,7 @@ import GroupManagement from './components/GroupManagement/GroupManagement';
 import { IGroupManagementProps } from './components/GroupManagement/IGroupManagementProps';
 /* Services */
 import UserGroupService from '../../services/UserGroupService';
+import '../../../assets/dist/tailwind.css';
 
 export interface IGroupManagementWebPartProps {
   flowUrl: string;

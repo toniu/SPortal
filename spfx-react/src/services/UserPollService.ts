@@ -21,10 +21,6 @@ import { IUserInfo, IResponseDetails, IQuestionDetails } from "../webparts/pollM
 
 export class UserPollService {
     private _sp: SPFI;
-
-    private selectFields: string[] = ["ID", "Title", "QuestionID", "UserResponse"];
-    private _list: IList = null;
-    private lst_response: string = "";
     private _polls: IList = null;
     private _pollResponses: IList = null;
 
@@ -32,8 +28,6 @@ export class UserPollService {
 
     public async setup(context: WebPartContext): Promise<void> {
         this._sp = getSP(context);
-        this.lst_response = "PollsX";
-        this._list = this._sp.web.lists.getByTitle(this.lst_response);
 
         /* Sharepoint lists */
         this._polls = this._sp.web.lists.getByTitle("Polls")
@@ -56,109 +50,6 @@ export class UserPollService {
             Picture: '/_layouts/15/userphoto.aspx?size=S&username=' + currentUserInfo.UserPrincipalName,
         };
         return userinfo;
-    }
-    /**
-     * Get the poll response based on the question id.
-     */
-    public getPollResponse = async (questionId: string): Promise<any> => {
-        console.log('1', questionId)
-        const questionResponse = await this._list.items.select(this.selectFields.join(','))
-            .filter(`QuestionID eq '${questionId}'`).expand('FieldValuesAsText')();
-
-        console.log('2', questionResponse)
-        if (questionResponse.length > 0) {
-            const tmpResponse = questionResponse[0].FieldValuesAsText.UserResponse;
-
-            console.log('3', tmpResponse)
-            if (tmpResponse !== undefined && tmpResponse !== null && tmpResponse !== "") {
-                const jsonQResponse = JSON.parse(tmpResponse);
-
-                console.log('4', jsonQResponse)
-                return jsonQResponse;
-            } else return [];
-        } else return [];
-    }
-    /**
-     * Add the user response.
-     */
-    public addPollResponse = async (userResponse: IResponseDetails, allUserResponse: any): Promise<IItemAddResult> => {
-        const addedresponse = await this._list.items.add({
-            Title: userResponse.PollQuestion,
-            QuestionID: userResponse.PollQuestionId,
-            UserResponse: JSON.stringify(allUserResponse)
-        });
-        return addedresponse;
-    }
-    /**
-     * Update the over all response based on the end user response.
-     */
-    public updatePollResponse = async (questionId: string, allUserResponse: any): Promise<any> => {
-        const response = await this._list.items.select(this.selectFields.join(','))
-            .filter(`QuestionID eq '${questionId}'`).expand('FieldValuesAsText')();
-        if (response.length > 0) {
-            if (allUserResponse.length > 0) {
-                const updatedResponse = await this._list.items.getById(response[0].ID).update({
-                    UserResponse: JSON.stringify(allUserResponse)
-                });
-                return updatedResponse;
-            } else return await this._list.items.getById(response[0].ID).delete();
-        }
-    }
-    /**
-     * Submit the user response.
-     */
-    public submitResponse = async (userResponse: IResponseDetails): Promise<boolean> => {
-        try {
-            const allUserResponse = await this.getPollResponse(userResponse.PollQuestionId);
-            if (allUserResponse.length > 0) {
-                allUserResponse.push({
-                    UserID: userResponse.UserID,
-                    UserName: userResponse.UserDisplayName,
-                    Response: userResponse.PollResponse,
-                    MultiResponse: userResponse.PollMultiResponse,
-                });
-                // Update the user response
-                await this.updatePollResponse(userResponse.PollQuestionId, allUserResponse);
-            } else {
-                allUserResponse.push({
-                    UserID: userResponse.UserID,
-                    UserName: userResponse.UserDisplayName,
-                    Response: userResponse.PollResponse,
-                    MultiResponse: userResponse.PollMultiResponse,
-                });
-                // Add the user response
-                await this.addPollResponse(userResponse, allUserResponse);
-            }
-            return true;
-        } catch (err) {
-            console.log(err);
-            return false;
-        }
-    }
-    /**
-     * Check and create the User response list.
-     */
-    public checkListExists = async (): Promise<boolean> => {
-        let done: boolean = false
-        await this._sp.web.lists.getByTitle(this.lst_response)().then((listExists) => {
-            if (listExists) {
-                done = true
-            }
-        }).catch(async err => {
-            const listExists = await (await (await this._sp.web.lists.ensure(this.lst_response)).list);
-
-            await listExists.fields.addText('QuestionID', { Required: true, MaxLength: 255, Description: '' });
-            await listExists.fields.addMultilineText('UserResponse', { NumberOfLines: 6, Required: false, Description: '' });
-            const allItemsView = await listExists.views.getByTitle('All Items');
-            await allItemsView.fields.add('QuestionID');
-            await allItemsView.fields.add('UserResponse');
-
-            done = true
-        });
-
-        return new Promise<boolean>((resolve, reject) => {
-            resolve(done);
-        });
     }
 
     /*-- MODIFIED --*/

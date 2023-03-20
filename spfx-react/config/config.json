@@ -81,6 +81,14 @@
           "manifest": "./src/webparts/pollManagement/PollManagementWebPart.manifest.json"
         }
       ]
+    },
+    "calendar-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/calendar/CalendarWebPart.js",
+          "manifest": "./src/webparts/calendar/CalendarWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -96,6 +104,7 @@
     "CheckUserGroupWebPartStrings": "lib/webparts/checkUserGroup/loc/{locale}.js",
     "GroupMembershipManagerWebPartStrings": "lib/webparts/groupMembershipManager/loc/{locale}.js",
     "GroupManagementWebPartStrings": "lib/webparts/groupManagement/loc/{locale}.js",
-    "PollManagementWebPartStrings": "lib/webparts/pollManagement/loc/{locale}.js"
+    "PollManagementWebPartStrings": "lib/webparts/pollManagement/loc/{locale}.js",
+    "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js"
   }
 }
