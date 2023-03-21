@@ -1,5 +1,5 @@
 export interface IListFields {
-    Title: String;
+    Title: string;
     InternalName: string;
     TypeAsString: string;
   }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
@@ -13,22 +14,21 @@ import {
 import * as strings from 'CalendarWebPartStrings';
 import Calendar from './components/Calendar';
 import { ICalendarProps } from './components/ICalendarProps';
-import { PropertyFieldDateTimePicker, DateConvention, TimeConvention, IDateTimeFieldValue } from '@pnp/spfx-property-controls/lib/PropertyFieldDateTimePicker';
+import { PropertyFieldDateTimePicker, DateConvention, IDateTimeFieldValue } from '@pnp/spfx-property-controls/lib/PropertyFieldDateTimePicker';
 
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
-import { PropertyPaneHorizontalRule } from "@microsoft/sp-property-pane";
 
 export interface ICalendarWebPartProps {
   title: string;
   siteUrl: string;
   list: string;
-  eventStartDate: IDateTimeFieldValue ;
+  eventStartDate: IDateTimeFieldValue;
   eventEndDate: IDateTimeFieldValue;
   errorMessage: string;
 }
 import UserEventService from '../../services/UserEventService';
+import '../../../assets/dist/tailwind.css';
 import * as moment from 'moment';
-import { format } from '@uifabric/utilities';
 
 export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebPartProps> {
 
@@ -63,25 +63,26 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   }
 
   // onInit
-  public  async onInit(): Promise<void> {
 
-    this.spService = new spservices(this.context);
+  protected async onInit(): Promise<any> {
     this.properties.siteUrl = this.properties.siteUrl ? this.properties.siteUrl : this.context.pageContext.site.absoluteUrl;
-    if (!this.properties.eventStartDate){
-      this.properties.eventStartDate = { value: moment().subtract(2,'years').startOf('month').toDate(), displayValue: moment().format('ddd MMM MM YYYY')};
+    if (!this.properties.eventStartDate) {
+      this.properties.eventStartDate = { value: moment().subtract(2, 'years').startOf('month').toDate(), displayValue: moment().format('ddd MMM MM YYYY') };
     }
-    if (!this.properties.eventEndDate){
-      this.properties.eventEndDate = { value: moment().add(20,'years').endOf('month').toDate(), displayValue: moment().format('ddd MMM MM YYYY')};
+    if (!this.properties.eventEndDate) {
+      this.properties.eventEndDate = { value: moment().add(20, 'years').endOf('month').toDate(), displayValue: moment().format('ddd MMM MM YYYY') };
     }
     if (this.properties.siteUrl && !this.properties.list) {
-     const _lists = await this.loadLists();
-     if ( _lists.length > 0 ){
-      this.lists = _lists;
-      this.properties.list = this.lists[0].key.toString();
-     }
+      const _lists = await this.loadLists();
+      if (_lists.length > 0) {
+        this.lists = _lists;
+        this.properties.list = this.lists[0].key.toString();
+      }
     }
 
-    return Promise.resolve();
+    return super.onInit().then(() => {
+      UserEventService.setup(this.context);
+    }).catch((e) => console.log(e));
   }
 
 
@@ -98,7 +99,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
    * @protected
    * @memberof CalendarWebPart
    */
-  protected async onPropertyPaneConfigurationStart() {
+  protected async onPropertyPaneConfigurationStart(): Promise<void> {
 
     try {
       if (this.properties.siteUrl) {
@@ -116,7 +117,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
       }
 
     } catch (error) {
-
+      console.log(error)
     }
   }
 
@@ -129,13 +130,13 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   private async loadLists(): Promise<IPropertyPaneDropdownOption[]> {
     const _lists: IPropertyPaneDropdownOption[] = [];
     try {
-      const results = await this.spService.getSiteLists(this.properties.siteUrl);
+      const results = await UserEventService.getSiteLists(this.properties.siteUrl);
       for (const list of results) {
         _lists.push({ key: list.Id, text: list.Title });
       }
       // push new item value
     } catch (error) {
-      this.errorMessage =  `${error.message} -  please check if site url if valid.` ;
+      this.errorMessage = `${error.message} -  please check if site url if valid.`;
       this.context.propertyPane.refresh();
     }
     return _lists;
@@ -149,9 +150,9 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
    * @returns
    * @memberof CalendarWebPart
    */
-  private onEventStartDateValidation(date:string){
-    if (date && this.properties.eventEndDate.value){
-      if (moment(date).isAfter(moment(this.properties.eventEndDate.value))){
+  private onEventStartDateValidation(date: string): string {
+    if (date && this.properties.eventEndDate.value) {
+      if (moment(date).isAfter(moment(this.properties.eventEndDate.value))) {
         return strings.SartDateValidationMessage;
       }
     }
@@ -165,9 +166,9 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
    * @returns
    * @memberof CalendarWebPart
    */
-  private onEventEndDateValidation(date:string){
-    if (date && this.properties.eventEndDate.value){
-      if (moment(date).isBefore( moment(this.properties.eventStartDate.value))){
+  private onEventEndDateValidation(date: string): string {
+    if (date && this.properties.eventEndDate.value) {
+      if (moment(date).isBefore(moment(this.properties.eventStartDate.value))) {
         return strings.EnDateValidationMessage;
       }
     }
@@ -181,7 +182,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
    * @memberof CalendarWebPart
    */
 
-  private onSiteUrlGetErrorMessage(value: string) {
+  private async onSiteUrlGetErrorMessage(value: string): Promise<any> {
     let returnValue: string = '';
     if (value) {
       returnValue = '';
@@ -193,8 +194,8 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
       this.properties.siteUrl = undefined;
       this.lists = [];
       this.listsDropdownDisabled = true;
-      this.onPropertyPaneFieldChanged('list', previousList, this.properties.list);
-      this.onPropertyPaneFieldChanged('siteUrl', previousSiteUrl, this.properties.siteUrl);
+      await this.onPropertyPaneFieldChanged('list', previousList, this.properties.list);
+      await this.onPropertyPaneFieldChanged('siteUrl', previousSiteUrl, this.properties.siteUrl);
       this.context.propertyPane.refresh();
     }
     return returnValue;
@@ -208,7 +209,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
    * @param {string} newValue
    * @memberof CalendarWebPart
    */
-  protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string) {
+  protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
     try {
       // reset any error
       this.properties.errorMessage = undefined;
@@ -218,7 +219,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
       if (propertyPath === 'siteUrl' && newValue) {
         super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
         const _oldValue = this.properties.list;
-        this.onPropertyPaneFieldChanged('list', _oldValue, this.properties.list);
+        await this.onPropertyPaneFieldChanged('list', _oldValue, this.properties.list);
         this.context.propertyPane.refresh();
         const _lists = await this.loadLists();
         this.lists = _lists;
@@ -231,7 +232,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
         super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
       }
     } catch (error) {
-      this.errorMessage =  `${error.message} -  please check if site url if valid.` ;
+      this.errorMessage = `${error.message} -  please check if site url if valid.`;
       this.context.propertyPane.refresh();
     }
   }
@@ -242,7 +243,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
    * @memberof CalendarWebPart
    */
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-      // EndDate and Start Date defualt values
+    // EndDate and Start Date defualt values
 
     return {
       pages: [
@@ -280,16 +281,16 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
                 }),
                 PropertyFieldDateTimePicker('eventEndDate', {
                   label: 'to',
-                  initialDate:  this.properties.eventEndDate,
+                  initialDate: this.properties.eventEndDate,
                   dateConvention: DateConvention.Date,
                   onPropertyChange: this.onPropertyPaneFieldChanged,
                   properties: this.properties,
-                  onGetErrorMessage:  this.onEventEndDateValidation,
+                  onGetErrorMessage: this.onEventEndDateValidation,
                   deferredValidationTime: 0,
                   key: 'eventEndDateId'
                 }),
                 PropertyPaneLabel('errorMessage', {
-                  text:  this.errorMessage,
+                  text: this.errorMessage,
                 }),
               ]
             }

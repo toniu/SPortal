@@ -16,7 +16,7 @@ import {
 
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
 import { toLocaleShortDateString } from '../../utils/dateUtils';
-import { UserEventService } from '../../../../services/UserEventService';
+import UserEventService from '../../../../services/UserEventService';
 
 
 
@@ -181,7 +181,7 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
     ev.preventDefault();
     setTimeout(() => {
       let errorMessage = '';
-      if (Number(value.trim()) == 0 || Number(value.trim()) > 12) {
+      if (Number(value.trim()) === 0 || Number(value.trim()) > 12) {
         value = '1 ';
         errorMessage = strings.AllowedValues1to12Label;
       }
@@ -430,11 +430,11 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
         break;
     }
     let recurrencePatern: string = '';
-    if (this.state.selectPatern == 'monthly') {
+    if (this.state.selectPatern === 'monthly') {
       recurrencePatern = `<monthly  monthFrequency="${this.state.everyNumberOfMonths}" day="${this.state.dayOfMonth}" /></repeat>${selectDateRangeOption}</rule></recurrence>`;
     }
 
-    if (this.state.selectPatern == 'monthlyByDay') {
+    if (this.state.selectPatern === 'monthlyByDay') {
 
       recurrencePatern = `<monthlyByDay weekdayOfMonth="${this.state.selectedWeekOrderMonth}" `;
       switch (this.state.selectedWeekDay) {
@@ -491,9 +491,7 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
       <div >
         {
           <div>
-            <div style={{ display: 'inline-block', float: 'right', paddingTop: '10px', height: '40px' }}>
-
-            </div>
+            <div style={{ display: 'inline-block', float: 'right', paddingTop: '10px', height: '40px' }} />
             <div style={{ width: '100%', paddingTop: '10px' }}>
               <Label>{ strings.patternLabel }</Label>
               <ChoiceGroup
@@ -507,7 +505,7 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
                     onRenderField: (props, render) => {
                       return (
                         <div  >
-                          {render!(props)}
+                          {render?.(props)}
                           <MaskedTextField
                             styles={{ root: { display: 'inline-block', verticalAlign: 'top', width: '100px', paddingLeft: '10px' } }}
                             mask="99"
@@ -536,7 +534,7 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
                     onRenderField: (props, render) => {
                       return (
                         <div  >
-                          {render!(props)}
+                          {render?.(props)}
                           <div style={{ display: 'inline-block', verticalAlign: 'top', width: '90px', paddingLeft: '10px' }}>
                             <Dropdown
                               selectedKey={this.state.selectedWeekOrderMonth}
@@ -623,7 +621,7 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
                       onRenderField: (props, render) => {
                         return (
                           <div  >
-                            {render!(props)}
+                            {render?.(props)}
                             <DatePicker
                               firstDayOfWeek={DayOfWeek.Sunday}
                               strings={DayPickerStrings}
@@ -645,7 +643,7 @@ export class EventRecurrenceInfoMonthly extends React.Component<IEventRecurrence
                       onRenderField: (props, render) => {
                         return (
                           <div  >
-                            {render!(props)}
+                            {render?.(props)}
                             <MaskedTextField
                               styles={{ root: { display: 'inline-block', verticalAlign: 'top', width: '100px', paddingLeft: '10px' } }}
                               mask="999"

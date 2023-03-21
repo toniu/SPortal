@@ -51,21 +51,21 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
    *
    * @memberof EventRecurrenceInfo
    */
-  public async componentDidMount() {
+  public async componentDidMount(): Promise<void> {
     if (this.props.recurrenceData) {
-      if (this.props.recurrenceData.indexOf('<daily') != -1) {
+      if (this.props.recurrenceData.indexOf('<daily') !== -1) {
         this.setState({ selectedRecurrenceRule: 'daily' });
       }
-      if (this.props.recurrenceData.indexOf('<weekly') != -1) {
+      if (this.props.recurrenceData.indexOf('<weekly') !== -1) {
         this.setState({ selectedRecurrenceRule: 'weekly' });
       }
-      if (this.props.recurrenceData.indexOf('<monthly') != -1) {
+      if (this.props.recurrenceData.indexOf('<monthly') !== -1) {
         this.setState({ selectedRecurrenceRule: 'monthly' });
       }
-      if (this.props.recurrenceData.indexOf('<monthlyByDay') != -1) {
+      if (this.props.recurrenceData.indexOf('<monthlyByDay') !== -1) {
         this.setState({ selectedRecurrenceRule: 'monthly' });
       }
-      if (this.props.recurrenceData.indexOf('<yearly') != -1) {
+      if (this.props.recurrenceData.indexOf('<yearly') !== -1) {
         this.setState({ selectedRecurrenceRule: 'yearly' });
       }
     }

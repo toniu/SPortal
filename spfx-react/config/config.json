@@ -2,22 +2,6 @@
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
   "version": "2.0",
   "bundles": {
-    "faq-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/faq/FaqWebPart.js",
-          "manifest": "./src/webparts/faq/FaqWebPart.manifest.json"
-        }
-      ]
-    },
-    "calendar-app-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/calendarApp/CalendarAppWebPart.js",
-          "manifest": "./src/webparts/calendarApp/CalendarAppWebPart.manifest.json"
-        }
-      ]
-    },
     "poll-app-web-part": {
       "components": [
         {
@@ -50,22 +34,6 @@
         }
       ]
     },
-    "check-user-group-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/checkUserGroup/CheckUserGroupWebPart.js",
-          "manifest": "./src/webparts/checkUserGroup/CheckUserGroupWebPart.manifest.json"
-        }
-      ]
-    },
-    "group-membership-manager-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/groupMembershipManager/GroupMembershipManagerWebPart.js",
-          "manifest": "./src/webparts/groupMembershipManager/GroupMembershipManagerWebPart.manifest.json"
-        }
-      ]
-    },
     "group-management-web-part": {
       "components": [
         {
@@ -93,16 +61,12 @@
   },
   "externals": {},
   "localizedResources": {
-    "FaqWebPartStrings": "lib/webparts/faq/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
-    "CalendarAppWebPartStrings": "lib/webparts/calendarApp/loc/{locale}.js",
     "PollAppWebPartStrings": "lib/webparts/pollApp/loc/{locale}.js",
     "ProfileWebPartStrings": "lib/webparts/profile/loc/{locale}.js",
     "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js",
     "DashboardAppWebPartStrings": "lib/webparts/dashboardApp/loc/{locale}.js",
-    "CheckUserGroupWebPartStrings": "lib/webparts/checkUserGroup/loc/{locale}.js",
-    "GroupMembershipManagerWebPartStrings": "lib/webparts/groupMembershipManager/loc/{locale}.js",
     "GroupManagementWebPartStrings": "lib/webparts/groupManagement/loc/{locale}.js",
     "PollManagementWebPartStrings": "lib/webparts/pollManagement/loc/{locale}.js",
     "CalendarWebPartStrings": "lib/webparts/calendar/loc/{locale}.js"

@@ -7,7 +7,7 @@ export interface IEventData {
     location?: string;
     EventDate: Date;
     EndDate: Date;
-    color?: string;
+    color?: any;
     ownerInitial?: string;
     ownerPhoto?: string;
     ownerEmail?: string;

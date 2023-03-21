@@ -7,9 +7,7 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import * as moment from 'moment';
 import * as strings from 'CalendarWebPartStrings';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-require('./calendar.css');
-import { CommunicationColors, FluentCustomizations, FluentTheme } from '@uifabric/fluent-theme';
-import Year from './Year';
+import Year from './Year/Year';
 
 import { Calendar as MyCalendar, momentLocalizer } from 'react-big-calendar';
 
@@ -19,20 +17,13 @@ import {
   Persona,
   PersonaSize,
   PersonaPresence,
-  HoverCard, IHoverCard, IPlainCardProps, HoverCardType, DefaultButton,
+  HoverCard, HoverCardType,
   DocumentCard,
   DocumentCardActivity,
   DocumentCardDetails,
   DocumentCardPreview,
   DocumentCardTitle,
   IDocumentCardPreviewProps,
-  IDocumentCardPreviewImage,
-  DocumentCardType,
-  Label,
-  ImageFit,
-  IDocumentCardLogoProps,
-  DocumentCardLogo,
-  DocumentCardImage,
   Icon,
   Spinner,
   SpinnerSize,
@@ -41,14 +32,10 @@ import {
 
 
 } from 'office-ui-fabric-react';
-import { EnvironmentType } from '@microsoft/sp-core-library';
-import { mergeStyleSets } from 'office-ui-fabric-react/lib/Styling';
 import { WebPartTitle } from "@pnp/spfx-controls-react/lib/WebPartTitle";
 import { Placeholder } from "@pnp/spfx-controls-react/lib/Placeholder";
-import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { DisplayMode } from '@microsoft/sp-core-library';
 import UserEventService from '../../../services/UserEventService';
-import { stringIsNullOrEmpty } from '@pnp/common';
 import { Event } from '../controls/Event/Event';
 import { IPanelModelEnum } from '../controls/Event/IPanelModeEnum';
 import { IEventData } from './../models/IEventData';
@@ -84,10 +71,6 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
 
   }
 
-  private onDocumentCardClick(ev: React.SyntheticEvent<HTMLElement, Event>): void {
-    ev.preventDefault();
-    ev.stopPropagation();
-  }
   /**
    * @private
    * @param {*} event
@@ -122,7 +105,7 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
       if (!this.props.list || !this.props.siteUrl || !this.props.eventStartDate.value || !this.props.eventEndDate.value) return;
 
       this.userListPermissions = await UserEventService.getUserPermissions(this.props.siteUrl, this.props.list);
-      
+
       const eventsData: IEventData[] = await UserEventService.getEvents(escape(this.props.siteUrl), escape(this.props.list), this.props.eventStartDate.value, this.props.eventEndDate.value);
 
       this.setState({ eventData: eventsData, hasError: false, errorMessage: "" });
@@ -171,7 +154,7 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
    * @returns
    * @memberof Calendar
    */
-  private renderEvent( event: IEventData ): JSX.Element {
+  private renderEvent(event: IEventData): JSX.Element {
 
     const previewEventIcon: IDocumentCardPreviewProps = {
       previewImages: [
@@ -234,8 +217,6 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
           cardDismissDelay={1000}
           type={HoverCardType.plain}
           plainCardProps={{ onRenderPlainCard: onRenderPlainCard }}
-          onCardHide={(): void => {
-          }}
         >
           <Persona
             {...EventInfo}
@@ -254,7 +235,7 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
    * @private
    * @memberof Calendar
    */
-  private onConfigure() {
+  private onConfigure(): void {
     // Context of the web part
     this.props.context.propertyPane.open();
   }
@@ -263,7 +244,7 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
    * @param {*} { start, end }
    * @memberof Calendar
    */
-  public async onSelectSlot({ start, end }) {
+  public onSelectSlot({start, end}: {start: any, end: any}): void {
     if (!this.userListPermissions.hasPermissionAdd) return;
     this.setState({ showDialog: true, startDateSlot: start, endDateSlot: end, selectedEvent: undefined, panelMode: IPanelModelEnum.add });
   }
@@ -271,15 +252,15 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
   /**
    *
    * @param {*} event
-   * @param {*} start
-   * @param {*} end
-   * @param {*} isSelected
+   * @param {*} _start
+   * @param {*} _end
+   * @param {*} _isSelected
    * @returns {*}
    * @memberof Calendar
    */
-  public eventStyleGetter(event, start, end, isSelected): any {
+  public eventStyleGetter(event: any, _start: any, _end: any, _isSelected: any): any {
 
-    let style: any = {
+    const style: any = {
       backgroundColor: 'white',
       borderRadius: '0px',
       opacity: 1,
@@ -302,7 +283,7 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
     * @param {*} date
     * @memberof Calendar
     */
-  public dayPropGetter(date: Date) {
+  public dayPropGetter(date: Date): any {
     return {
       className: styles.dayPropGetter
     };
@@ -314,6 +295,7 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
    * @memberof Calendar
    */
   public render(): React.ReactElement<ICalendarProps> {
+
     return (
       <Customizer>
 
@@ -351,9 +333,7 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
                         endAccessor="EndDate"
                         eventPropGetter={this.eventStyleGetter}
                         onSelectSlot={this.onSelectSlot}
-                        components={{
-                          event: this.renderEvent
-                        }}
+                        components={{event: this.renderEvent} as any}
                         onSelectEvent={this.onSelectEvent}
                         defaultDate={moment().startOf('day').toDate()}
                         views={{

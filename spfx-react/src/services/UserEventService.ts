@@ -1,19 +1,23 @@
+/* eslint-disable @rushstack/security/no-unsafe-regexp */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* SP/PNP imports */
-import "pnp/sp/webs"
-import "pnp/sp/lists"
-import "pnp/sp/fields"
+import "@pnp/sp/webs"
+import "@pnp/sp/lists"
+import "@pnp/sp/fields"
+import "@pnp/sp/profiles"
+import "@pnp/sp/security";
 import "@pnp/sp/site-users/web"
+import "@pnp/sp/regional-settings/web"
 import { WebPartContext } from "@microsoft/sp-webpart-base";
+import { PermissionKind } from "@pnp/sp/security";
 import { SPFI } from '@pnp/sp';
 import { getSP } from '../pnpjsConfig';
 
 import '@pnp/sp';
-import { graph, } from "@pnp/graph";
+import '@pnp/queryable';
 import * as $ from 'jquery';
 import { IEventData } from '../webparts/calendar/models/IEventData';
 import * as moment from 'moment';
-import { SiteUser } from "@pnp/sp/src/siteusers";
 import { IUserPermissions } from '../webparts/calendar/models/IUserPermissions';
 import parseRecurrentEvent from '../webparts/calendar/models/parseRecurrentEvent';
 
@@ -27,7 +31,7 @@ export class UserEventService {
 
     public async getLocalTime(date: string | Date): Promise<string> {
         try {
-            const localTime = await sp.web.regionalSettings.timeZone.utcToLocalTime(date);
+            const localTime = await this._sp.web.regionalSettings.timeZone.utcToLocalTime(date);
             return localTime;
         }
         catch (error) {
@@ -38,12 +42,11 @@ export class UserEventService {
     /**
      *
      * @private
-     * @returns {Promise<string>}
-     * @memberof spservices
+     * @returns {Promise<any>}
      */
-    public async getUtcTime(date: string | Date): Promise<string> {
+    public async getUtcTime(date: string | Date): Promise<any> {
         try {
-            const utcTime = await sp.web.regionalSettings.timeZone.localTimeToUTC(date);
+            const utcTime = await this._sp.web.regionalSettings.timeZone.localTimeToUTC(date);
             return utcTime;
         }
         catch (error) {
@@ -54,9 +57,8 @@ export class UserEventService {
     public async addEvent(newEvent: IEventData, siteUrl: string, listId: string): Promise<any> {
         let results = null;
         try {
-            const web = new Web(siteUrl);
 
-            results = await web.lists.getById(listId).items.add({
+            results = await this._sp.web.lists.getById(listId).items.add({
                 Title: newEvent.title,
                 Description: newEvent.Description,
                 Geolocation: newEvent.geolocation,
@@ -83,13 +85,13 @@ export class UserEventService {
     public async getEvent(siteUrl: string, listId: string, eventId: number): Promise<IEventData> {
         let returnEvent: IEventData = undefined;
         try {
-            const web = new Web(siteUrl);
 
             //"Title","fRecurrence", "fAllDayEvent","EventDate", "EndDate", "Description","ID", "Location","Geolocation","ParticipantsPickerId"
-            const event = await web.lists.getById(listId).items.usingCaching().getById(eventId)
+            // const event = await this._sp.web.lists.getById(listId).items.usingCaching().getById(eventId)
+            const event = await this._sp.web.lists.getById(listId).items.getById(eventId)
                 .select("RecurrenceID", "MasterSeriesItemID", "Id", "ID", "ParticipantsPickerId", "EventType", "Title", "Description", "EventDate", "EndDate", "Location", "Author/SipAddress", "Author/Title", "Geolocation", "fAllDayEvent", "fRecurrence", "RecurrenceData", "RecurrenceData", "Duration", "Category", "UID")
                 .expand("Author")
-                .get();
+                ();
 
             const eventDate = await this.getLocalTime(event.EventDate);
             const endDate = await this.getLocalTime(event.EndDate);
@@ -126,13 +128,12 @@ export class UserEventService {
         return returnEvent;
     }
 
-    public async updateEvent(updateEvent: IEventData, siteUrl: string, listId: string) {
+    public async updateEvent(updateEvent: IEventData, siteUrl: string, listId: string): Promise<any> {
         let results = null;
         try {
             // delete all recursive extentions before update recurrence event
-            if (updateEvent.EventType.toString() == "1") await this.deleteRecurrenceExceptions(updateEvent, siteUrl, listId);
+            if (updateEvent.EventType.toString() === "1") await this.deleteRecurrenceExceptions(updateEvent, siteUrl, listId);
 
-            const web = new Web(siteUrl);
             const eventDate = await this.getUtcTime(updateEvent.EventDate);
             const endDate = await this.getUtcTime(updateEvent.EndDate);
 
@@ -159,7 +160,7 @@ export class UserEventService {
                 newItem.MasterSeriesItemID = updateEvent.MasterSeriesItemID;
             }
 
-            results = await web.lists.getById(listId).items.getById(updateEvent.Id).update(newItem);
+            results = await this._sp.web.lists.getById(listId).items.getById(updateEvent.Id).update(newItem);
         }
         catch (error) {
             return Promise.reject(error);
@@ -167,17 +168,16 @@ export class UserEventService {
         return results;
     }
 
-    public async deleteRecurrenceExceptions(event: IEventData, siteUrl: string, listId: string) {
+    public async deleteRecurrenceExceptions(event: IEventData, siteUrl: string, listId: string): Promise<any> {
         let results = null;
         try {
-            const web = new Web(siteUrl);
-            results = await web.lists.getById(listId).items
+            results = await this._sp.web.lists.getById(listId).items
                 .select('Id')
                 .filter(`EventType eq '3' or EventType eq '4' and MasterSeriesItemID eq '${event.Id}' `)
-                .get();
+                ();
             if (results && results.length > 0) {
                 for (const recurrenceException of results) {
-                    await web.lists.getById(listId).items.getById(recurrenceException.Id).delete();
+                    await this._sp.web.lists.getById(listId).items.getById(recurrenceException.Id).delete();
                 }
             }
         } catch (error) {
@@ -186,24 +186,24 @@ export class UserEventService {
         return;
     }
 
-    public async deleteEvent(event: IEventData, siteUrl: string, listId: string, recurrenceSeriesEdited: boolean) {
+    public async deleteEvent(event: IEventData, siteUrl: string, listId: string, recurrenceSeriesEdited: boolean): Promise<any> {
         let results = null;
         try {
-            const web = new Web(siteUrl);
             // Exception Recurrence eventtype = 4 ?  update to deleted Recurrence eventtype=3
             switch (event.EventType.toString()) {
                 case '4': // Exception Recurrence Event
-                    results = await web.lists.getById(listId).items.getById(event.Id).update({
+                    results = await this._sp.web.lists.getById(listId).items.getById(event.Id).update({
                         Title: `Deleted: ${event.title}`,
                         EventType: '3',
                     });
+                    console.log(results)
                     break;
                 case '1': // recurrence Event
                     // if  delete is a main recrrence delete all recurrences and main recurrence
                     if (recurrenceSeriesEdited) {
                         // delete execptions if exists before delete recurrence event
                         await this.deleteRecurrenceExceptions(event, siteUrl, listId);
-                        await web.lists.getById(listId).items.getById(event.Id).delete();
+                        await this._sp.web.lists.getById(listId).items.getById(event.Id).delete();
                     } else {
                         //Applying the Standard funactionality of SharePoint When deleting for deleting one occurrence of recurrent event by
                         // 1) adding prefix "Deleted" to event title  2) Set RecurrenceID to event Date 3) Set MasterSeriesItemID to event ID 4)Set fRecurrence to true 5) Set event type to 3
@@ -217,7 +217,7 @@ export class UserEventService {
 
                     break;
                 case '0': // normal Event
-                    await web.lists.getById(listId).items.getById(event.Id).delete();
+                    await this._sp.web.lists.getById(listId).items.getById(event.Id).delete();
                     break;
             }
 
@@ -227,16 +227,15 @@ export class UserEventService {
         return;
     }
 
-    public async getUserById(userId: number, siteUrl: string): Promise<SiteUser> {
-        let results: SiteUser = null;
+    public async getUserById(userId: number, siteUrl: string): Promise<any> {
+        let results: any = null;
 
         if (!userId && !siteUrl) {
             return null;
         }
 
         try {
-            const web = new Web(siteUrl);
-            results = await web.siteUsers.getById(userId).get();
+            results = await this._sp.web.siteUsers.getById(userId)();
             //results = await web.siteUsers.getByLoginName(userId).get();
         } catch (error) {
             return Promise.reject(error);
@@ -244,17 +243,16 @@ export class UserEventService {
         return results;
     }
 
-    public async getUserByLoginName(loginName: string, siteUrl: string): Promise<SiteUser> {
-        let results: SiteUser = null;
+    public async getUserByLoginName(loginName: string, siteUrl: string): Promise<any> {
+        let results: any = null;
 
         if (!loginName && !siteUrl) {
             return null;
         }
 
         try {
-            const web = new Web(siteUrl);
-            await web.ensureUser(loginName);
-            results = await web.siteUsers.getByLoginName(loginName).get();
+            await this._sp.web.ensureUser(loginName);
+            results = await this._sp.web.siteUsers.getByLoginName(loginName)();
             //results = await web.siteUsers.getByLoginName(userId).get();
         } catch (error) {
             return Promise.reject(error);
@@ -262,10 +260,11 @@ export class UserEventService {
         return results;
     }
 
-    public async getUserProfilePictureUrl(loginName: string) {
+    public async getUserProfilePictureUrl(loginName: string): Promise<any> {
         let results: any = null;
         try {
-            results = await sp.profiles.usingCaching().getPropertiesFor(loginName);
+            // results = await this._sp.profiles.usingCaching().getPropertiesFor(loginName);
+            results = await this._sp.profiles.getPropertiesFor(loginName);
         } catch (error) {
             results = null;
         }
@@ -279,13 +278,13 @@ export class UserEventService {
         let hasPermissionView: boolean = false;
         let userPermissions: IUserPermissions = undefined;
         try {
-            const web = new Web(siteUrl);
-            const userEffectivePermissions = await web.lists.getById(listId).effectiveBasePermissions.get();
+            //const userEffectivePermissions = this._sp.web.lists.getById(listId).effectiveBasePermissions
+            const userEffectivePermissions = await this._sp.web.getCurrentUserEffectivePermissions()
             // ...
-            hasPermissionAdd = sp.web.lists.getById(listId).hasPermissions(userEffectivePermissions, PermissionKind.AddListItems);
-            hasPermissionDelete = sp.web.lists.getById(listId).hasPermissions(userEffectivePermissions, PermissionKind.DeleteListItems);
-            hasPermissionEdit = sp.web.lists.getById(listId).hasPermissions(userEffectivePermissions, PermissionKind.EditListItems);
-            hasPermissionView = sp.web.lists.getById(listId).hasPermissions(userEffectivePermissions, PermissionKind.ViewListItems);
+            hasPermissionAdd = this._sp.web.lists.getById(listId).hasPermissions(userEffectivePermissions, PermissionKind.AddListItems);
+            hasPermissionDelete = this._sp.web.lists.getById(listId).hasPermissions(userEffectivePermissions, PermissionKind.DeleteListItems);
+            hasPermissionEdit = this._sp.web.lists.getById(listId).hasPermissions(userEffectivePermissions, PermissionKind.EditListItems);
+            hasPermissionView = this._sp.web.lists.getById(listId).hasPermissions(userEffectivePermissions, PermissionKind.ViewListItems);
             userPermissions = { hasPermissionAdd: hasPermissionAdd, hasPermissionEdit: hasPermissionEdit, hasPermissionDelete: hasPermissionDelete, hasPermissionView: hasPermissionView };
 
         } catch (error) {
@@ -294,7 +293,7 @@ export class UserEventService {
         return userPermissions;
     }
 
-    public async getSiteLists(siteUrl: string) {
+    public async getSiteLists(siteUrl: string): Promise<any> {
 
         let results: any[] = [];
 
@@ -303,8 +302,7 @@ export class UserEventService {
         }
 
         try {
-            const web = new Web(siteUrl);
-            results = await web.lists.select("Title", "ID").filter('BaseTemplate eq 106').get();
+            results = await this._sp.web.lists.select("Title", "ID").filter('BaseTemplate eq 106')();
 
         } catch (error) {
             return Promise.reject(error);
@@ -312,7 +310,7 @@ export class UserEventService {
         return results;
     }
 
-    public async colorGenerate() {
+    public async colorGenerate(): Promise<any> {
 
         const hexValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e"];
         let newColor = "#";
@@ -329,12 +327,11 @@ export class UserEventService {
     public async getChoiceFieldOptions(siteUrl: string, listId: string, fieldInternalName: string): Promise<{ key: string, text: string }[]> {
         const fieldOptions: { key: string, text: string }[] = [];
         try {
-            const web = new Web(siteUrl);
-            const results = await web.lists.getById(listId)
+            const results = await this._sp.web.lists.getById(listId)
                 .fields
                 .getByInternalNameOrTitle(fieldInternalName)
                 .select("Title", "InternalName", "Choices")
-                .get();
+                ();
             if (results && results.Choices.length > 0) {
                 for (const option of results.Choices) {
                     fieldOptions.push({
@@ -363,8 +360,8 @@ export class UserEventService {
                 categoryColor.push({ category: cat.text, color: await this.colorGenerate() });
             }
 
-            const web = new Web(siteUrl);
-            const results = await web.lists.getById(listId).usingCaching().renderListDataAsStream(
+            //  const results = await this._sp.web.lists.getById(listId).usingCaching().renderListDataAsStream(
+            const results = await this._sp.web.lists.getById(listId).renderListDataAsStream(
                 {
                     DatesInUtc: true,
                     ViewXml: `<View><ViewFields><FieldRef Name='RecurrenceData'/><FieldRef Name='Duration'/><FieldRef Name='Author'/><FieldRef Name='Category'/><FieldRef Name='Description'/><FieldRef Name='ParticipantsPicker'/><FieldRef Name='Geolocation'/><FieldRef Name='ID'/><FieldRef Name='EndDate'/><FieldRef Name='EventDate'/><FieldRef Name='ID'/><FieldRef Name='Location'/><FieldRef Name='Title'/><FieldRef Name='fAllDayEvent'/><FieldRef Name='EventType'/><FieldRef Name='UID' /><FieldRef Name='fRecurrence' /></ViewFields>
@@ -402,7 +399,7 @@ export class UserEventService {
                         const geo = event.Geolocation.substring(first, last);
                         const geolocation = geo.split(' ');
                         const CategoryColorValue: any[] = categoryColor.filter((value) => {
-                            return value.category == event.Category;
+                            return value.category === event.Category;
                         });
                         const isAllDayEvent: boolean = event["fAllDayEvent.value"] === "1";
 
@@ -450,13 +447,17 @@ export class UserEventService {
                         window.localStorage.setItem("eventResult", JSON.stringify(results));
                         //when they are not equal then we loop through the results and maps them to IEventData
                         /* tslint:disable:no-unused-expression */
-                        await mapEvents() ? window.localStorage.setItem("calendarEventsWithLocalTime", JSON.stringify(events)) : null;
+                        if (await mapEvents()) {
+                            window.localStorage.setItem("calendarEventsWithLocalTime", JSON.stringify(events))
+                        }
                     }
                 } else {
                     //if there is no local storage of the events we create them
                     window.localStorage.setItem("eventResult", JSON.stringify(results));
                     //we also needs to map through the events the first time and save the mapped version to local storage
-                    await mapEvents() ? window.localStorage.setItem("calendarEventsWithLocalTime", JSON.stringify(events)) : null;
+                    if (await mapEvents()) {
+                        window.localStorage.setItem("calendarEventsWithLocalTime", JSON.stringify(events))
+                    }
                 }
             }
             const parseEvt: parseRecurrentEvent = new parseRecurrentEvent();
@@ -471,10 +472,10 @@ export class UserEventService {
     }
 
     public async getSiteRegionalSettingsTimeZone(siteUrl: string): Promise<any> {
-        let regionalSettings: RegionalSettings;
+        let regionalSettings: any;
         try {
-            const web = new Web(siteUrl);
-            regionalSettings = await web.regionalSettings.timeZone.usingCaching().get();
+            // regionalSettings = await this._sp.web.regionalSettings.timeZone.usingCaching().get();
+            regionalSettings = await this._sp.web.regionalSettings.timeZone();
 
         } catch (error) {
             return Promise.reject(error);
@@ -756,7 +757,7 @@ export class UserEventService {
         string = string.replace(/"/g, '&quot;');
         for (const key in entityMap) {
             if (key) {
-                const entity = entityMap[key];
+                const entity = entityMap[key as keyof typeof entityMap];
                 const regex = new RegExp(key, 'g');
                 string = string.replace(regex, entity);
             }
@@ -1015,7 +1016,7 @@ export class UserEventService {
         const entityMap = HtmlEntitiesMap;
         for (const key in entityMap) {
             if (key) {
-            const entity = entityMap[key];
+            const entity = entityMap[key as keyof typeof entityMap];
             const regex = new RegExp(entity, 'g');
             string = string.replace(regex, key);
             }

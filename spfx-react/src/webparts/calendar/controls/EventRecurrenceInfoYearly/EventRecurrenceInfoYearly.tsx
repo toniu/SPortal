@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react';
-import styles from './EventRecurrenceInfoYearly.module.scss';
 import * as strings from 'CalendarWebPartStrings';
 import { IEventRecurrenceInfoYearlyProps } from './IEventRecurrenceInfoYearlyProps';
 import { IEventRecurrenceInfoYearlyState } from './IEventRecurrenceInfoYearlyState';
-import { escape } from '@microsoft/sp-lodash-subset';
 import * as moment from 'moment';
-import { parseString, Builder } from "xml2js";
+import { parseString } from "xml2js";
 import {
   ChoiceGroup,
   IChoiceGroupOption,
@@ -16,7 +15,7 @@ import {
 } from 'office-ui-fabric-react';
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
 import { toLocaleShortDateString }  from '../../utils/dateUtils';
-import spservices from '../../services/spservices';
+import UserEventService from '../../../../services/UserEventService';
 
 const DayPickerStrings: IDatePickerStrings = {
   months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -43,8 +42,7 @@ const DayPickerStrings: IDatePickerStrings = {
  * @extends {React.Component<IEventRecurrenceInfoYearlyProps, IEventRecurrenceInfoYearlyState>}
  */
 export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceInfoYearlyProps, IEventRecurrenceInfoYearlyState> {
-  private spService: spservices = null;
-  public constructor(props) {
+  public constructor(props: IEventRecurrenceInfoYearlyProps) {
     super(props);
 
 
@@ -81,8 +79,6 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
     this.onSelectedWeekDayChange = this.onSelectedWeekDayChange.bind(this);
     this.onWeekOrderMonthChange = this.onWeekOrderMonthChange.bind(this);
     this.onMonthChange = this.onMonthChange.bind(this);
-
-    this.spService = new spservices(this.props.context);
   }
 
     /**
@@ -92,10 +88,10 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
    * @param {Date} date
    * @memberof EventRecurrenceInfoDaily
    */
-     private onStartDateChange(date: Date) {
+     private onStartDateChange(date: Date): void {
       //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
       this.setState({ startDate: date }, () => {
-        this.applyRecurrence();
+        this.applyRecurrence().catch((e: any) => console.log(e));
       });
     }
   
@@ -106,10 +102,10 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
      * @param {Date} date
      * @memberof EventRecurrenceInfoDaily
      */
-    private onEndDateChange(date: Date) {
+    private onEndDateChange(date: Date): void {
       //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
       this.setState({ endDate: date }, () => {
-        this.applyRecurrence();
+        this.applyRecurrence().catch((e: any) => console.log(e));
       });
     }
 
@@ -121,7 +117,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
    * @param {string} value
    * @memberof EventRecurrenceInfoDaily
    */
-  private onDayOfMonthChange(ev: React.SyntheticEvent<HTMLElement>, value: string) {
+  private onDayOfMonthChange(ev: React.SyntheticEvent<HTMLElement>, value: string): void {
     ev.preventDefault();
 
     setTimeout(() => {
@@ -132,7 +128,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
 
       }
       this.setState({ dayOfMonth: value, errorMessageDayOfMonth: errorMessage });
-      this.applyRecurrence();
+      this.applyRecurrence().catch((e: any) => console.log(e));
     }, 3000);
 
   }
@@ -141,10 +137,10 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
   private onMonthChange(
     ev: React.SyntheticEvent<HTMLElement>,
     item: IDropdownOption
-  ) {
+  ): void {
     //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
     this.setState({ selectedMonth: item.key }, () => {
-      this.applyRecurrence();
+      this.applyRecurrence().catch((e: any) => console.log(e));
     });
   }
 
@@ -159,11 +155,11 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
    private onNumberOfOcurrencesChange(
     ev: React.SyntheticEvent<HTMLElement>,
     value: string
-  ) {
+  ): void {
     ev.preventDefault();
     //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
     this.setState({ numberOcurrences: value }, () => {
-      this.applyRecurrence();
+      this.applyRecurrence().catch((e: any) => console.log(e));
     });
   }
 
@@ -184,11 +180,11 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
     this.setState(
       {
         selectdateRangeOption: option.key,
-        disableNumberOcurrences: option.key == "endAfter" ? false : true,
-        disableEndDate: option.key == "endDate" ? false : true,
+        disableNumberOcurrences: option.key === "endAfter" ? false : true,
+        disableEndDate: option.key === "endDate" ? false : true,
       },
       () => {
-        this.applyRecurrence();
+        this.applyRecurrence().catch((e: any) => console.log(e));
       }
     );
   }
@@ -210,19 +206,15 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
     this.setState(
       {
         selectPatern: option.key,
-        disableDayOfMonth: option.key == "yearly" ? false : true,
+        disableDayOfMonth: option.key === "yearly" ? false : true,
       },
       () => {
-        this.applyRecurrence();
+        this.applyRecurrence().catch((e: any) => console.log(e));
       }
     );
   }
 
-  public async componentDidMount() {
-
-
-  }
-  public async componentWillMount() {
+  public async componentDidMount(): Promise<void> {
     await this.load();
   }
 
@@ -240,7 +232,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
   ): void {
     //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
     this.setState({ selectedWeekOrderMonth: item.key.toString() }, () => {
-      this.applyRecurrence();
+      this.applyRecurrence().catch((e: any) => console.log(e));
     });
   }
 
@@ -258,7 +250,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
   ): void {
     //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
     this.setState({ selectedYearlyByDayMonth: item.key }, () => {
-      this.applyRecurrence();
+      this.applyRecurrence().catch((e: any) => console.log(e));
     });
   }
 
@@ -276,13 +268,10 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
   ): void {
     //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
     this.setState({ selectedWeekDay: item.key.toString() }, () => {
-      this.applyRecurrence();
+      this.applyRecurrence().catch((e: any) => console.log(e));
     });
   }
 
-  public async  componentDidUpdate(prevProps: IEventRecurrenceInfoYearlyProps, prevState: IEventRecurrenceInfoYearlyState) {
-
-  }
 
   /**
    *
@@ -290,7 +279,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
    * @private
    * @memberof EventRecurrenceInfoYearly
    */
-  private async load() {
+  private async load(): Promise<void> {
     let patern: any = {};
     let dateRange: { repeatForever?: string, repeatInstances?: string, windowEnd?: Date } = {};
     let yearlyPatern: { yearFrequency?: string, day?: string, month?: string } = {};
@@ -387,7 +376,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
    * @param {React.MouseEvent<HTMLButtonElement>} ev
    * @memberof EventRecurrenceInfoYearly
    */
-  private async onApplyRecurrence(ev: React.MouseEvent<HTMLButtonElement>) {
+  private async onApplyRecurrence(ev: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     await this.applyRecurrence();
   }
   /**
@@ -397,8 +386,8 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
    * @param {React.MouseEvent<HTMLButtonElement>} ev
    * @memberof EventRecurrenceInfoDaily
    */
-  private async applyRecurrence() {
-    const endDate = await this.spService.getUtcTime(this.state.endDate);
+  private async applyRecurrence(): Promise<void> {
+    const endDate = await UserEventService.getUtcTime(this.state.endDate);
     let selectDateRangeOption;
     switch (this.state.selectdateRangeOption) {
       case 'noDate':
@@ -414,11 +403,11 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
         break;
     }
     let recurrencePatern: string = '';
-    if (this.state.selectPatern == 'yearly') {
+    if (this.state.selectPatern === 'yearly') {
       recurrencePatern = `<yearly  yearFrequency="1" day="${this.state.dayOfMonth}" month="${this.state.selectedMonth}" /></repeat>${selectDateRangeOption}</rule></recurrence>`;
     }
 
-    if (this.state.selectPatern == 'yearlyByDay') {
+    if (this.state.selectPatern === 'yearlyByDay') {
 
       recurrencePatern = `<yearlyByDay weekdayOfMonth="${this.state.selectedWeekOrderMonth}"  month="${this.state.selectedYearlyByDayMonth}"`;
 
@@ -476,9 +465,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
       <div >
         {
           <div>
-            <div style={{ display: 'inline-block', float: 'right', paddingTop: '10px', height: '40px' }}>
-
-            </div>
+            <div style={{ display: 'inline-block', float: 'right', paddingTop: '10px', height: '40px' }} />
             <div style={{ width: '100%', paddingTop: '10px' }}>
               <Label>{strings.PaternLabel}</Label>
               <ChoiceGroup
@@ -491,7 +478,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
                     onRenderField: (props, render) => {
                       return (
                         <div >
-                          {render!(props)}
+                          {render?.(props)}
                           <div style={{ display: 'inline-block', verticalAlign: 'top', width: '100px', paddingLeft: '10px' }}>
                             <Dropdown
                               selectedKey={this.state.selectedMonth}
@@ -532,7 +519,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
                     onRenderField: (props, render) => {
                       return (
                         <div  >
-                          {render!(props)}
+                          {render?.(props)}
                           <div style={{ display: 'inline-block', verticalAlign: 'top', width: '80px', paddingLeft: '10px' }}>
                             <Dropdown
                               selectedKey={this.state.selectedWeekOrderMonth}
@@ -632,7 +619,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
                       onRenderField: (props, render) => {
                         return (
                           <div  >
-                            {render!(props)}
+                            {render?.(props)}
                             <DatePicker
                               firstDayOfWeek={DayOfWeek.Sunday}
                               strings={DayPickerStrings}
@@ -654,7 +641,7 @@ export class EventRecurrenceInfoYearly extends React.Component<IEventRecurrenceI
                       onRenderField: (props, render) => {
                         return (
                           <div  >
-                            {render!(props)}
+                            {render?.(props)}
                             <MaskedTextField
                               styles={{ root: { display: 'inline-block', verticalAlign: 'top', width: '100px', paddingLeft: '10px' } }}
                               mask="999"

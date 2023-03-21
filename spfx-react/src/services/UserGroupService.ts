@@ -44,7 +44,6 @@ export class UserGroupService {
 
   public getGroups = async (): Promise<IGroup[]> => {
     /* Get items from SP list Groups */
-    console.log('SP check', this._sp)
     const groups = await this._sp.web.lists.getByTitle("Groups").items()
 
     return new Promise<IGroup[]>((resolve) => {

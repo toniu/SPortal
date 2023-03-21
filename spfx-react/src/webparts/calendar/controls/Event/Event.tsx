@@ -43,7 +43,7 @@ import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import UserEventService from '../../../../services/UserEventService';
-import { Map, ICoordinates, MapType } from "@pnp/spfx-controls-react/lib/Map";
+import { Map, ICoordinates } from "@pnp/spfx-controls-react/lib/Map";
 import { EventRecurrenceInfo } from '../../controls/EventRecurrenceInfo/EventRecurrenceInfo';
 import { getGUID } from '@pnp/common';
 import { toLocaleShortDateString } from '../../utils/dateUtils';
@@ -204,7 +204,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
 
     // get Geolocation
     eventData.geolocation = { Latitude: this.latitude, Longitude: this.longitude };
-    const locationInfo = UserEventService.getGeoLactionName(this.latitude, this.longitude);
+    const locationInfo = await UserEventService.getGeoLactionName(this.latitude, this.longitude);
     eventData.location = locationInfo ? locationInfo.display_name : 'N/A';
 
     // get Attendees
@@ -422,7 +422,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
    * @private
    * @memberof Event
    */
-  private onChangeEventTitle (event:any) {
+  private onChangeEventTitle (event:any): void {
     const eventTitle = event.target.value;
     this.setState({eventData: {...this.state.eventData, title: eventTitle}});
   }
@@ -580,7 +580,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
   private async onEditRecurrence(ev: React.MouseEvent<HTMLButtonElement>): Promise<void>  {
     ev.preventDefault();
     // EventType = 4 Recurrence Exception
-    await this.renderEventData(this.state.eventData.EventType == '4' ? Number(this.state.eventData.MasterSeriesItemID) : this.state.eventData.Id);
+    await this.renderEventData(this.state.eventData.EventType === '4' ? Number(this.state.eventData.MasterSeriesItemID) : this.state.eventData.Id);
     this.setState({ showRecurrenceSeriesInfo: true, recurrenceSeriesEdited: true });
   }
 
@@ -594,10 +594,10 @@ export class Event extends React.Component<IEventProps, IEventState> {
   private parseDailyRule(rule: any): string {
     const keys = Object.keys(rule);
     if (keys.indexOf("weekday") !== -1 && rule.weekday === "TRUE")
-      return format("{} {}", format(strings.everyFormat, 1), strings.weekDayLabel);
+      return format("{} {}", format(strings.everyFormat, '1'), strings.weekDayLabel);
 
     if (keys.indexOf("dayFrequency") !== -1) {
-      const dayFrequency: number = parseInt(rule.dayFrequency);
+      const dayFrequency: any = parseInt(rule.dayFrequency);
       const frequencyFormat = dayFrequency === 1 ? strings.everyFormat : dayFrequency === 2 ? strings.everySecondFormat : strings.everyNthFormat;
       return format("{} {}", format(frequencyFormat, dayFrequency), strings.dayLable);
     }
@@ -613,7 +613,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
    * @memberof Event 
    */
   private parseWeeklyRule(rule: any): string {
-    const frequency: number = parseInt(rule.weekFrequency);
+    const frequency: any = parseInt(rule.weekFrequency);
     const keys = Object.keys(rule);
     const dayMap: any = {
       "mo": strings.Monday,
@@ -644,8 +644,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
    * @memberof Event
    */
   private parseMonthlyRule(rule: any): string {
-    const frequency: number = parseInt(rule.monthFrequency);
-    const day: number = parseInt(rule.day);
+    const frequency: any = parseInt(rule.monthFrequency);
+    const day: any = parseInt(rule.day);
 
     return format("{}{} {}",
       frequency === 1 ? format(strings.everyFormat, frequency) : frequency === 2 ? format(strings.everySecondFormat, frequency) : format(strings.everyNthFormat, frequency),
@@ -689,7 +689,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
     for (const key of keys) {
       switch (key) {
         case "monthFrequency":
-          const frequency = parseInt(rule[key]);
+          const frequency: any = parseInt(rule[key]);
           switch (frequency) {
             case 1:
               frequencyFormat = format(strings.everyFormat, frequency);
@@ -735,7 +735,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
     for (const key of keys) {
       switch (key) {
         case "yearFrequency":
-          const frequency = parseInt(rule[key]);
+          const frequency: any = parseInt(rule[key]);
           const frequencyFormat = frequency === 1 ? strings.everyFormat : frequency === 2 ? strings.everySecondFormat : strings.everyNthFormat;
           frequencyString = format(frequencyFormat, frequency);
           break;
@@ -760,7 +760,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
    */
   private parseYearlyByDayRule(rule: any): string {
     const keys: string[] = Object.keys(rule);
-    const months: string[] = DayPickerStrings.months;
+    //const months: string[] = DayPickerStrings.months;
     const orderMap: any = {
       "first": strings.firstLabel,
       "second": strings.secondLabel,
@@ -786,7 +786,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
     for (const key of keys) {
       switch (key) {
         case "yearFrequency":
-          const frequency = parseInt(rule[key]);
+          const frequency: any = parseInt(rule[key]);
           const frequencyFormat = frequency === 1 ? strings.everyFormat : frequency === 2 ? strings.everySecondFormat : strings.everyNthFormat;
           frequencyString = format(frequencyFormat, frequency);
           break;
@@ -831,8 +831,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
     if (recurrenceInfo !== null) {
       const keys = Object.keys(recurrenceInfo.recurrence.rule[0].repeat[0]);
       const recurrenceTypes = ["daily", "weekly", "monthly", "monthlyByDay", "yearly", "yearlyByDay"];
-      for (key of keys) {
-        const rule = recurrenceInfo.recurrence.rule[0].repeat[0][key][0]['$'];
+      for (const key of keys) {
+        const rule = recurrenceInfo.recurrence.rule[0].repeat[0][key][0].$;
         switch (recurrenceTypes.indexOf(key)) {
           case 0:
             return this.parseDailyRule(rule);
@@ -1124,7 +1124,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
                 <br />
 
                 {
-                  this.state.eventData && (this.state.eventData.EventType == "0") ?
+                  this.state.eventData && (this.state.eventData.EventType === "0") ?
                     <div style={{ display: 'inline-block', verticalAlign: 'top', width: '200px' }}>
                       <Toggle
                         defaultChecked={false}
@@ -1161,7 +1161,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
                   <Editor
                     editorState={editorState}
                     onEditorStateChange={this.onEditorStateChange}
-                    ReadOnly={this.state.userPermissions.hasPermissionAdd || this.state.userPermissions.hasPermissionEdit ? false : true}
+                    readOnly={this.state.userPermissions.hasPermissionAdd || this.state.userPermissions.hasPermissionEdit ? false : true}
                   />
                 </div>
                 <div>
