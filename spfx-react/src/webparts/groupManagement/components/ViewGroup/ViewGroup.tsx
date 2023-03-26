@@ -260,7 +260,6 @@ export default class ViewGroup extends React.Component<IViewGroupProps, IViewGro
         } catch (error) {
             this.handleGroupError(error)
         }
-
     }
 
     private handleGroupError = (error: string) => {

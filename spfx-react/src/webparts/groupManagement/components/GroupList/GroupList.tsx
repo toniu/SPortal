@@ -203,7 +203,6 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
       filterText: text,
       groups: text ? this._originalItems.filter(item => item.displayName.toLowerCase().indexOf(text.toLowerCase()) >= 0) : this._originalItems
     });
-
   }
 
   private _onRenderUserGroupCell(group: IGroup, index: number | undefined): JSX.Element {

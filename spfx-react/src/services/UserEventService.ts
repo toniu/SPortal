@@ -22,11 +22,19 @@ import { IUserPermissions } from '../webparts/calendar/models/IUserPermissions';
 import parseRecurrentEvent from '../webparts/calendar/models/parseRecurrentEvent';
 
 export class UserEventService {
+    private static instance: UserEventService
     private _sp: SPFI;
 
     public setup(context: WebPartContext): void {
         this._sp = getSP(context);
         console.log(this._sp)
+    }
+
+    static getInstance(): UserEventService {
+        if (!UserEventService.instance) {
+            UserEventService.instance = new UserEventService();
+        }
+        return UserEventService.instance
     }
 
     public async getLocalTime(date: string | Date): Promise<string> {
@@ -57,7 +65,7 @@ export class UserEventService {
     public async addEvent(newEvent: IEventData, siteUrl: string, listId: string): Promise<any> {
         let results = null;
         try {
-
+            console.log('Adding event to list...', await this._sp.web.lists.getById(listId).items)
             results = await this._sp.web.lists.getById(listId).items.add({
                 Title: newEvent.title,
                 Description: newEvent.Description,

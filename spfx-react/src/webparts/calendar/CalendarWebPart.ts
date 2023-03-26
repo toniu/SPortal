@@ -38,7 +38,6 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
 
   public constructor() {
     super();
-
   }
 
   public render(): void {

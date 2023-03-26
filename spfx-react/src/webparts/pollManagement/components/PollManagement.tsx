@@ -116,18 +116,20 @@ export default class PollManagement extends React.Component<IPollManagementProps
       /* Only checking the polls that were already in the list */
       for (let i = 0; i < epAfter.length; i++) {
         let shouldChange = false;
-        const newStartDate = epBefore[i].StartDate
-        const newEndDate = epBefore[i].EndDate
+        let newStartDate = epBefore[i].StartDate
+        let newEndDate = epBefore[i].EndDate
 
         /* Check for property change in start date */
         if (new Date(epAfter[i].QStartDate).getTime() !== new Date(epBefore[i].QStartDate).getTime()) {
           shouldChange = true
+          newStartDate = epAfter[i].QStartDate
           console.log('StartDate Changed for item ', i, ': ', epBefore[i].QStartDate, ' to ', epAfter[i].QStartDate)
         }
 
         /* Check for property change in end date */
         if (new Date(epAfter[i].QEndDate).getTime() !== new Date(epBefore[i].QEndDate).getTime()) {
           shouldChange = true
+          newEndDate = epAfter[i].QEndDate
           console.log('EndDate changed for item', i, ': ', epBefore[i].QEndDate, ' to ', epAfter[i].QEndDate)
         }
 
@@ -291,7 +293,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
     /* */
 
     UserPollService.igetPolls().then(polls => {
-      /* Set state code [...]: isLoading, polls, loadCount */
+      /* Console log of SP Polls from SP list: Polls */
       console.log('Polls: ', polls)
 
       /* Only polls that are owned by the current user */
@@ -305,6 +307,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
       console.log('Polls owned by YOU: ', ownerPolls)
 
       this.disQuestionId = this._checkActivePolls(ownerPolls)
+       /* Set state code [...]: isLoading, polls, loadCount */
       this.setState({
         isLoading: false,
         polls: polls,
