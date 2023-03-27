@@ -13,11 +13,17 @@ import UserGroupService from '../../../../services/UserGroupService';
 
 const backIcon: IIconProps = { iconName: 'NavigateBack' };
 
+/**
+ * Custom styling of stack props
+ */
 const verticalStackProps: IStackProps = {
     styles: { root: { overflow: 'hidden', width: '100%' } },
     tokens: { childrenGap: 20 }
 };
 
+/**
+ * The component for the new group
+ */
 export default class NewGroup extends React.Component<INewGroupProps, INewGroupState> {
 
     constructor(props: INewGroupProps) {
@@ -33,6 +39,10 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
         };
     }
 
+    /**
+     * The render
+     * @returns The JSX element
+     */
     public render(): React.ReactElement<INewGroupProps> {
         return (
             <div className={styles.groupManagement}>
@@ -119,6 +129,10 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
         );
     }
 
+    /**
+     * On changed selected owners - retrieve the emails of currently selected owners
+     * @param items the people picker list of owners
+     */
     private _getPeoplePickerOwners = (items: IPeoplePickerUserItem[]) => {
         console.log('People picker owners: ', items)
         this.setState(() => {
@@ -129,6 +143,10 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
         });
     }
 
+    /**
+     * On changed selected owners - retrieve the emails of currently selected owners
+     * @param items the people picker list of members
+     */
     private _getPeoplePickerMembers = (items: IPeoplePickerUserItem[]) => {
         console.log('People picker members: ', items)
         this.setState(() => {
@@ -139,21 +157,36 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
         });
     }
 
+    /**
+     * Event fired for changed name text field
+     * @param groupName new group name
+     */
     private onchangedName = (groupName: any) => {
         this.setState({ name: groupName.target.value });
     }
 
+    /**
+     * Event fired for changed description text field
+     * @param groupDescription new group description
+     */
     private onchangedDescription = (groupDescription: any) => {
         this.setState({ description: groupDescription.target.value });
     }
 
+    /**
+     * Event fired for changed visibility (check-box changed)
+     * @param ev the event of input element
+     * @param option the new option chosen
+     */
     private onChangeVisibility = (ev: React.FormEvent<HTMLInputElement>, option: IChoiceGroupOption) => {
         this.setState({ visibility: option.key });
     }
 
+    /**
+     * Calls service to create a new group, uses current state of inputs as the new group's details
+     */
     private createNewGroup = () => {
         try {
-            console.log('CG State: ', this.state)
             UserGroupService.createGroup(this.state.name, this.state.description, this.state.visibility, this.state.owners, this.state.members).catch(e => this.handleGroupError(e));
 
             this.setState({
@@ -166,6 +199,10 @@ export default class NewGroup extends React.Component<INewGroupProps, INewGroupS
         }
     }
 
+    /**
+     * Handles the error from submitting form
+     * @param error 
+     */
     private handleGroupError = (error: string) => {
         this.setState({
             message: "Group " + this.state.name + " creation failed with error: " + error,

@@ -19,6 +19,9 @@ import UserGroupService from '../../../../services/UserGroupService';
 /* Tailwind import */
 import '../../../../../assets/dist/tailwind.css';
 
+/**
+ * The interface for representing a group list object
+ */
 interface IGroupListClassObject {
   itemCell: string;
   itemImage: string;
@@ -28,16 +31,19 @@ interface IGroupListClassObject {
   chevron: string;
 }
 
-// Icons
+/* Icons */
 const joinIcon: IIconProps = { iconName: 'Subscribe' };
 const leaveIcon: IIconProps = { iconName: 'Unsubscribe' };
 const manageIcon: IIconProps = { iconName: 'AccountManagement' };
 const deleteIcon: IIconProps = { iconName: 'Delete' };
 
-// List style
+/* List style */
 const theme: ITheme = getTheme();
 const { palette, semanticColors, fonts } = theme;
 
+/**
+ * The styling of the group list
+ */
 const classNames: IGroupListClassObject = mergeStyleSets({
   itemCell: [
     getFocusStyle(theme, { inset: -1 }),
@@ -82,10 +88,17 @@ const classNames: IGroupListClassObject = mergeStyleSets({
   }
 });
 
+/**
+ * The component for the group list
+ */
 export default class GroupList extends React.Component<IGroupListProps, IGroupListState> {
   private _originalItems: IGroup[];
   private _menuButtonElement: HTMLElement;
 
+  /**
+   * Set up the state and user roles of the groups; also bind functions
+   * @param props The group list props
+   */
   constructor(props: IGroupListProps) {
     super(props);
 
@@ -118,6 +131,10 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     this._onDismiss = this._onDismiss.bind(this);
   }
 
+  /**
+   * The render
+   * @returns the JSX element
+   */
   public render(): React.ReactElement<IGroupListProps> {
     const { groups = [] } = this.state;
     const resultCountText = groups.length === this._originalItems.length ? '' : ` (${groups.length} of ${this._originalItems.length} shown)`;
@@ -187,6 +204,9 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     );
   }
 
+  /**
+   * Back to the main page of groups
+   */
   public mainPageGroups = () => {
     this.setState(() => {
       return {
@@ -198,6 +218,11 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
   }
 
 
+  /**
+   * Event fired for changed filter text
+   * @param _ 
+   * @param text the text
+   */
   private _onFilterChanged = (_: any, text: string): void => {
     this.setState({
       filterText: text,
@@ -205,6 +230,12 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     });
   }
 
+  /**
+   * Render of each cell of the user group section
+   * @param group the details of the group
+   * @param index the index (if any)
+   * @returns the JSX element
+   */
   private _onRenderUserGroupCell(group: IGroup, index: number | undefined): JSX.Element {
     return (
       <div className={classNames.itemCell} data-is-focusable={true}>
@@ -237,6 +268,12 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     );
   }
 
+    /**
+   * Render of each cell of the existing group section
+   * @param group the details of the group
+   * @param index the index (if any)
+   * @returns the JSX element
+   */
   private _onRenderExistingGroupCell(group: IGroup, index: number | undefined): JSX.Element {
     return (
       <div className={classNames.itemCell} data-is-focusable={true}>
@@ -255,12 +292,20 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     );
   }
 
+  /**
+   * Dismiss the message
+   * @param ev 
+   */
   private _onDismiss(ev: any): void {
     this.setState({
       isTeachingBubbleVisible: false
     });
   }
 
+  /**
+   * Manage the group (edit its details, members etc.)
+   * @param group the group to select
+   */
   private _manageGroupClicked = async (group: any) => {
     console.log('Manage group selected', group)
     let members: any[] = []
@@ -281,8 +326,6 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
       members: members
     }
 
-    console.log('Group details from viewed group: ', groupDetails);
-
     await this.setState({
       selectedGroup: groupDetails,
       showSelectedGroup: true
@@ -291,6 +334,10 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     this.forceUpdate()
   }
 
+  /**
+   * Selects the group to delete
+   * @param group the group selected to delete
+   */
   private _deleteGroupClicked = (group: any) => {
     this.setState({
       selectedGroup: group,
@@ -300,6 +347,10 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     this.forceUpdate()
   }
 
+  /**
+   * Call service to delete the group based on user response from dialog box
+   * @param confirm Did the user confirm to delete the group?
+   */
   private _manageDeleteGroup = (confirm: boolean) => {
     /* If option is yes */
     if (confirm) {
@@ -331,6 +382,11 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     this.forceUpdate();
   }
 
+  /**
+   * Leaves the group they were a member of
+   * @param groupId the ID of group
+   * @param groupName the name of group
+   */
   private _leaveGroupClicked = (groupId: string, groupName: string) => {
     UserGroupService.removeMembersFromGroup(groupId, 'me').then(response => {
       this.setState(prevState => ({
@@ -343,6 +399,11 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
     this.forceUpdate();
   }
 
+    /**
+   * Join the group they were not a member of
+   * @param groupId the ID of group
+   * @param groupName the name of group
+   */
   private _joinGroupClicked = (groupId: string, groupName: string) => {
     UserGroupService.addMembersToGroup(groupId, 'me').then(response => {
       this.setState(prevState => ({

@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// Represents attributes of an O365 Group
+
+/**
+ * Represents attributes of an O365 group
+ */
 export interface IGroup {
     id: string;
     displayName: string;
@@ -12,6 +15,9 @@ export interface IGroup {
     teamsConnected?: boolean;
 }
 
+/**
+ * Collection of groups
+ */
 export interface IGroupCollection {
     value: IGroup[];
 }

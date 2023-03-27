@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-//import { IQuestionDetails, IResponseDetails } from "../models";
 
+/**
+ * Props the the poll management state
+ */
 export interface IPollManagementState {
 	polls: any[]
 	prevPolls: any[],

@@ -4,11 +4,19 @@ import { Text } from 'office-ui-fabric-react/lib/Text';
 import styles from './MessageContainer.module.scss';
 import { MessageScope } from '../../../../common/enumHelper';
 
+/**
+ * Props for the message container
+ */
 export interface IMessageContainerProps {
     Message?: string;
     MessageScope: MessageScope;
 }
 
+/**
+ * The component for the message container; can be success, failure, warning or info
+ * @param props the props 
+ * @returns the JSX element
+ */
 export default function MessageContainer(props: IMessageContainerProps): JSX.Element {
     return (
         <div className={styles.MessageContainer}>

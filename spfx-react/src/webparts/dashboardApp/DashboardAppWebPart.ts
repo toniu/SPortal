@@ -19,6 +19,9 @@ import { PropertyFieldDateTimePicker, DateConvention, IDateTimeFieldValue } from
 
 import '../../../assets/dist/tailwind.css';
 
+/**
+ * The props of the Dashboard web part
+ */
 export interface IDashboardAppWebPartProps {
   title: string;
   siteUrl: string;
@@ -32,12 +35,18 @@ import UserEventService from '../../services/UserEventService';
 import '../../../assets/dist/tailwind.css';
 import * as moment from 'moment';
 
+/**
+ * The dashboard web part
+ */
 export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboardAppWebPartProps> {
 
   private lists: IPropertyPaneDropdownOption[] = [];
   private listsDropdownDisabled: boolean = true;
   private errorMessage: string;
 
+  /**
+   * The render (including the props to pass on)
+   */
   public render(): void {
     const element: React.ReactElement<IDashboardAppProps> = React.createElement(
       DashboardApp,
@@ -58,6 +67,10 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
     ReactDom.render(element, this.domElement);
   }
 
+  /**
+   * The initial steps to do on set-up
+   * @returns set-up the event service required
+   */
   protected async onInit(): Promise<any> {
     this.properties.siteUrl = this.properties.siteUrl ? this.properties.siteUrl : this.context.pageContext.site.absoluteUrl;
     if (!this.properties.eventStartDate) {
@@ -87,6 +100,9 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
     return Version.parse('1.0');
   }
 
+  /**
+   * Property pane configuration
+   */
   protected async onPropertyPaneConfigurationStart(): Promise<void> {
 
     try {
@@ -109,6 +125,10 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
     }
   }
 
+  /**
+   * Loads the lists on property pane dropdown
+   * @returns the lists
+   */
   private async loadLists(): Promise<IPropertyPaneDropdownOption[]> {
     const _lists: IPropertyPaneDropdownOption[] = [];
     try {
@@ -124,6 +144,11 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
     return _lists;
   }
 
+  /**
+   * Display of start date validation message
+   * @param date the date
+   * @returns the validation message
+   */
   private onEventStartDateValidation(date: string): string {
     if (date && this.properties.eventEndDate.value) {
       if (moment(date).isAfter(moment(this.properties.eventEndDate.value))) {
@@ -133,6 +158,11 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
     return '';
   }
 
+    /**
+   * Display of end date validation message
+   * @param date the date
+   * @returns the validation message
+   */
   private onEventEndDateValidation(date: string): string {
     if (date && this.properties.eventEndDate.value) {
       if (moment(date).isBefore(moment(this.properties.eventStartDate.value))) {
@@ -142,6 +172,11 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
     return '';
   }
 
+  /**
+   * Gets the error message for a site URL not existing
+   * @param value the value
+   * @returns 
+   */
   private async onSiteUrlGetErrorMessage(value: string): Promise<any> {
     let returnValue: string = '';
     if (value) {
@@ -161,6 +196,12 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
     return returnValue;
   }
 
+  /**
+   * Event fired for change in property pane field
+   * @param propertyPath the string
+   * @param oldValue the old value
+   * @param newValue the new value
+   */
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
     try {
       // reset any error
@@ -189,6 +230,10 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
     }
   }
 
+  /**
+   * Gets the property pane configuration
+   * @returns The pages of configuration panel
+   */
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     // EndDate and Start Date defualt values
 

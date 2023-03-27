@@ -21,7 +21,9 @@ import { IUserInfo } from './models';
 import { ChartType } from '@pnp/spfx-controls-react/lib/ChartControl';
 import '../../../assets/dist/tailwind.css';
 
-
+/**
+ * Props for poll management web part
+ */
 export interface IPollManagementWebPartProps {
     pollQuestions: any[];
     MsgAfterSubmission: string;
@@ -32,10 +34,17 @@ export interface IPollManagementWebPartProps {
     NoPollMsg: string;
 }
 
+/**
+ * The web part component for poll management
+ */
 export default class PollManagementWebPart extends BaseClientSideWebPart<IPollManagementWebPartProps> {
     private userinfo: IUserInfo = null;
     private initialPolls: any[];
 
+    /**
+     * The initial set-up of the poll service as well as the polls to load into the configuration panel
+     * @returns set-up of services
+     */
     protected async onInit(): Promise<void> {
       return super.onInit().then(async () => {
         await UserPollService.setup(this.context);
@@ -45,6 +54,9 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
       }).catch((e) => console.log(e));
     }
 
+    /**
+     * The render
+     */
     public render(): void {
         const element: React.ReactElement<IPollManagementProps> = React.createElement(
             PollManagement,
@@ -77,17 +89,22 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
         return Version.parse('1.0');
     }
 
+    /**
+     * Opens the property pane
+     */
     private openPropertyPane = async (): Promise<void> => {
         this.context.propertyPane.open();
     }
 
+    /**
+     * Gets the polls from SP list to intially load into the configuration panel
+     * @returns the retrieved polls to pass as a prop
+     */
     private getInitialPolls = async (): Promise<any> => {
         /* Get polls */
         const polls = await UserPollService.igetPolls();
-        console.log('Polls in webpart: ', polls)
 
         const ownerPolls = polls.filter((poll: any) => poll.Owner.toLowerCase() === this.userinfo.Email.toLowerCase())
-        console.log('My polls in webpart: ', ownerPolls)
 
         const pollAsProps: any = []
         for (let i = 0; i < ownerPolls.length; i++) {
@@ -112,6 +129,10 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
         return pollAsProps
     }
 
+    /**
+     * The property pane configuration
+     * @returns the pages
+     */
     protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
         return {
             pages: [

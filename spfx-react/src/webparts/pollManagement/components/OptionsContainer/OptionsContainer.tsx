@@ -4,11 +4,21 @@ import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/Choi
 import { IOptionsContainerProps } from './IOptionsContainerProps';
 // import * as _ from 'lodash';
 
+/**
+ * The state for the options container
+ */
 export interface IOptionsContainerState {
     selChoices?: string[];
 }
 
+/**
+ * The component for the options container
+ */
 export default class OptionsContainer extends React.Component<IOptionsContainerProps, IOptionsContainerState> {
+    /**
+     * Initial set-up and initial state based on props
+     * @param props the props
+     */
     constructor(props: IOptionsContainerProps) {
         super(props);
         this.state = {
@@ -16,6 +26,10 @@ export default class OptionsContainer extends React.Component<IOptionsContainerP
         };
     }
 
+    /**
+     * The render
+     * @returns the JSX element
+     */
     public render(): JSX.Element {
         const { disabled } = this.props;
         return (
@@ -29,6 +43,10 @@ export default class OptionsContainer extends React.Component<IOptionsContainerP
         );
     }
 
+    /**
+     * Gets the options based on string; array created by split commas
+     * @returns the choices
+     */
     private getOptions = (): string[] => {
         const tempChoices: string[] = [];
         if (this.props.options.indexOf(',') >= 0) {
@@ -40,6 +58,10 @@ export default class OptionsContainer extends React.Component<IOptionsContainerP
         return tempChoices;
     }
 
+    /**
+     * Render of the choice options
+     * @returns the choice group options
+     */
     private onRenderChoiceOptions(): IChoiceGroupOption[] {
         const choices: IChoiceGroupOption[] = [];
         const tempChoices: string[] = this.getOptions();
@@ -60,10 +82,19 @@ export default class OptionsContainer extends React.Component<IOptionsContainerP
         return choices;
     }
 
+    /**
+     * Gets the currently selected key
+     * @returns the selected key
+     */
     private _getSelectedKey = (): string => {
         return this.props.selectedKey();
     }
 
+    /**
+     * Event fired for change of option input
+     * @param ev the event
+     * @param option the option chosen
+     */
     private _onChange = (ev: React.FormEvent<HTMLInputElement>, option: any): void => {
         this.props.onChange(ev, option, false);
     }

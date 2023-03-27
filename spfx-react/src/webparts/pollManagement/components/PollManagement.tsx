@@ -7,20 +7,29 @@ import { ProgressIndicator } from 'office-ui-fabric-react/lib/ProgressIndicator'
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { IPollManagementProps } from './IPollManagementProps';
 import { IPollManagementState } from './IPollManagementState';
+/* Containers */
 import OptionsContainer from './OptionsContainer/OptionsContainer';
 import MessageContainer from './MessageContainer/MessageContainer';
 import QuickPollChart from './ChartContainer/QuickPollChart';
+/* Models: IQuestionDetails, IResponseDetails, IPollAnalyticsInfo */
 import { IQuestionDetails, IResponseDetails, IPollAnalyticsInfo } from '../models';
-// Models: IResponseDetails, IPollAnalyticsInfo
+/* Services */
 import UserPollService from '../../../services/UserPollService';
 import { MessageScope } from '../../../common/enumHelper';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
+/**
+ * Component for poll management
+ */
 export default class PollManagement extends React.Component<IPollManagementProps, IPollManagementState> {
   private disQuestionId: string;
   private displayQuestion: IQuestionDetails;
 
+  /**
+   * Initial set-up and initial state of component
+   * @param props the props
+   */
   constructor(props: IPollManagementProps) {
     super(props);
     this.state = {
@@ -54,10 +63,17 @@ export default class PollManagement extends React.Component<IPollManagementProps
     console.log(this.disQuestionId, this.displayQuestion)
   }
 
+  /**
+   * When component is mounted, begin by getting the polls
+   */
   public componentDidMount = async (): Promise<void> => {
     await this._getPolls();
   }
 
+  /**
+   * When the component is updated, check for any saved changes on polls
+   * @param prevProps the previous props
+   */
   public componentDidUpdate = async (prevProps: IPollManagementProps): Promise<void> => {
 
     /* If the poll questions or enable poll based on date changed */
@@ -93,7 +109,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
             pollsToCreate[i].QTitle,
             pollsToCreate[i].QOptions,
             /* SP List Context: visibility: 'Public' -> true; 'Private' -> false */
-            pollsToCreate[i].Visibility !== null ? (pollsToCreate[i].Visibility === true ? 'Public' : 'Private' ) : 'Private',
+            pollsToCreate[i].Visibility !== null ? (pollsToCreate[i].Visibility === true ? 'Public' : 'Private') : 'Private',
             pollsToCreate[i].QStartDate,
             pollsToCreate[i].QEndDate)
         }
@@ -142,7 +158,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
         /* Finally call method to update any details */
         if (shouldChange) {
           await UserPollService.ieditPoll(epAfter[i].uniqueId,
-            epAfter[i].Visibility !== null ? (epAfter[i].Visibility === true ? 'Public' : 'Private' ) : 'Private',
+            epAfter[i].Visibility !== null ? (epAfter[i].Visibility === true ? 'Public' : 'Private') : 'Private',
             newStartDate,
             newEndDate)
         }
@@ -168,6 +184,12 @@ export default class PollManagement extends React.Component<IPollManagementProps
     }
   }
 
+  /**
+   * Fired event for change of input (selected option changed)
+   * @param ev the event
+   * @param option the chosen options
+   * @param isMultiSel is multiple selection
+   */
   public _onChange = (ev: any, option: any, isMultiSel: boolean): void => {
     const prevUserResponse = this.state.pollResponse;
 
@@ -188,7 +210,6 @@ export default class PollManagement extends React.Component<IPollManagementProps
       prevUserResponse.push(userResponse)
     }
 
-    console.log('Changed! new response: ', prevUserResponse)
     this.setState({
       ...this.state,
       enableSubmit: true,
@@ -196,6 +217,10 @@ export default class PollManagement extends React.Component<IPollManagementProps
     });
   }
 
+  /**
+   * Get selected key of user response
+   * @returns the selected key
+   */
   private _getSelectedKey = (): string => {
     let selKey: string = "";
     if (this.state.pollResponse && this.state.pollResponse.length > 0) {
@@ -208,6 +233,9 @@ export default class PollManagement extends React.Component<IPollManagementProps
     return selKey;
   }
 
+  /**
+   * Submits the vote
+   */
   public _submitVote = async (): Promise<void> => {
     try {
       console.log('Submit with current state', this.state)
@@ -282,15 +310,21 @@ export default class PollManagement extends React.Component<IPollManagementProps
     }
   }
 
+  /**
+   * Gets the current user response to a poll
+   * @param userResponse the user responses
+   * @returns the details of the user response
+   */
   public _getCurrentUserResponse(userResponse: any): any {
     const retUR: IResponseDetails[] = userResponse.filter((res: any) => { return res.UserEmail === this.props.currentUserInfo.Email; });
     return retUR;
   }
 
+  /**
+   * Gets all of the existing polls; calls service to get polls from SP list
+   */
   public _getPolls = async (): Promise<void> => {
     const userInfo = await UserPollService.getCurrentUserInfo()
-
-    /* */
 
     UserPollService.igetPolls().then(polls => {
       /* Console log of SP Polls from SP list: Polls */
@@ -307,7 +341,7 @@ export default class PollManagement extends React.Component<IPollManagementProps
       console.log('Polls owned by YOU: ', ownerPolls)
 
       this.disQuestionId = this._checkActivePolls(ownerPolls)
-       /* Set state code [...]: isLoading, polls, loadCount */
+      /* Set state code [...]: isLoading, polls, loadCount */
       this.setState({
         isLoading: false,
         polls: polls,
@@ -318,6 +352,11 @@ export default class PollManagement extends React.Component<IPollManagementProps
 
   }
 
+  /**
+   * Checks for active polls and selects the active poll to display
+   * @param polls the existing polls
+   * @returns the ID of the active poll
+   */
   public _checkActivePolls = (polls: any): any => {
     let activePolls: any[] = []
     console.log('Checking polls from ', polls)
@@ -367,6 +406,9 @@ export default class PollManagement extends React.Component<IPollManagementProps
     return '';
   }
 
+  /**
+   * Binds the polls
+   */
   public _bindPolls = (): void => {
     this.setState({
       showProgress: (this.state.polls.length > 0) ? true : false,
@@ -383,6 +425,9 @@ export default class PollManagement extends React.Component<IPollManagementProps
     }, this._getUserResponses)
   }
 
+  /**
+   * Gets all of the user responses from a poll
+   */
   public _getUserResponses = async (): Promise<void> => {
     const usersResponses = await UserPollService.igetPollResponses((this.state.currentPoll.Id) ? this.state.currentPoll.Id : this.disQuestionId);
 
@@ -412,6 +457,10 @@ export default class PollManagement extends React.Component<IPollManagementProps
     }
   }
 
+  /**
+   * Binds the analytics of the user responses;
+   * computes the count of the responses by option and displays chart
+   */
   public _bindResponseAnalytics = (): void => {
     const { currentPoll } = this.state;
     const tmpUserResponse: any = this.state.pollResponse;
@@ -448,14 +497,21 @@ export default class PollManagement extends React.Component<IPollManagementProps
     }
   }
 
-
+  /**
+   * Checks that the user has voted for this poll 
+   * @param poll the poll selected
+   * @returns Has the user voted for the poll?
+   */
   public _checkSubmitted = async (poll: any): Promise<boolean> => {
     /* Has the user already voted in this particular poll? */
     const voted = await UserPollService.checkSubmitted(poll.id)
     return voted
   }
 
-
+  /**
+   * The render
+   * @returns The JSX element
+   */
   public render(): React.ReactElement<IPollManagementProps> {
     const showConfig = false
     return (

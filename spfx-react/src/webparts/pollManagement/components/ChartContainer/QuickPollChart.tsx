@@ -2,10 +2,16 @@ import * as React from 'react';
 import { ChartControl, ChartType } from '@pnp/spfx-controls-react/lib/ChartControl';
 import { IPollAnalyticsInfo } from '../../models';
 
+/**
+ * Props for quick poll chart
+ */
 export interface IQuickPollChartProps {
   PollAnalytics: IPollAnalyticsInfo;
 }
 
+/**
+ * Component for quick poll chart
+ */
 export default class QuickPollChart extends React.Component<IQuickPollChartProps, {}> {
   private charttype: ChartType = null;
   public render(): React.ReactElement<IQuickPollChartProps> {
@@ -29,6 +35,10 @@ export default class QuickPollChart extends React.Component<IQuickPollChartProps
     );
   }
 
+  /**
+   * Renders chart based on chart type and poll analytics
+   * @returns the JSX element
+   */
   private renderChart(): JSX.Element {
     const { PollAnalytics } = this.props;
     if (undefined !== this.props.PollAnalytics) {
@@ -63,6 +73,9 @@ export default class QuickPollChart extends React.Component<IQuickPollChartProps
     }
   }
 
+  /**
+   * Gets the selected chart type
+   */
   private getChartType = (): void => {
     switch (this.props.PollAnalytics.ChartType.toLocaleLowerCase()) {
       case 'pie':

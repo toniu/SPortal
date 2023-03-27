@@ -1,3 +1,6 @@
+/**
+ * The model for information about current user
+ */
 export interface IUserInfo {
     ID: string;
     Email: string;

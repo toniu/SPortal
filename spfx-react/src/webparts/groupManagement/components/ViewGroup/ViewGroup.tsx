@@ -16,13 +16,23 @@ import '../../../../../assets/dist/tailwind.css';
 const backIcon: IIconProps = { iconName: 'NavigateBack' };
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
+/**
+ * Custom styling of stack props
+ */
 const verticalStackProps: IStackProps = {
     styles: { root: { overflow: 'hidden', width: '100%' } },
     tokens: { childrenGap: 20 }
 };
 
+/**
+ * The component for view group
+ */
 export default class ViewGroup extends React.Component<IViewGroupProps, IViewGroupState> {
 
+    /**
+     * Set the intial state of component; get the old values of selected group
+     * @param props the props
+     */
     constructor(props: IViewGroupProps) {
         super(props);
 
@@ -43,7 +53,9 @@ export default class ViewGroup extends React.Component<IViewGroupProps, IViewGro
         this.forceUpdate()
     }
 
-
+    /**
+     * The render
+     */
     public render(): React.ReactElement<IViewGroupProps> {
 
         /* Original state: the original owners and members of the group */
@@ -156,6 +168,10 @@ export default class ViewGroup extends React.Component<IViewGroupProps, IViewGro
         );
     }
 
+    /**
+     * On changed selected owners - retrieve the emails of currently selected owners
+     * @param items the people picker list of members
+     */
     private _getPeoplePickerMembers = (items: IPeoplePickerUserItem[]) => {
         console.log('People picker members: ', items)
         this.setState(() => {
@@ -166,18 +182,34 @@ export default class ViewGroup extends React.Component<IViewGroupProps, IViewGro
         });
     }
 
+    /**
+    * Event fired for changed name text field
+    * @param groupName new group name
+    */
     private onchangedName = (groupName: any) => {
         this.setState({ name: groupName.target.value });
     }
 
+    /**
+     * Event fired for changed description text field
+     * @param groupDescription new group description
+     */
     private onchangedDescription = (groupDescription: any) => {
         this.setState({ description: groupDescription.target.value });
     }
 
+    /**
+     * Event fired for changed visibility (check-box changed)
+     * @param ev the event of input element
+     * @param option the new option chosen
+     */
     private onChangeVisibility = (ev: React.FormEvent<HTMLInputElement>, option: IChoiceGroupOption) => {
         this.setState({ visibility: option.key });
     }
 
+    /**
+     * Calls service to edit a group; includes validation check of inputs
+     */
     private updateGroup = () => {
         console.log('Save changes to state: ', this.state)
 
@@ -262,6 +294,10 @@ export default class ViewGroup extends React.Component<IViewGroupProps, IViewGro
         }
     }
 
+    /**
+     * Handles the error from submitting form
+     * @param error 
+     */
     private handleGroupError = (error: string) => {
         this.setState({
             message: "Group " + this.state.name + " update request failed with error: " + error,

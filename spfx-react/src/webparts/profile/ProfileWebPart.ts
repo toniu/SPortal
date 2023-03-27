@@ -6,7 +6,6 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'ProfileWebPartStrings';
 import Profile from './components/Profile';
@@ -15,12 +14,21 @@ import { IProfileProps } from './components/IProfileProps';
 import UserGroupService from '../../services/UserGroupService';
 import '../../../assets/dist/tailwind.css';
 
+/**
+ * The props for the profile web part
+ */
 export interface IProfileWebPartProps {
   description: string;
 }
 
+/**
+ * The web part component for profile
+ */
 export default class ProfileWebPart extends BaseClientSideWebPart<IProfileWebPartProps> {
 
+  /**
+   * The render
+   */
   public render(): void {
     const element: React.ReactElement<IProfileProps> = React.createElement(
       Profile,
@@ -36,27 +44,14 @@ export default class ProfileWebPart extends BaseClientSideWebPart<IProfileWebPar
     ReactDom.render(element, this.domElement);
   }
 
+  /**
+  * The initial set-up of the profile service
+  * @returns set-up of services
+  */
   protected onInit(): Promise<void> {
     return super.onInit().then(async () => {
       await UserGroupService.setup(this.context, this.context.serviceScope);
     }).catch((e) => console.log(e));
-  }
-
-  protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
-    if (!currentTheme) {
-      return;
-    }
-
-    const {
-      semanticColors
-    } = currentTheme;
-
-    if (semanticColors) {
-      this.domElement.style.setProperty('--bodyText', semanticColors.bodyText || null);
-      this.domElement.style.setProperty('--link', semanticColors.link || null);
-      this.domElement.style.setProperty('--linkHovered', semanticColors.linkHovered || null);
-    }
-
   }
 
   protected onDispose(): void {
@@ -67,6 +62,10 @@ export default class ProfileWebPart extends BaseClientSideWebPart<IProfileWebPar
     return Version.parse('1.0');
   }
 
+  /**
+   * The property pane configuration
+   * @returns the pages
+   */
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [

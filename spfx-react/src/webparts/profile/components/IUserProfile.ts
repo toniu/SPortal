@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * The interface for the user profile
+ */
 export interface IUserProfile {
     Id: string;
     FirstName: string;

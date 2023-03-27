@@ -1,3 +1,6 @@
+/**
+ * The model for details about a user response
+ */
 export interface IResponseDetails {
     QuestionID: string;
     UserEmail: string;

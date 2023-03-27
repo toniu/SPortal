@@ -1,5 +1,8 @@
 import { MessageBarType } from 'office-ui-fabric-react';
 
+/**
+ * The new group state
+ */
 export interface INewGroupState {
     name: string;
     description: string;

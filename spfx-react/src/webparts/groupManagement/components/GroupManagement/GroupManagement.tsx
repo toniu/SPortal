@@ -12,7 +12,14 @@ import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 
 const addGroupIcon: IIconProps = { iconName: 'AddGroup' };
 
+/**
+ * Main component for Group management
+ */
 export default class GroupManagement extends React.Component<IGroupManagementProps, IGroupManagementState> {
+  /**
+   * Set-up initial state
+   * @param props the props
+   */
   constructor(props: IGroupManagementProps) {
     super(props);
 
@@ -26,6 +33,10 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
     };
   }
 
+  /**
+   * The render
+   * @returns JSX element
+   */
   public render(): React.ReactElement<IGroupManagementProps> {
     return (
       <div className={styles.groupManagement}>
@@ -62,6 +73,9 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
     );
   }
 
+  /**
+   * Show page for new group form
+   */
   public showNewGroupScreen = () => {
     this.setState(() => {
       return {
@@ -74,6 +88,9 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
     this.forceUpdate()
   }
 
+  /**
+   * Show main screen of group list
+   */
   public showMainScreen = () => {
     this.setState(() => {
       return {
@@ -86,10 +103,16 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
     this.forceUpdate()
   }
 
+  /**
+   * Get the groups when component mounted
+   */
   public componentDidMount(): void {
     this._getGroups();
   }
 
+  /**
+   * Get the groups (including owner and member groups)
+   */
   public _getGroups = (): void => {
     UserGroupService.getGroups().then(groups => {
       console.log('Get groups: ', groups);

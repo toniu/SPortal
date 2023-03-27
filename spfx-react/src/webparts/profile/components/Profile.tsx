@@ -18,6 +18,9 @@ import { faUserGroup } from "@fortawesome/free-solid-svg-icons"
 import { faPeopleGroup } from "@fortawesome/free-solid-svg-icons"
 
 
+/**
+ * The interface for the user profile
+ */
 export class UserProfile implements IUserProfile {
   public Id: string;
   public FirstName: string;
@@ -31,10 +34,9 @@ export class UserProfile implements IUserProfile {
   public UserProfileProperties: Array<any>;
 }
 
-/* ... Function plans (temp) */
-/* getProfileInfo(ID): to get name, and other information etc. */
-/* getAllStudents(ID): get IDs and randomly select some to present to "discover more" */
-
+/**
+ * The component for the profile; initial state and initial default profile
+ */
 export default class Profile extends React.Component<IProfileProps, IProfileState> {
   private dataCenterServiceInstance: IDataService;
   private defaultProfile: IUserProfile;
@@ -64,6 +66,10 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     }
   }
 
+  /**
+   * When the component is mounted, get the user properties of current user,
+   * their groups and suggested users to discover
+   */
   public componentDidMount(): void {
     console.log('Mounted:', this.state)
 
@@ -77,6 +83,10 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     this.forceUpdate()
   }
 
+  /**
+   * The render
+   * @returns The JSX element
+   */
   public render(): React.ReactElement<IProfileProps> {
     console.log('Rendering using state:', this.state)
     const renderOwnerGroups = this.state.ownerGroups.map((group: any) => <li key={group.id} className="m-1 p-1 flex bg-white">
@@ -168,6 +178,12 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     );
   }
 
+  /**
+   * Gets the user profile properties of a particular user
+   * @param email the user email
+   * @param discover Is this for getting a current user's profile properties or for discovering new users?
+   * @returns 
+   */
   public _getUserProperties = (email: string, discover: boolean): IUserProfile => {
     /* Email is either 'me' (current user) or zhacXXX@live.rhul.ac.uk (another user's profile) */
     const serviceScope: ServiceScope = this.props.serviceScope;
@@ -180,7 +196,6 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
 
       /* Only retrieve properties if the user actually exists */
       if (userProfileItems.UserProfileProperties !== null && userProfileItems.UserProfileProperties !== undefined) {
-        console.log('Check dis out: does it align?', email, userProfileItems)
 
         for (let i: number = 0; i < userProfileItems.UserProfileProperties.length; i++) {
 
@@ -258,6 +273,10 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     return
   }
 
+  /**
+   * Get the groups of the user
+   * @param user the user email
+   */
   public _getGroups = (user: string): void => {
     console.log('Getting groups with user: ', user)
     UserGroupService.getGroups().then(groups => {
@@ -279,6 +298,10 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     }).catch((e: any) => console.log(e));
   }
 
+  /**
+   * Algorithm to suggest (3 max.) other users profiles to check out based on the current user
+   * @param email 
+   */
   public _getUsersToDiscover = (email: string): void => {
     /* Initialise array */
     this.setState({ usersToDiscover: [] })
@@ -330,7 +353,10 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     }
   }
 
-  /* Click profile of new user */
+  /**
+   * Clicks profile of new user
+   * @param profile the items of the new user's profile
+   */
   public _clickNewProfile = (profile: IUserProfile) => {
     /* Set state to new clicked profile of another user */
     this.setState({ currentUser: profile.Email, userProfileItems: profile })
@@ -340,6 +366,9 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
     this.forceUpdate()
   }
 
+  /**
+   * Returns back to the original user's profile (the current user)
+   */
   public _returnToOriginalUser = () => {
     /* Set state to new clicked profile of another user */
     this.setState({ currentUser: this.state.loggedInUser})

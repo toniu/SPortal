@@ -9,6 +9,9 @@ import { getSP } from '../../../pnpjsConfig';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFile } from "@fortawesome/free-solid-svg-icons"
 
+/**
+ * The main component of the Dashboard web part
+ */
 export default class DashboardApp extends React.Component<IDashboardAppProps, {}> {
   private _sp:SPFI;
   private recentEvents: any = null;
@@ -20,7 +23,9 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, {}
     this._sp = getSP(props.context);
   }
 
-  /* Get events from SP Lists */
+  /**
+   * Get events from SP Lists
+   */
   private loadEvents = async () => {
     try {
       /* Recreate list, columns are messed up at the moment */
@@ -57,6 +62,10 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, {}
     }
   }
 
+  /**
+   * Get recent poll
+   * @returns 
+   */
   public getRecentPoll = async() => {
     try {
       const polls: any[] = await this._sp.web.lists.getByTitle("Polls").items.select()();
@@ -68,6 +77,11 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, {}
     return;
   }
 
+  /**
+   * Render the recent events
+   * @param events the events
+   * @returns JSX element of renders events
+   */
   public renderRecentEvents(events: any) {
     const recentEvents = events.map((e: any) => <li key={e.ID} className="p-2 m-1 block border-l-4 border-black bg-white">
     Hosted by <span className="font-bold"> {e.field_4},</span> <span className="block font-normal">
@@ -78,6 +92,11 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, {}
     return recentEvents;
   }
 
+   /**
+   * Render the upcoming events
+   * @param events the events
+   * @returns JSX element of renders events
+   */
   public renderUpcomingEvents(events: any) {
     const upcomingEvents = events.map((e: any) => <div key={e.ID} className="m-1 w-1/3 text-sm">
     <h3 className="p-1 uppercase text-white text-center font-semibold bg-gray-900">
@@ -91,12 +110,19 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, {}
     return upcomingEvents;
   }
 
+  /**
+   * Load the events when the component mounts
+   */
   public async componentDidMount(): Promise<void> {
     this.setState({ isloading: true });
     await this.loadEvents();
     this.setState({ isloading: false });
   }
 
+  /**
+   * The render
+   * @returns the rendered component
+   */
   public render(): React.ReactElement<IDashboardAppProps> {
     return (
       <div className="p-1 m-1">

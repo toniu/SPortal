@@ -15,12 +15,21 @@ import { IGroupManagementProps } from './components/GroupManagement/IGroupManage
 import UserGroupService from '../../services/UserGroupService';
 import '../../../assets/dist/tailwind.css';
 
+/**
+ * The props of the group management web part
+ */
 export interface IGroupManagementWebPartProps {
   flowUrl: string;
 }
 
+/**
+ * The web part for group management
+ */
 export default class GroupManagementWebPart extends BaseClientSideWebPart<IGroupManagementWebPartProps> {
 
+  /**
+   * The render
+   */
   public render(): void {
     const element: React.ReactElement<IGroupManagementProps> = React.createElement(
       GroupManagement,
@@ -33,6 +42,10 @@ export default class GroupManagementWebPart extends BaseClientSideWebPart<IGroup
     ReactDom.render(element, this.domElement);
   }
 
+  /**
+   * Intial set-up of required services: the user group service
+   * @returns 
+   */
   protected onInit(): Promise<void> {
     return super.onInit().then(() => {
       UserGroupService.setup(this.context, this.context.serviceScope);
@@ -51,6 +64,10 @@ export default class GroupManagementWebPart extends BaseClientSideWebPart<IGroup
     return Version.parse('1.0');
   }
 
+  /**
+   * The property pane configuration
+   * @returns the pages
+   */
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [

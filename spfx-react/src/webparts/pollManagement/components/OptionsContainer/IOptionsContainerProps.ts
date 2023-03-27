@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * Props for the options container
+ */
 export interface IOptionsContainerProps {
   disabled: boolean;
   selectedKey?: () => string;
