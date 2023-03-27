@@ -1,10 +1,13 @@
-import { WebPartContext } from "@microsoft/sp-webpart-base"
-
+import { DisplayMode } from '@microsoft/sp-core-library';
+import { WebPartContext } from "@microsoft/sp-webpart-base";
+import { IDateTimeFieldValue } from '@pnp/spfx-property-controls/lib/PropertyFieldDateTimePicker';
 export interface IDashboardAppProps {
-  description: string;
-  isDarkTheme: boolean;
-  environmentMessage: string;
-  hasTeamsContext: boolean;
-  userDisplayName: string;
+  title: string;
+  siteUrl: string;
+  list: string;
+  displayMode: DisplayMode;
+  updateProperty: (value: string) => void;
   context: WebPartContext;
+  eventStartDate:  IDateTimeFieldValue;
+  eventEndDate: IDateTimeFieldValue;
 }

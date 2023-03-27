@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * The unit tests for the key functions in the components of the Group management web part
+ */
 describe('Group management', () => {
   let groupTemplate: any = {}
 

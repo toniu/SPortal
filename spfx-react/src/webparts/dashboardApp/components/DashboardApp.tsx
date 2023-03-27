@@ -21,7 +21,7 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, {}
   }
 
   /* Get events from SP Lists */
-  private getAllEvents = async () => {
+  private loadEvents = async () => {
     try {
       /* Recreate list, columns are messed up at the moment */
       /* Get list of all events; ordered by date */
@@ -92,7 +92,9 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, {}
   }
 
   public async componentDidMount(): Promise<void> {
-    await this.getAllEvents();
+    this.setState({ isloading: true });
+    await this.loadEvents();
+    this.setState({ isloading: false });
   }
 
   public render(): React.ReactElement<IDashboardAppProps> {

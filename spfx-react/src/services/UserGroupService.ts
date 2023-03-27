@@ -15,6 +15,9 @@ import { getSP } from '../pnpjsConfig';
 import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web"
 
+/**
+ * Web part service for handling groups
+ */
 export class UserGroupService {
   private _sp: SPFI;
   public context: WebPartContext;
@@ -22,26 +25,24 @@ export class UserGroupService {
   private userEmail: string;
   private dataCenterServiceInstance: IDataService;
 
+  /**
+   * The set-up of the SharePoint context
+   * @param context the web part context
+   * @param serviceScope the service scope
+   */
   public async setup(context: WebPartContext, serviceScope: ServiceScope): Promise<void> {
     this.context = context;
     this.serviceScope = serviceScope;
     this._sp = getSP(context);
-    console.log('SP check on setup', this._sp)
 
     /* Get email of current user */
     this.userEmail = await (await this._sp.web.currentUser()).UserPrincipalName
   }
 
-  public getGroupLink(groups: IGroup): Promise<any> {
-    return new Promise<any>((resolve) => {
-      try {
-        console.log(groups)
-      } catch (error) {
-        console.error(error);
-      }
-    });
-  }
-
+  /**
+   * Get all groups from SP list
+   * @returns the retrieved groups
+   */
   public getGroups = async (): Promise<IGroup[]> => {
     /* Get items from SP list Groups */
     const groups = await this._sp.web.lists.getByTitle("Groups").items()
@@ -69,6 +70,12 @@ export class UserGroupService {
     });
   }
 
+  /**
+   * Get all groups that the user is a member of
+   * @param groups all groups of the list
+   * @param email the user email
+   * @returns the retrieved groups
+   */
   public getMyMemberGroups = async (groups: IGroup[], email: string): Promise<IGroup[]> => {
     try {
       /* If the email is the current user then set it as that */
@@ -92,6 +99,12 @@ export class UserGroupService {
     return groups;
   }
 
+   /**
+   * Get all groups that the user is a owner of
+   * @param groups all groups of the list
+   * @param email the user email
+   * @returns the retrieved groups
+   */
   public getMyOwnerGroups = async (groups: IGroup[], email: string): Promise<IGroup[]> => {
     try {
       /* If the email is the current user then set it as that */
@@ -115,6 +128,12 @@ export class UserGroupService {
     return groups;
   }
 
+  /**
+   * Gets either the members or the owners of a group
+   * @param groupId ID of group
+   * @param roleToGet the role to get
+   * @returns the retrieved users
+   */
   public getGroupUsers = async (groupId: string, roleToGet: string): Promise<any> => {
     let groupUsers: string | any[] = []
     /* Retrieve the all members OR owners with specific group ID */
@@ -163,6 +182,11 @@ export class UserGroupService {
     });
   }
 
+  /**
+   * Add members into a group
+   * @param groupId the group ID
+   * @param memberEmails the emails of the members to add
+   */
   public addMembersToGroup = async (groupId: string, memberEmails: any): Promise<void> => {
     try {
       /* Set email parameter to current user, if current user is trying to join a group
@@ -213,6 +237,11 @@ export class UserGroupService {
     }
   }
 
+  /**
+   * Remove members into a group
+   * @param groupId the group ID
+   * @param memberEmails the emails of the members to remove
+   */
   public removeMembersFromGroup = async (groupId: string, memberEmails: any): Promise<void> => {
     try {
       /* Set email parameter to current user, if current user is trying to leave a group
@@ -259,15 +288,13 @@ export class UserGroupService {
     }
   }
 
-
-
   /**
    * Creates a new group and adds to Sharepoint Lists, along with its owners and members
-   * @param groupName 
-   * @param groupDescription 
-   * @param groupVisibility 
-   * @param groupOwners 
-   * @param groupMembers 
+   * @param groupName the group name
+   * @param groupDescription the group description
+   * @param groupVisibility the group visibility
+   * @param groupOwners the group owners
+   * @param groupMembers the group members
    */
   public createGroup = async (groupName: string, groupDescription: string, groupVisibility: string, groupOwners: string[], groupMembers: string[]): Promise<void> => {
     try {
@@ -348,6 +375,16 @@ export class UserGroupService {
     }
   }
 
+  /**
+   * Updates the details of a group
+   * @param spGroupID the SP ID of the group
+   * @param groupId the ID of the group
+   * @param groupName the new value of group name
+   * @param groupDescription the new value of group description
+   * @param groupVisibility the new value of group visibility
+   * @param membersToAdd the members to add
+   * @param membersToRemove the members to remove
+   */
   public editGroupDetails = async (spGroupID: number, groupId: string, groupName: string, groupDescription: string, groupVisibility: string, membersToAdd: string[], membersToRemove: string[]): Promise<void> => {
     try {
       /* In context to internal fields,
@@ -380,6 +417,10 @@ export class UserGroupService {
     }
   }
 
+  /**
+   * Deletes the group from SP list
+   * @param groupId the ID of group
+   */
   public deleteGroup = async (groupId: string): Promise<void> => {
     try {
       /* Retrieve the Sharepoint list ID (required to delete item with) */

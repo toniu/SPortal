@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * The unit tests for the key functions in the components of the Poll management web part
+ */
 describe('Poll management', () => {
   let pollsTemplate: any = {}
 

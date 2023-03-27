@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * The unit tests for the key functions in the components of the Dashboard web part
+ */
 describe('Dashboard', () => {
     let events: any = []
 
     /* Function tests: */
-    function getEvents(events: any[]): any {
+    function eventsToDisplay(events: any[]): any {
       console.log('Events: ', events)
       /* Dashboard displays the upcoming and recent events */
 
@@ -40,10 +44,10 @@ describe('Dashboard', () => {
     beforeEach(() => {
       events = []
     });
-
+    
     it('Confirm length of no events', () => {
-      const recentEvents = getEvents([])[0]
-      const upcomingEvents = getEvents([])[1]
+      const recentEvents = eventsToDisplay([])[0]
+      const upcomingEvents = eventsToDisplay([])[1]
       expect(recentEvents.length).toBe(0)
       expect(upcomingEvents.length).toBe(0)
     });
@@ -102,7 +106,7 @@ describe('Dashboard', () => {
       events.push(E7)
       events.push(E8)
   
-      const displayedEvents = getEvents(events)
+      const displayedEvents = eventsToDisplay(events)
       const recentEvents = displayedEvents[0]
       const upcomingEvents = displayedEvents[1]
 

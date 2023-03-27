@@ -19,6 +19,9 @@ import "@pnp/sp/site-users/web"
 import * as _ from "lodash";
 import { IUserInfo, IResponseDetails, IQuestionDetails } from "../webparts/pollManagement/models";
 
+/**
+ * Web part service for handling polls
+ */
 export class UserPollService {
     private _sp: SPFI;
     private _polls: IList = null;
@@ -26,6 +29,10 @@ export class UserPollService {
 
     private currentUser: any;
 
+    /**
+     * The set-up of the SharePoint context
+     * @param context The web part context
+     */
     public async setup(context: WebPartContext): Promise<void> {
         this._sp = getSP(context);
 
@@ -38,6 +45,7 @@ export class UserPollService {
 
     /**
      * Get the current logged in user information
+     * @returns the retrieved data of user information
      */
     public getCurrentUserInfo = async (): Promise<IUserInfo> => {
         let userinfo: IUserInfo = null;
@@ -52,8 +60,11 @@ export class UserPollService {
         return userinfo;
     }
 
-    /*-- MODIFIED --*/
-
+    /**
+     * Get the polls of SP list
+     * @param questions any questions involved in pre-processing?
+     * @returns the list of populated polls
+     */
     public igetPolls = async (questions?: any[]): Promise<any> => {
         /* Get items from polls */
         const polls = await this._polls.items()
@@ -76,15 +87,6 @@ export class UserPollService {
                         SPId: item.ID
                     })
                 })
-                /* 
-                        Id: question.uniqueId,
-          DisplayName: question.QTitle,
-          Choices: question.QOptions,
-          UseDate: question.QUseDate,
-          StartDate: new Date(question.QStartDate),
-          EndDate: new Date(question.QEndDate),
-          MultiChoice: question.QMultiChoice,
-          SortIdx: question.sortIdx*/
 
                 resolve(spPolls)
             } catch (e) {
@@ -94,6 +96,11 @@ export class UserPollService {
 
     }
 
+    /**
+     * Get the user responses of a particular poll
+     * @param pollId the ID of the poll
+     * @returns the list of poll responses
+     */
     public igetPollResponses = async (pollId: any): Promise<any> => {
         /* Get items from poll responses of specific poll */
         const pollResponses = await this._pollResponses.items.filter(`Title eq '${pollId}'`)()
@@ -115,6 +122,11 @@ export class UserPollService {
         });
     }
 
+    /**
+     * Checks if a poll has already been submitted by the user
+     * @param pollId the ID of the poll
+     * @returns Has the poll already been submitted by the user?
+     */
     public checkSubmitted = async (pollId: any): Promise<boolean> => {
         const pollResponses = await this.igetPollResponses(pollId)
 
@@ -132,6 +144,10 @@ export class UserPollService {
         });
     }
 
+    /**
+     * Submits a new response into the poll
+     * @param userResponse data of the user response
+     */
     public isubmitResponseToPoll = async (userResponse: IResponseDetails): Promise<void> => {
         try {
             /* SP List PollResponses fields:
@@ -153,6 +169,11 @@ export class UserPollService {
         }
     }
 
+    /**
+     * Removes all responses from a particular poll
+     * @param pollId the ID of the poll
+     * @param userEmails the emails of the users
+     */
     public iremoveResponsesFromPoll = async (pollId: string, userEmails: any): Promise<void> => {
         /* Batch delete from poll responses */
         try {
@@ -190,6 +211,15 @@ export class UserPollService {
         }
     }
 
+    /**
+     * Creates a new poll and adds into SP list
+     * @param pollUniqueID the generated ID of poll
+     * @param pollQuestion the poll question
+     * @param options the poll options
+     * @param visibility is the poll public or private?
+     * @param startDate the start date of the poll to display
+     * @param endDate the end date of the poll to display
+     */
     public icreatePoll = async (pollUniqueID: string, pollQuestion: string, options: string, visibility: string, startDate: any, endDate: any): Promise<void> => {
         /* Add poll into polls */
 
@@ -220,6 +250,13 @@ export class UserPollService {
         console.log('Poll created...\n', iar)
     }
 
+    /**
+     * Edits the details of a poll (only able to change the date and its visibility)
+     * @param pollId ID of the poll
+     * @param visibility is the poll public or private?
+     * @param startDate the start date of the poll to display
+     * @param endDate the end date of the poll to display
+     */
     public ieditPoll = async (pollId: string, visibility: string, startDate: any, endDate: any): Promise<void> => {
         /* User only has the ability to change the visibility of poll, or the start and end date */
         try {
@@ -246,22 +283,23 @@ export class UserPollService {
                 console.log('Edit request failed - no poll to edit')
             }
 
-            console.log('Edit poll service done!')
         } catch (e) {
             console.log(e)
         }
     }
 
+    /**
+     * Deletes a poll from SP list
+     * @param pollId the ID of poll to delete
+     */
     public ideletePoll = async (pollId: string): Promise<void> => {
         /* Retrieve the Sharepoint list ID (required to delete item with) */
       const pollToDelete = await this._polls.items.filter(`Title eq '${pollId}'`)()
-      console.log('PTD', pollToDelete)
 
       /* If item is found */
       if (pollToDelete[0]) {
         /* Delete using the Sharepoint list item ID (note: this is different to the groupId) */
         await this._polls.items.getById(pollToDelete[0].ID).delete();
-        console.log(`Poll ID ${pollId} deleted...\n`)
       } else {
         console.log('Delete request failed - no poll to delete')
       }

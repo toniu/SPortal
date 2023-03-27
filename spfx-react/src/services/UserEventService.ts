@@ -21,15 +21,26 @@ import * as moment from 'moment';
 import { IUserPermissions } from '../webparts/calendar/models/IUserPermissions';
 import parseRecurrentEvent from '../webparts/calendar/models/parseRecurrentEvent';
 
+/**
+ * Web part service for handling events
+ */
 export class UserEventService {
     private static instance: UserEventService
     private _sp: SPFI;
 
+    /**
+     * The set-up of the SharePoint context
+     * @param context The web part context
+     */
     public setup(context: WebPartContext): void {
         this._sp = getSP(context);
         console.log(this._sp)
     }
 
+    /**
+     * Singleton instance
+     * @returns the instance
+     */
     static getInstance(): UserEventService {
         if (!UserEventService.instance) {
             UserEventService.instance = new UserEventService();
@@ -37,6 +48,11 @@ export class UserEventService {
         return UserEventService.instance
     }
 
+    /**
+     * Get the local time based on regional settings
+     * @param date The date string
+     * @returns the local time
+     */
     public async getLocalTime(date: string | Date): Promise<string> {
         try {
             const localTime = await this._sp.web.regionalSettings.timeZone.utcToLocalTime(date);
@@ -48,9 +64,9 @@ export class UserEventService {
     }
 
     /**
-     *
-     * @private
-     * @returns {Promise<any>}
+     * Get the time zone
+     * @param date the date string
+     * @returns the time based on time zone
      */
     public async getUtcTime(date: string | Date): Promise<any> {
         try {
@@ -62,6 +78,13 @@ export class UserEventService {
         }
     }
 
+    /**
+     * Adding a new event to calendar
+     * @param newEvent The data of the new event to add
+     * @param siteUrl the site URL
+     * @param listId the ID of the SP list
+     * @returns The result from adding SP list
+     */
     public async addEvent(newEvent: IEventData, siteUrl: string, listId: string): Promise<any> {
         let results = null;
         try {
@@ -90,6 +113,13 @@ export class UserEventService {
         return results;
     }
 
+    /**
+     * Get selected event from calendar
+     * @param siteUrl the site URL
+     * @param listId the ID of the SP list
+     * @param eventId the ID of the event
+     * @returns the result from getting the event
+     */
     public async getEvent(siteUrl: string, listId: string, eventId: number): Promise<IEventData> {
         let returnEvent: IEventData = undefined;
         try {
@@ -136,6 +166,13 @@ export class UserEventService {
         return returnEvent;
     }
 
+    /**
+     * Updating an event in the calendar
+     * @param updateEvent the data of the event to edit
+     * @param siteUrl the site URL
+     * @param listId the ID of the SP list
+     * @returns the result from updating the event
+     */
     public async updateEvent(updateEvent: IEventData, siteUrl: string, listId: string): Promise<any> {
         let results = null;
         try {
@@ -176,6 +213,13 @@ export class UserEventService {
         return results;
     }
 
+    /**
+     * Deleting recurrence exceptions
+     * @param event the data of the selected event
+     * @param siteUrl the URL of the site
+     * @param listId the ID of the list
+     * @returns the result from the operation
+     */
     public async deleteRecurrenceExceptions(event: IEventData, siteUrl: string, listId: string): Promise<any> {
         let results = null;
         try {
@@ -194,6 +238,14 @@ export class UserEventService {
         return;
     }
 
+    /**
+     * Deleting an event
+     * @param event the event 
+     * @param siteUrl the URL of the site
+     * @param listId the ID of the list
+     * @param recurrenceSeriesEdited is the recurrence series edited?
+     * @returns 
+     */
     public async deleteEvent(event: IEventData, siteUrl: string, listId: string, recurrenceSeriesEdited: boolean): Promise<any> {
         let results = null;
         try {
@@ -235,6 +287,12 @@ export class UserEventService {
         return;
     }
 
+    /**
+     * Getting the user by ID
+     * @param userId The ID of the user
+     * @param siteUrl the URL of the site
+     * @returns the retrieved results
+     */
     public async getUserById(userId: number, siteUrl: string): Promise<any> {
         let results: any = null;
 
@@ -244,13 +302,18 @@ export class UserEventService {
 
         try {
             results = await this._sp.web.siteUsers.getById(userId)();
-            //results = await web.siteUsers.getByLoginName(userId).get();
         } catch (error) {
             return Promise.reject(error);
         }
         return results;
     }
 
+    /**
+     * Getting the user by login name
+     * @param loginName the login name
+     * @param siteUrl the site URL
+     * @returns the retrieved results
+     */
     public async getUserByLoginName(loginName: string, siteUrl: string): Promise<any> {
         let results: any = null;
 
@@ -268,6 +331,11 @@ export class UserEventService {
         return results;
     }
 
+    /**
+     * Getting the user profile picture 
+     * @param loginName the login name
+     * @returns the retrieved results
+     */
     public async getUserProfilePictureUrl(loginName: string): Promise<any> {
         let results: any = null;
         try {
@@ -279,6 +347,12 @@ export class UserEventService {
         return results.PictureUrl;
     }
 
+    /**
+     * Getting the user permissions
+     * @param siteUrl the URL of the site
+     * @param listId the ID of the list
+     * @returns the retrieved results
+     */
     public async getUserPermissions(siteUrl: string, listId: string): Promise<IUserPermissions> {
         let hasPermissionAdd: boolean = false;
         let hasPermissionEdit: boolean = false;
@@ -301,6 +375,11 @@ export class UserEventService {
         return userPermissions;
     }
 
+    /**
+     * Getting all of the lists of a particular SharePoint site
+     * @param siteUrl the site URL
+     * @returns the retrieved results
+     */
     public async getSiteLists(siteUrl: string): Promise<any> {
 
         let results: any[] = [];
@@ -318,6 +397,10 @@ export class UserEventService {
         return results;
     }
 
+    /**
+     * Random generation of colour
+     * @returns the colour
+     */
     public async colorGenerate(): Promise<any> {
 
         const hexValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e"];
@@ -332,6 +415,13 @@ export class UserEventService {
         return newColor;
     }
 
+    /**
+     * Getting the choice field options
+     * @param siteUrl the site URL
+     * @param listId the ID of the list
+     * @param fieldInternalName the internal name of the field
+     * @returns the results of field options
+     */
     public async getChoiceFieldOptions(siteUrl: string, listId: string, fieldInternalName: string): Promise<{ key: string, text: string }[]> {
         const fieldOptions: { key: string, text: string }[] = [];
         try {
@@ -354,6 +444,14 @@ export class UserEventService {
         return fieldOptions;
     }
 
+    /**
+     * Retrieves all events from a particular calendar (a particular 'Events' list)
+     * @param siteUrl the site URL
+     * @param listId the ID of the list
+     * @param eventStartDate the start date to look for events from
+     * @param eventEndDate the end date to look for events to
+     * @returns the retrieved results
+     */
     public async getEvents(siteUrl: string, listId: string, eventStartDate: Date, eventEndDate: Date): Promise<IEventData[]> {
 
         let events: IEventData[] = [];
@@ -479,6 +577,11 @@ export class UserEventService {
         }
     }
 
+    /**
+     * Get the time zone based on regional settings
+     * @param siteUrl the site URL
+     * @returns 
+     */
     public async getSiteRegionalSettingsTimeZone(siteUrl: string): Promise<any> {
         let regionalSettings: any;
         try {
@@ -491,6 +594,12 @@ export class UserEventService {
         return regionalSettings;
     }
 
+    /**
+     * Get the geo laction name
+     * @param latitude the latitude number
+     * @param longitude the longitude number
+     * @returns the retrieved results
+     */
     public async getGeoLactionName(latitude: number, longitude: number): Promise<any> {
         try {
             const apiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`;
@@ -512,6 +621,11 @@ export class UserEventService {
         }
     }
 
+    /**
+     * Encodes html entities based on string
+     * @param string the given string
+     * @returns the encoded string
+     */
     public async enCodeHtmlEntities(string: string): Promise<any> {
 
         const HtmlEntitiesMap = {
@@ -773,6 +887,11 @@ export class UserEventService {
         return string;
     }
 
+    /**
+     * Decodes string based on given string
+     * @param string the given string
+     * @returns the decoded string
+     */
     public async deCodeHtmlEntities(string: string): Promise<any> {
 
         const HtmlEntitiesMap = {
