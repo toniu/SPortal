@@ -2,7 +2,6 @@
 describe('Profile', () => {
 
     /* Functions to test: */
-
     const getUsersToDiscover = (email: string): any => {
       /* Initialise array */
       const usersToDiscover = []
