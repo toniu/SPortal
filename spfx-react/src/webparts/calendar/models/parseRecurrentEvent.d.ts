@@ -1,3 +1,6 @@
+/**
+ * Parses the reccurent event
+ */
 export default class parseRecurrentEvent {
     constructor();
     parseEvents(events: any, start: any, end: any): any[];

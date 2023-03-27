@@ -1,6 +1,10 @@
 import { IEventData } from '../../models/IEventData';
 import { IPanelModelEnum} from './IPanelModeEnum';
 import { WebPartContext } from "@microsoft/sp-webpart-base";
+
+/**
+ * The props for the event
+ */
 export interface IEventProps {
   event: IEventData;
   panelMode: IPanelModelEnum;

@@ -14,8 +14,16 @@ import { EventRecurrenceInfoDaily } from './../EventRecurrenceInfoDaily/EventRec
 import { EventRecurrenceInfoWeekly } from './../EventRecurrenceInfoWeekly/EventRecurrenceInfoWeekly';
 import { EventRecurrenceInfoMonthly } from './../EventRecurrenceInfoMonthly/EventRecurrenceInfoMonthly';
 import { EventRecurrenceInfoYearly } from './../EventRecurrenceInfoYearly/EventRecurrenceInfoYearly';
+
+/**
+ * Component for the event reccurence info
+ */
 export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoProps, IEventRecurrenceInfoState> {
 
+  /**
+   * Initial set-up of component; including initial state
+   * @param props the props
+   */
   public constructor(props: IEventRecurrenceInfoProps) {
     super(props);
 
@@ -39,6 +47,11 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
 
 
 
+  /**
+   * Change of input for recurrence frequency change
+   * @param ev event
+   * @param option option
+   */
   private _onRecurrenceFrequenceChange(ev: React.SyntheticEvent<HTMLElement>, option: IChoiceGroupOption): void {
     this.setState({
       selectedRecurrenceRule: option.key
@@ -47,9 +60,7 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
 
 
   /**
-   *
-   *
-   * @memberof EventRecurrenceInfo
+   * When component mounted, check properties for recurrence data to set the recurrence rule
    */
   public async componentDidMount(): Promise<void> {
     if (this.props.recurrenceData) {
@@ -72,10 +83,8 @@ export class EventRecurrenceInfo extends React.Component<IEventRecurrenceInfoPro
   }
 
   /**
-   *
-   *
-   * @returns {React.ReactElement<IEventRecurrenceInfoProps>}
-   * @memberof EventRecurrenceInfo
+   * The render
+   * @returns JSX element
    */
   public render(): React.ReactElement<IEventRecurrenceInfoProps> {
     return (

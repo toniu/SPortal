@@ -18,6 +18,9 @@ import { PropertyFieldDateTimePicker, DateConvention, IDateTimeFieldValue } from
 
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 
+/**
+ * The props for calendar web part
+ */
 export interface ICalendarWebPartProps {
   title: string;
   siteUrl: string;
@@ -26,10 +29,14 @@ export interface ICalendarWebPartProps {
   eventEndDate: IDateTimeFieldValue;
   errorMessage: string;
 }
+/* Services */
 import UserEventService from '../../services/UserEventService';
 import '../../../assets/dist/tailwind.css';
 import * as moment from 'moment';
 
+/**
+ * The component of the calendar web part
+ */
 export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebPartProps> {
 
   private lists: IPropertyPaneDropdownOption[] = [];
@@ -40,6 +47,9 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
     super();
   }
 
+  /**
+   * The render
+   */
   public render(): void {
 
     const element: React.ReactElement<ICalendarProps> = React.createElement(
@@ -61,8 +71,10 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
     ReactDom.render(element, this.domElement);
   }
 
-  // onInit
-
+  /**
+   * Initial set-up of properties; loads the lists
+   * @returns The initial set-up of the required services: the event service
+   */
   protected async onInit(): Promise<any> {
     this.properties.siteUrl = this.properties.siteUrl ? this.properties.siteUrl : this.context.pageContext.site.absoluteUrl;
     if (!this.properties.eventStartDate) {
@@ -94,9 +106,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   }
 
   /**
-   *
-   * @protected
-   * @memberof CalendarWebPart
+   * Property pane configuration: start
    */
   protected async onPropertyPaneConfigurationStart(): Promise<void> {
 
@@ -121,10 +131,8 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   }
 
   /**
-   *
-   * @private
-   * @returns {Promise<IPropertyPaneDropdownOption[]>}
-   * @memberof CalendarWebPart
+   * Loads the SharePoint lists and populates into property pane dropdown (based on site URL)
+   * @returns the lists
    */
   private async loadLists(): Promise<IPropertyPaneDropdownOption[]> {
     const _lists: IPropertyPaneDropdownOption[] = [];
@@ -141,13 +149,10 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
     return _lists;
   }
 
-  /**
-   *
-   *
-   * @private
-   * @param {string} date
-   * @returns
-   * @memberof CalendarWebPart
+   /**
+   * Display of start date validation message
+   * @param date the date
+   * @returns the validation message
    */
   private onEventStartDateValidation(date: string): string {
     if (date && this.properties.eventEndDate.value) {
@@ -159,11 +164,9 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   }
 
   /**
-   *
-   * @private
-   * @param {string} date
-   * @returns
-   * @memberof CalendarWebPart
+   * Display of end date validation message
+   * @param date the date
+   * @returns the validation message
    */
   private onEventEndDateValidation(date: string): string {
     if (date && this.properties.eventEndDate.value) {
@@ -173,14 +176,12 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
     }
     return '';
   }
+  
   /**
-   *
-   * @private
-   * @param {string} value
-   * @returns {Promise<string>}
-   * @memberof CalendarWebPart
+   * Gets the error message for a site URL not existing
+   * @param value the value
+   * @returns 
    */
-
   private async onSiteUrlGetErrorMessage(value: string): Promise<any> {
     let returnValue: string = '';
     if (value) {
@@ -201,12 +202,10 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   }
 
   /**
-   *
-   * @protected
-   * @param {string} propertyPath
-   * @param {string} oldValue
-   * @param {string} newValue
-   * @memberof CalendarWebPart
+   * Event fired for change in property pane field
+   * @param propertyPath the string
+   * @param oldValue the old value
+   * @param newValue the new value
    */
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
     try {
@@ -235,11 +234,10 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
       this.context.propertyPane.refresh();
     }
   }
+  
   /**
-   *
-   * @protected
-   * @returns {IPropertyPaneConfiguration}
-   * @memberof CalendarWebPart
+   * Gets the property pane configuration
+   * @returns The pages of configuration panel
    */
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     // EndDate and Start Date defualt values

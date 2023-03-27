@@ -14,7 +14,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'DashboardAppWebPartStrings';
 import DashboardApp from './components/DashboardApp';
-import { IDashboardAppProps,  } from './components/IDashboardAppProps';
+import { IDashboardAppProps, } from './components/IDashboardAppProps';
 import { PropertyFieldDateTimePicker, DateConvention, IDateTimeFieldValue } from '@pnp/spfx-property-controls/lib/PropertyFieldDateTimePicker';
 
 import '../../../assets/dist/tailwind.css';
@@ -126,7 +126,7 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
   }
 
   /**
-   * Loads the lists on property pane dropdown
+   * Loads the SharePoint lists and populates into property pane dropdown (based on site URL)
    * @returns the lists
    */
   private async loadLists(): Promise<IPropertyPaneDropdownOption[]> {
@@ -158,7 +158,7 @@ export default class DashboardAppWebPart extends BaseClientSideWebPart<IDashboar
     return '';
   }
 
-    /**
+  /**
    * Display of end date validation message
    * @param date the date
    * @returns the validation message

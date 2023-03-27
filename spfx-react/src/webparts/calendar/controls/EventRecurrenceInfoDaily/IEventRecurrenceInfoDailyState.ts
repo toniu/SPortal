@@ -1,3 +1,7 @@
+
+/**
+ * The state for the event reccurence info daily
+ */
 export interface IEventRecurrenceInfoDailyState {
     selectedKey:string;
     selectPatern:string;

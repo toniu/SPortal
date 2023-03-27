@@ -49,6 +49,9 @@ import { getGUID } from '@pnp/common';
 import { toLocaleShortDateString } from '../../utils/dateUtils';
 import format from 'string-format';
 
+/**
+ * Strings for the day picker
+ */
 const DayPickerStrings: IDatePickerStrings = {
   months: [strings.January, strings.February, strings.March, strings.April, strings.May, strings.June, strings.July, strings.August, strings.September, strings.October, strings.November, strings.December],
   shortMonths: [strings.Jan, strings.Feb, strings.Mar, strings.Apr, strings.May, strings.Jun, strings.Jul, strings.Aug, strings.Sep, strings.Oct, strings.Nov, strings.Dez],
@@ -64,6 +67,9 @@ const DayPickerStrings: IDatePickerStrings = {
   invalidInputErrorMessage: strings.InvalidDateFormat,
 };
 
+/**
+ * Component for the event
+ */
 export class Event extends React.Component<IEventProps, IEventState> {
   private attendees: IPersonaProps[] = [];
   private latitude: number = 41.1931819;
@@ -72,6 +78,10 @@ export class Event extends React.Component<IEventProps, IEventState> {
 
   private categoryDropdownOption: IDropdownOption[] = [];
 
+  /**
+   * Initial set-up of component; check availability of geolocation and set initial state of component
+   * @param props the props
+   */
   public constructor(props: IEventProps) {
     super(props);
 
@@ -135,19 +145,16 @@ export class Event extends React.Component<IEventProps, IEventState> {
     this.returnRecurrenceInfo = this.returnRecurrenceInfo.bind(this);
 
   }
+
   /**
-   *  Hide Panel
-   *
-   * @private
-   * @memberof Event
+   * Hide the panel
    */
   private hidePanel(): void {
     this.props.onDissmissPanel(false);
   }
+
   /**
-   *  Save Event to a list
-   * @private
-   * @memberof Event
+   * Save event to a list
    */
   private async onSave(): Promise<void> {
     const eventData: IEventData = this.state.eventData;
@@ -156,10 +163,10 @@ export class Event extends React.Component<IEventProps, IEventState> {
     let endDate: string = null;
     eventData.fRecurrence = false;
 
-    // set All day event
+    /* Set All day event */
     eventData.fAllDayEvent = this.state.isAllDayEvent;
 
-    // if there are new Event recurrence or Edited recurrence series
+    /* If there are new Event recurrence or Edited recurrence series */
     if (this.state.recurrenceSeriesEdited || this.state.newRecurrenceEvent) {
       eventData.RecurrenceData = this.returnedRecurrenceInfo.recurrenceData;
       startDate = `${moment(this.returnedRecurrenceInfo.eventDate).format('YYYY/MM/DD')}`;
@@ -190,29 +197,29 @@ export class Event extends React.Component<IEventProps, IEventState> {
       endDate = `${moment(this.state.endDate).format('YYYY/MM/DD')}`;
     }
 
-    // Start Date
+    /* Start Date */
     const startTime = `${this.state.startSelectedHour.key}:${this.state.startSelectedMin.key}`;
     const startDateTime = `${startDate} ${startTime}`;
     const start = moment(startDateTime, 'YYYY/MM/DD HH:mm').toLocaleString();
     eventData.EventDate = new Date(start);
 
-    // End Date
+    /* End Date */
     const endTime = `${this.state.endSelectedHour.key}:${this.state.endSelectedMin.key}`;
     const endDateTime = `${endDate} ${endTime}`;
     const end = moment(endDateTime, 'YYYY/MM/DD HH:mm').toLocaleString();
     eventData.EndDate = new Date(end);
 
-    // get Geolocation
+    /* Get Geolocation */
     eventData.geolocation = { Latitude: this.latitude, Longitude: this.longitude };
     const locationInfo = await UserEventService.getGeoLactionName(this.latitude, this.longitude);
     eventData.location = locationInfo ? locationInfo.display_name : 'N/A';
 
-    // get Attendees
+    /* Get Attendees */
     if (!eventData.attendes) { //vinitialize if no attendees
       eventData.attendes = [];
     }
 
-    // Get Descript from RichText Compoment
+    /* Get Descript from RichText Compoment */
     eventData.Description = draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()));
 
     try {
@@ -242,21 +249,17 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   * @param {*} error
-   * @param {*} errorInfo
-   * @memberof Event
+   * When component catches error
+   * @param error the error
+   * @param errorInfo the information on the error
    */
   public componentDidCatch(error: any, errorInfo: any): void {
     this.setState({ hasError: true, errorMessage: errorInfo.message });
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {number} [eventId]
-   * @memberof Event
+   * Renders the event
+   * @param eventId the ID of the event
    */
   private async renderEventData(eventId?: number): Promise<void> {
 
@@ -264,22 +267,22 @@ export class Event extends React.Component<IEventProps, IEventState> {
     const event: IEventData = !eventId ? this.props.event : await UserEventService.getEvent(this.props.siteUrl, this.props.listId, eventId);
 
     let editorState: EditorState;
-    // Load Regional Settings
+    /* Load Regional Settings */
     const siteRegionalSettings = await UserEventService.getSiteRegionalSettingsTimeZone(this.props.siteUrl);
-    // chaeck User list Permissions
+    /* Check User list Permissions */
     const userListPermissions: IUserPermissions = await UserEventService.getUserPermissions(this.props.siteUrl, this.props.listId);
-    // Load Categories
+    /* Load Categories */
     this.categoryDropdownOption = await UserEventService.getChoiceFieldOptions(this.props.siteUrl, this.props.listId, 'Category');
-    // Edit Mode ?
+    /* Is panel on Edit Mode? */
     if (this.props.panelMode === IPanelModelEnum.edit && event) {
 
-      // Get hours of event
+      /* Get hours of event */
       const startHour = moment(event.EventDate).format('HH').toString();
       const startMin = moment(event.EventDate).format('mm').toString();
       const endHour = moment(event.EndDate).format('HH').toString();
       const endMin = moment(event.EndDate).format('mm').toString();
 
-      // Get Descript and covert to RichText Control
+      /* Get Descript and covert to RichText Control */
       const html = event.Description;
       const contentBlock = htmlToDraft(html);
 
@@ -288,7 +291,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
         editorState = EditorState.createWithContent(contentState);
       }
 
-      // testa  attendees
+      /* Tests the attendees */
       const attendees = event.attendes;
       const selectedUsers: string[] = [];
       if (attendees && attendees.length > 0) {
@@ -299,7 +302,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
           }
         }
       }
-      // Has geolocation ?
+      /* Does the event have geolocation ? */
       this.latitude = event.geolocation && event.geolocation.Latitude ? event.geolocation.Latitude : this.latitude;
       this.longitude = event.geolocation && event.geolocation.Longitude ? event.geolocation.Longitude : this.longitude;
 
@@ -307,7 +310,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
       event.geolocation.Longitude = this.longitude;
 
       const recurrenceInfo = event.EventType === "4" && event.MasterSeriesItemID !== "" ? event.RecurrenceData : await this.returnExceptionRecurrenceInfo(event.RecurrenceData);
-      // Update Component Data
+
+      /* Update component data */
       this.setState({
         eventData: event,
         startDate: event.EventDate,
@@ -341,9 +345,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
 
 
   /**
-   *
-   *
-   * @memberof Event
+   * When the component is mounted, render the event's data
    */
   public async componentDidMount(): Promise<void> {
     await this.renderEventData();
@@ -352,16 +354,18 @@ export class Event extends React.Component<IEventProps, IEventState> {
 
 
   /**
-   * @private
-   * @memberof Event
+   * Sets the start selected hour
+   * @param ev event
+   * @param item item chosen
    */
   private onStartChangeHour = (ev: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
     this.setState({ startSelectedHour: item });
   }
 
   /**
-   * @private
-   * @memberof Event
+   * Sets the end selected hour
+   * @param ev event
+   * @param item item chosen
    */
   private onEndChangeHour = (ev: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
 
@@ -369,8 +373,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * @private
-   * @memberof Event
+   * Sets the start selected minute
+   * @param ev event
+   * @param item item chosen
    */
   private onStartChangeMin = (ev: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void => {
 
@@ -378,9 +383,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * @private
-   * @param {any[]} items
-   * @memberof Event
+   * Gets the attendees of event based on People Picker item
+   * @param items the items from people picker
    */
   private getPeoplePickerItems(items: any[]): void {
 
@@ -389,11 +393,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   * @private
-   * @param {*} editorState
-   * @memberof Event
-   */
+  * Changes the editor state
+  * @param editorState the new editor state
+  */
   private onEditorStateChange(editorState: any): void {
     this.setState({
       editorState,
@@ -401,12 +403,10 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   * @private
-   * @param {string} value
-   * @returns {string}
-   * @memberof Event
-   */
+  * Get error message title
+  * @param value new value
+  * @returns the return message
+  */
   private onGetErrorMessageTitle(value: string): string {
     let returnMessage: string = '';
     if (value.length === 0) {
@@ -418,9 +418,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   * @private
-   * @memberof Event
+   * Change of input for event's title
+   * @param event the event
    */
   private onChangeEventTitle (event:any): void {
     const eventTitle = event.target.value;
@@ -428,9 +427,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   * @private
-   * @memberof Event
+   * Change of input for end selected min option
+   * @param ev the event
+   * @param item new item
    */
   private onEndChangeMin(ev: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void {
 
@@ -438,11 +437,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   * @private
-   * @param {React.FormEvent<HTMLDivElement>} ev
-   * @param {IDropdownOption} item
-   * @memberof Event
+   * Event fired for change in input for category
+   * @param ev the event
+   * @param item the item
    */
   private onCategoryChanged(ev: React.FormEvent<HTMLDivElement>, item: IDropdownOption): void {
 
@@ -450,10 +447,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   * @private
-   * @param {React.MouseEvent<HTMLDivElement>} event
-   * @memberof Event
+   * Displays dialog for deleting event
+   * @param ev 
    */
   private onDelete(ev: React.MouseEvent<HTMLDivElement>): void{
     ev.preventDefault();
@@ -461,10 +456,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   * @private
-   * @param {React.MouseEvent<HTMLDivElement>} event
-   * @memberof Event
+   * Closes the dialog
+   * @param ev the event
    */
   private closeDialog(ev: React.MouseEvent<HTMLDivElement>): void{
     ev.preventDefault();
@@ -472,11 +465,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {React.MouseEvent<HTMLDivElement>} ev
-   * @memberof Event
+   * Confirm deletion of event
+   * @param ev the event
    */
   private async confirmDelete(ev: React.MouseEvent<HTMLDivElement>): Promise<void>  {
     ev.preventDefault();
@@ -498,9 +488,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * @private
-   * @returns
-   * @memberof Event
+   * Render of footer content
+   * @returns JSX element
    */
   private onRenderFooterContent(): any {
     return (
@@ -537,19 +526,16 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   * @private
-   * @param {Date} newDate
-   * @memberof Event
+   * Selects new start date
+   * @param newDate the new date
    */
   private onSelectDateStart(newDate: Date): void {
     this.setState({ startDate: newDate });
   }
 
   /**
-   * @private
-   * @param {Date} newDate
-   * @memberof Event
+   * Selects new end date
+   * @param newDate the new date
    */
   private onSelectDateEnd(newDate: Date): void{
     this.setState({ endDate: newDate });
@@ -558,10 +544,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
 
 
   /**
-   *
-   * @private
-   * @param {ICoordinates} coordinates
-   * @memberof Event
+   * Event fired for change of coordinates in location
+   * @param coordinates new coordinates
    */
   private async onUpdateCoordinates(coordinates: ICoordinates): Promise<void>  {
     this.latitude = coordinates.latitude;
@@ -571,11 +555,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {React.MouseEvent<HTMLButtonElement>} ev
-   * @memberof Event
+   * Edits the recurrence
+   * @param ev the event
    */
   private async onEditRecurrence(ev: React.MouseEvent<HTMLButtonElement>): Promise<void>  {
     ev.preventDefault();
@@ -585,11 +566,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * 
-   * 
-   * @private
-   * @param {string} rule 
-   * @memberof Event
+   * Parses the daily rule
+   * @param rule the rule
+   * @returns the resulting format
    */
   private parseDailyRule(rule: any): string {
     const keys = Object.keys(rule);
@@ -606,11 +585,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * 
-   * 
-   * @private
-   * @param { string } rule
-   * @memberof Event 
+   * Parses the weekly rule
+   * @param rule the rule
+   * @returns the resulting format
    */
   private parseWeeklyRule(rule: any): string {
     const frequency: any = parseInt(rule.weekFrequency);
@@ -637,11 +614,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * 
-   * 
-   * @private
-   * @param { string } rule 
-   * @memberof Event
+   * Parses the monthly rule
+   * @param rule the rule
+   * @returns the resulting format
    */
   private parseMonthlyRule(rule: any): string {
     const frequency: any = parseInt(rule.monthFrequency);
@@ -655,10 +630,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * 
-   * @private
-   * @param { string } rule 
-   * @memberof Event
+   * Parses the monthly by day rule
+   * @param rule the rule
+   * @returns the resulting format
    */
   private parseMonthlyByDayRule(rule: any): string {
     const keys: string[] = Object.keys(rule);
@@ -721,10 +695,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * 
-   * @private
-   * @param rule
-   * @memberof Event 
+   * Parses the yearly rule
+   * @param rule the rule
+   * @returns the resulting format
    */
   private parseYearlyRule(rule: any): string {
     const keys: string[] = Object.keys(rule);
@@ -752,11 +725,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * 
-   * 
-   * @private
-   * @param rule 
-   * @memberof Event
+   * Parses the yearly by day rule
+   * @param rule the rule
+   * @returns the resulting format
    */
   private parseYearlyByDayRule(rule: any): string {
     const keys: string[] = Object.keys(rule);
@@ -810,11 +781,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
   }
 
   /**
-   * 
-   * 
-   * @private
-   * @param {string} recurrenceData
-   * @memberof Event 
+   * Returns the information on exception recurrence
+   * @param recurrenceData the reccurrence data
+   * @returns 
    */
   private async returnExceptionRecurrenceInfo(recurrenceData: string): Promise<any>  {
     const promise = new Promise<object>((resolve, reject) => {
@@ -861,11 +830,9 @@ export class Event extends React.Component<IEventProps, IEventState> {
 
 
   /**
-   *
-   *
-   * @param {Date} startDate
-   * @param {string} recurrenceData
-   * @memberof Event
+   * Returns the recurrence info
+   * @param startDate the start date
+   * @param recurrenceData the recurrence data
    */
   public async returnRecurrenceInfo(startDate: Date, recurrenceData: string): Promise<void>  {
     this.returnedRecurrenceInfo = { recurrenceData: recurrenceData, eventDate: startDate, endDate: moment().add(20, 'years').toDate() };
@@ -875,10 +842,8 @@ export class Event extends React.Component<IEventProps, IEventState> {
 
 
   /**
-   *
-   *
-   * @returns {React.ReactElement<IEventProps>}
-   * @memberof Event
+   * THe render
+   * @returns JSX element
    */
   public render(): React.ReactElement<IEventProps> {
 

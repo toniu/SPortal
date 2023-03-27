@@ -1,3 +1,7 @@
+
+/**
+ * The state for event recurrence info
+ */
 export interface IEventRecurrenceInfoState {
     selectedKey:string;
     selectPatern:string;

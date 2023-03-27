@@ -1,4 +1,7 @@
+/**
+ * The model for a list
+ */
 export interface IList {
-    ID: string;
-    Title: string;
-  }
+  ID: string;
+  Title: string;
+}

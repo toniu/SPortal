@@ -1,10 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import * as moment from 'moment';
+/**
+ * Class for parsing recurrent event
+ */
 export default class parseRecurrentEvent {
 
   private wEvents: any[] = [];
   private full: any[] = [] ;
+  
+  /**
+   * Parses the events
+   * @param events the events
+   * @param start start date
+   * @param end end date
+   * @returns 
+   */
   public parseEvents(events: any[], start: any, end: any): any {
 
     this.wEvents = events;
@@ -20,7 +31,7 @@ export default class parseRecurrentEvent {
 
       this.full = this.full.concat(this.parseEvent(events[i], start, end));
     }
-    // remove deleted recurrences EventType = 3
+    /* remove deleted recurrences EventType = 3 */
 
        this.full = this.full.filter( (el,j)=>{
         if (el.EventType !== '3'){
@@ -30,7 +41,12 @@ export default class parseRecurrentEvent {
     return this.full;
   }
 
-
+  /**
+   * Checks if the recurrence exception exists
+   * @param masterSeriesItemId the ID of the master series item
+   * @param date the date
+   * @returns Does the exception exist?
+   */
   public RecurrenceExceptionExists(masterSeriesItemId: any, date: any): any {
     const found = this.wEvents.filter((el,i) => {
 
@@ -42,6 +58,11 @@ export default class parseRecurrentEvent {
   }
   //
 
+  /**
+   * Formats the string
+   * @param str the given string
+   * @returns the array split by spaces
+   */
   public formatString(str: string): any {
     let arr = str.split("'");
     str = arr.join('');
@@ -53,6 +74,12 @@ export default class parseRecurrentEvent {
     return str.split(' ');
   }
 
+  /**
+   * Parses the date
+   * @param date the date
+   * @param allDay is it all day?
+   * @returns the new date
+   */
   public parseDate(date: any, allDay: any): any {
     if (typeof date === 'string') {
       return new Date(date);
@@ -60,6 +87,13 @@ export default class parseRecurrentEvent {
     return date;
   }
   
+  /**
+   * Parses the event; including recurrence check
+   * @param e the event
+   * @param start the start date
+   * @param end the end date
+   * @returns the parsed event
+   */
   public parseEvent(e: any, start: any, end: any): any {
     if (e.fRecurrence === '0' || e.fRecurrence === '4') {
       e.EventDate = new Date(this.parseDate(e.EventDate, e.fAllDayEvent));
@@ -328,13 +362,13 @@ export default class parseRecurrentEvent {
             if ((new Date(init)).getTime() >= start.getTime()) {
               nd.setDate(1);
               const dayOfMonth = nd.getDay();
-              if (day < dayOfMonth) nd.setDate(nd.getDate() + ((7 - dayOfMonth) + day)); //first instance of this day in the selected month
+              if (day < dayOfMonth) nd.setDate(nd.getDate() + ((7 - dayOfMonth) + day)); // First instance of this day in the selected month
               else nd.setDate(nd.getDate() + (day - dayOfMonth));
               if (weekdayOfMonth === 'last') {
                 const temp: any = new Date(nd);
                 while (temp.getMonth() === month) {
                   nd = new Date(temp);
-                  temp.setDate(temp.getDate() + 7); //loop from first instance of month to last instance of month
+                  temp.setDate(temp.getDate() + 7); // Loop from first instance of month to last instance of month
                 }
               }
               else {
@@ -368,9 +402,15 @@ export default class parseRecurrentEvent {
         er.push(ni);
       }
       return er;
-    } //end recurrence check
+    }
+    /* End recurrence check */
   }
 
+  /**
+   * Clones an object
+   * @param obj The object to clone
+   * @returns the copy of the object
+   */
   public cloneObj(obj: any): any {
     let copy: any;
     if (null === obj || "object" !== typeof obj) return obj;

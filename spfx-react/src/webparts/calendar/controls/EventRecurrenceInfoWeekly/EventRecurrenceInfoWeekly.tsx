@@ -15,9 +15,12 @@ import {
 } from 'office-ui-fabric-react';
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
 import { toLocaleShortDateString } from '../../utils/dateUtils';
-
+/* Services */
 import UserEventService from '../../../../services/UserEventService';
 
+/**
+ * The strings for date picker
+ */
 const DayPickerStrings: IDatePickerStrings = {
   months: [strings.January, strings.February, strings.March, strings.April, strings.May, strings.June, strings.July, strings.August, strings.September, strings.October, strings.November, strings.December],
 
@@ -36,11 +39,7 @@ const DayPickerStrings: IDatePickerStrings = {
 };
 
 /**
- *
- *
- * @export
- * @class EventRecurrenceInfoDaily
- * @extends {React.Component<IEventRecurrenceInfoWeeklyProps, IEventRecurrenceInfoWeeklyState>}
+ * The component for event reccurence info weekly
  */
 export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceInfoWeeklyProps, IEventRecurrenceInfoWeeklyState> {
   public constructor(props: IEventRecurrenceInfoWeeklyProps) {
@@ -59,13 +58,13 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
       disableNumberOcurrences: true,
       selectdateRangeOption: 'noDate',
       disableEndDate: true,
-      weeklySunday:  moment().weekday() === 0 ? true: false,
-      weeklyMonday: moment().weekday() === 1 ? true: false,
-      weekklyTuesday: moment().weekday() === 2 ? true: false,
-      weekklyWednesday: moment().weekday() === 3 ? true: false,
-      weekklyThursday: moment().weekday() === 4 ? true: false,
-      weeklyFriday: moment().weekday() === 5 ? true: false,
-      weeklySaturday: moment().weekday() === 6 ? true: false,
+      weeklySunday: moment().weekday() === 0 ? true : false,
+      weeklyMonday: moment().weekday() === 1 ? true : false,
+      weekklyTuesday: moment().weekday() === 2 ? true : false,
+      weekklyWednesday: moment().weekday() === 3 ? true : false,
+      weekklyThursday: moment().weekday() === 4 ? true : false,
+      weeklyFriday: moment().weekday() === 5 ? true : false,
+      weeklySaturday: moment().weekday() === 6 ? true : false,
       isLoading: false,
       errorMessageNumberOfWeeks: '',
     };
@@ -87,13 +86,10 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {Date} date
-   * @memberof EventRecurrenceInfoDaily
+   * Start date for event recurrence
+   * @param date new date
    */
-   private onStartDateChange(date: Date): void {
+  private onStartDateChange(date: Date): void {
     //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
     this.setState({ startDate: date }, () => {
       this.applyRecurrence().catch((e: any) => console.log(e));
@@ -101,36 +97,31 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {Date} date
-   * @memberof EventRecurrenceInfoDaily
+   * End date for event recurrence
+   * @param date new date
    */
-   private onEndDateChange(date: Date): void {
+  private onEndDateChange(date: Date): void {
     //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
-    this.setState({ endDate: date}, () => {
-       this.applyRecurrence().catch((e: any) => console.log(e));
-      }
+    this.setState({ endDate: date }, () => {
+      this.applyRecurrence().catch((e: any) => console.log(e));
+    }
     );
   }
+
   /**
-   *
-   *
-   * @private
-   * @param {React.SyntheticEvent<HTMLElement>} ev
-   * @param {string} value
-   * @memberof EventRecurrenceInfoDaily
+   * Change of input for number of weeks
+   * @param ev event
+   * @param value new value
    */
   private onNumberOfWeeksChange(ev: React.SyntheticEvent<HTMLElement>, value: string): void {
     ev.preventDefault();
     setTimeout(() => {
-      let errorMessage:string ='';
+      let errorMessage: string = '';
       if (Number(value.trim()) === 0 || Number(value.trim()) > 255) {
         value = '1  ';
         errorMessage = 'Allowed values 1 to 255';
       }
-      this.setState({  numberOfWeeks: value , errorMessageNumberOfWeeks: errorMessage  });
+      this.setState({ numberOfWeeks: value, errorMessageNumberOfWeeks: errorMessage });
       this.applyRecurrence().catch((e: any) => console.log(e));
     }, 2000);
 
@@ -139,12 +130,9 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
 
 
   /**
-   *
-   *
-   * @private
-   * @param {React.SyntheticEvent<HTMLElement>} ev
-   * @param {string} value
-   * @memberof EventRecurrenceInfoDaily
+   * Change of input for number of occurences
+   * @param ev event
+   * @param value new value
    */
   private onNumberOfOcurrencesChange(ev: React.SyntheticEvent<HTMLElement>, value: string): void {
     ev.preventDefault();
@@ -156,14 +144,11 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {React.SyntheticEvent<HTMLElement>} ev
-   * @param {IChoiceGroupOption} option
-   * @memberof EventRecurrenceInfoDaily
+   * Change of input for data range option
+   * @param ev event
+   * @param option new option
    */
-   private onDataRangeOptionChange(
+  private onDataRangeOptionChange(
     ev: React.SyntheticEvent<HTMLElement>,
     option: IChoiceGroupOption
   ): void {
@@ -181,6 +166,11 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
     );
   }
 
+  /**
+   * Change of input for pattern
+   * @param ev event
+   * @param option new option
+   */
   private onPaternChange(
     ev: React.SyntheticEvent<HTMLElement>,
     option: IChoiceGroupOption
@@ -198,11 +188,17 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
     );
   }
 
+  /**
+   * When component mounted, begin loading
+   */
   public async componentDidMount(): Promise<void> {
     //  await this.load();
     await this.load();
   }
 
+  /**
+   * Loads the recurrence
+   */
   private async load(): Promise<void> {
     let patern: any = {};
     let dateRange: { repeatForever?: string, repeatInstances?: string, windowEnd?: Date } = {};
@@ -278,16 +274,16 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
     await this.applyRecurrence().catch((e: any) => console.log(e));
   }
 
-
+  /**
+   * Button click to apply the reccurence
+   * @param ev the event
+   */
   private async onApplyRecurrence(ev: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     await this.applyRecurrence().catch((e: any) => console.log(e));
   }
+
   /**
-   *
-   *
-   * @private
-   * @param {React.MouseEvent<HTMLButtonElement>} ev
-   * @memberof EventRecurrenceInfoDaily
+   * Function to apply the reccurence
    */
   private async applyRecurrence(): Promise<void> {
     const endDate = await UserEventService.getUtcTime(this.state.endDate);
@@ -335,39 +331,79 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
     this.props.returnRecurrenceData(this.state.startDate, recurrenceXML);
   }
 
+  /**
+   * Change of checkbox input for Sunday
+   * @param ev event
+   * @param isChecked is the checkbox checked?
+   */
   private async onCheckboxSundayChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean): Promise<void> {
     this.setState({ weeklySunday: isChecked });
     await this.applyRecurrence().catch((e: any) => console.log(e));
   }
+
+  /**
+   * Change of checkbox input for Monday
+   * @param ev event
+   * @param isChecked is the checkbox checked?
+   */
   private async onCheckboxMondayChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean): Promise<void> {
     this.setState({ weeklyMonday: isChecked });
     await this.applyRecurrence().catch((e: any) => console.log(e));
   }
+
+  /**
+   * Change of checkbox input for Tuesday
+   * @param ev event
+   * @param isChecked is the checkbox checked?
+   */
   private async onCheckboxTuesdayChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean): Promise<void> {
     this.setState({ weekklyTuesday: isChecked });
     await this.applyRecurrence().catch((e: any) => console.log(e));
   }
+
+  /**
+   * Change of checkbox input for Wednesday
+   * @param ev event
+   * @param isChecked is the checkbox checked?
+   */
   private async onCheckboxWednesdayChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean): Promise<void> {
     this.setState({ weekklyWednesday: isChecked });
     await this.applyRecurrence().catch((e: any) => console.log(e));
   }
+
+  /**
+   * Change of checkbox input for Thursday
+   * @param ev event
+   * @param isChecked is the checkbox checked?
+   */
   private async onCheckboxThursdayChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean): Promise<void> {
     this.setState({ weekklyThursday: isChecked });
     await this.applyRecurrence().catch((e: any) => console.log(e));
   }
+
+  /**
+   * Change of checkbox input for Friday
+   * @param ev event
+   * @param isChecked is the checkbox checked?
+   */
   private async onCheckboxFridayChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean): Promise<void> {
     this.setState({ weeklyFriday: isChecked });
     await this.applyRecurrence().catch((e: any) => console.log(e));
   }
+
+  /**
+   * Change of checkbox input for Saturday
+   * @param ev event
+   * @param isChecked is the checkbox checked?
+   */
   private async onCheckboxSaturdayChange(ev: React.FormEvent<HTMLElement>, isChecked: boolean): Promise<void> {
     this.setState({ weeklySaturday: isChecked });
     await this.applyRecurrence().catch((e: any) => console.log(e));
   }
+  
   /**
-   *
-   *
-   * @returns {React.ReactElement<IEventRecurrenceInfoWeeklyProps>}
-   * @memberof EventRecurrenceInfoWeekly
+   * The render
+   * @returns JSX element
    */
   public render(): React.ReactElement<IEventRecurrenceInfoWeeklyProps> {
     return (
@@ -414,7 +450,7 @@ export class EventRecurrenceInfoWeekly extends React.Component<IEventRecurrenceI
                   label={strings.StartDateLabel}
                   value={this.state.startDate}
                   onSelectDate={this.onStartDateChange}
-                  formatDate={toLocaleShortDateString}    
+                  formatDate={toLocaleShortDateString}
                 />
 
               </div>

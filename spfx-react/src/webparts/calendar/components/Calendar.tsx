@@ -41,16 +41,18 @@ import { IPanelModelEnum } from '../controls/Event/IPanelModeEnum';
 import { IEventData } from './../models/IEventData';
 import { IUserPermissions } from './../models/IUserPermissions';
 
-
-//const localizer = BigCalendar.momentLocalizer(moment);
 const localizer = momentLocalizer(moment);
+
 /**
- * @export
- * @class Calendar
- * @extends {React.Component<ICalendarProps, ICalendarState>}
+ * Component for the calendar
  */
 export default class Calendar extends React.Component<ICalendarProps, ICalendarState> {
   private userListPermissions: IUserPermissions = undefined;
+
+  /**
+   * The constructor; initial state, binding of functions
+   * @param props the props
+   */
   public constructor(props: ICalendarProps) {
     super(props);
 
@@ -72,19 +74,16 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
   }
 
   /**
-   * @private
-   * @param {*} event
-   * @memberof Calendar
+   * Event fired for selected event; go to edit-mode
+   * @param event the event to select
    */
   private onSelectEvent(event: any): void {
     this.setState({ showDialog: true, selectedEvent: event, panelMode: IPanelModelEnum.edit });
   }
 
   /**
-   *
-   * @private
-   * @param {boolean} refresh
-   * @memberof Calendar
+   * On dismiss panel
+   * @param refresh is refreshing?
    */
   private async onDismissPanel(refresh: boolean): Promise<void> {
 
@@ -95,9 +94,11 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
       this.setState({ isloading: false });
     }
   }
+
+
   /**
-   * @private
-   * @memberof Calendar
+   * Loads the events of the calendar based on site URL and list (also the date range)
+   * @returns 
    */
   private async loadEvents(): Promise<void> {
     try {
@@ -113,8 +114,9 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
       this.setState({ hasError: true, errorMessage: error.message, isloading: false });
     }
   }
+
   /**
-   * @memberof Calendar
+   * When component is mounted, load events
    */
   public async componentDidMount(): Promise<void> {
     this.setState({ isloading: true });
@@ -123,20 +125,19 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
   }
 
   /**
-   *
-   * @param {*} error
-   * @param {*} errorInfo
-   * @memberof Calendar
+   * When component catches an error, present error message
+   * @param error the error
+   * @param errorInfo the information on the error
    */
   public componentDidCatch(error: any, errorInfo: any): void {
     this.setState({ hasError: true, errorMessage: errorInfo.componentStack });
   }
+
   /**
-   *
-   *
-   * @param {ICalendarProps} prevProps
-   * @param {ICalendarState} prevState
-   * @memberof Calendar
+   * When the component updated, get changes to the properties, and re-load events
+   * @param prevProps the previous props
+   * @param prevState the previous state
+   * @returns 
    */
   public async componentDidUpdate(prevProps: ICalendarProps, prevState: ICalendarState): Promise<void> {
 
@@ -148,11 +149,11 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
       this.setState({ isloading: false });
     }
   }
+
   /**
-   * @private
-   * @param {*} { event }
-   * @returns
-   * @memberof Calendar
+   * Renders the event
+   * @param event The data of the event
+   * @returns JSX element
    */
   private renderEvent(event: IEventData): JSX.Element {
 
@@ -229,34 +230,33 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
       </div>
     );
   }
+
   /**
-   *
-   *
-   * @private
-   * @memberof Calendar
+   * On configure; opens the property pane
    */
   private onConfigure(): void {
-    // Context of the web part
+    /* Context of the web part */
     this.props.context.propertyPane.open();
   }
 
+
   /**
-   * @param {*} { start, end }
-   * @memberof Calendar
+   * The selected slot; range of start and end; panel set to add mode
+   * @param param0 The start and end
+   * @returns 
    */
-  public onSelectSlot({start, end}: {start: any, end: any}): void {
+  public onSelectSlot({ start, end }: { start: any, end: any }): void {
     if (!this.userListPermissions.hasPermissionAdd) return;
     this.setState({ showDialog: true, startDateSlot: start, endDateSlot: end, selectedEvent: undefined, panelMode: IPanelModelEnum.add });
   }
 
   /**
-   *
-   * @param {*} event
-   * @param {*} _start
-   * @param {*} _end
-   * @param {*} _isSelected
-   * @returns {*}
-   * @memberof Calendar
+   * Style the selected event
+   * @param event the event
+   * @param _start start
+   * @param _end end
+   * @param _isSelected is it selected?
+   * @returns the style
    */
   public eventStyleGetter(event: any, _start: any, _end: any, _isSelected: any): any {
 
@@ -279,10 +279,10 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
 
 
   /**
-    *
-    * @param {*} date
-    * @memberof Calendar
-    */
+   * Gets the day properties
+   * @param date the date
+   * @returns style of day prop getter
+   */
   public dayPropGetter(date: Date): any {
     return {
       className: styles.dayPropGetter
@@ -290,9 +290,8 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
   }
 
   /**
-   *
-   * @returns {React.ReactElement<ICalendarProps>}
-   * @memberof Calendar
+   * The render
+   * @returns The JSX element
    */
   public render(): React.ReactElement<ICalendarProps> {
 
@@ -333,7 +332,7 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
                         endAccessor="EndDate"
                         eventPropGetter={this.eventStyleGetter}
                         onSelectSlot={this.onSelectSlot}
-                        components={{event: this.renderEvent} as any}
+                        components={{ event: this.renderEvent } as any}
                         onSelectEvent={this.onSelectEvent}
                         defaultDate={moment().startOf('day').toDate()}
                         views={{

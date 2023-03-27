@@ -6,7 +6,9 @@ import { IYearCalendarState } from "./IYearCalendarState";
 import { IYearCalendarProps } from "./IYearCalendarProps";
 import { css } from "office-ui-fabric-react";
 
-
+/**
+ * Interface for the calendar
+ */
 export interface ICalendar {
     currentDate: any;
     first: any;
@@ -15,6 +17,11 @@ export interface ICalendar {
     month: any;
 }
 
+/**
+ * Creates the calendar based on current date
+ * @param currentDate the current date
+ * @returns the calendar
+ */
 function createCalendar(currentDate: any): any {
     if (!currentDate) {
       currentDate = moment();
@@ -45,13 +52,19 @@ function createCalendar(currentDate: any): any {
     return calendar;
   }
 
+  /**
+   * THe calendar date
+   * @param props the props
+   * @returns 
+   */
 function CalendarDate(props: any): any {
     const { dateToRender, dateOfMonth } = props;
     const today =
       dateToRender.format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')
         ? styles.today
         : '';
-  
+
+    /* Disable button to move previous month if date to render is less than the date of month */
     if (dateToRender.month() < dateOfMonth.month()) {
       return (
         <button disabled={true} className={css(styles.date, styles.prevMonth)}>
@@ -59,7 +72,8 @@ function CalendarDate(props: any): any {
         </button>
       );
     }
-  
+    
+    /* Disable button to move next month if date to render is further than the date of month */
     if (dateToRender.month() > dateOfMonth.month()) {
       return (
         <button disabled={true} className={css(styles.date, styles.nextMonth)}>
@@ -77,6 +91,9 @@ function CalendarDate(props: any): any {
     );
   }
 
+/**
+ * Component for the year calendar
+ */
 export default class YearCalendar extends React.Component<IYearCalendarProps, IYearCalendarState> {
     constructor(props: IYearCalendarProps) {
         super(props);
@@ -86,16 +103,27 @@ export default class YearCalendar extends React.Component<IYearCalendarProps, IY
         };
     }
 
+    /**
+     * When component mounted, create calendar
+     */
     public componentDidMount(): void {
         this.setState({ calendar: createCalendar(this.props.date) });
     }
 
+    /**
+     * When component updated, create new calendar if the date has changed
+     * @param prevProps previous props
+     */
     public componentDidUpdate(prevProps: IYearCalendarProps): void {
         if (this.props.date !== prevProps.date) {
             this.setState({ calendar: createCalendar(this.props.date) });
         }
     }
 
+    /**
+     * The render
+     * @returns The JSX element
+     */
     public render(): React.ReactElement<IYearCalendarProps> {
         if (!this.state.calendar) {
             return null;
@@ -132,6 +160,12 @@ export default class YearCalendar extends React.Component<IYearCalendarProps, IY
         );
     }
 
+    /**
+     * Opens the view
+     * @param date the date
+     * @param view the view
+     * @param e prevent default
+     */
     private openView = (date: any, view: any, e: any): void => {
         e.preventDefault();
         this.props.onDrillDown(date, view);

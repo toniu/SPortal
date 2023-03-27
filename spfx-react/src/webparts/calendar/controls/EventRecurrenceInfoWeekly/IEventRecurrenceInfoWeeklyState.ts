@@ -1,3 +1,6 @@
+/**
+ * The state for event recurrence info weekly
+ */
 export interface IEventRecurrenceInfoWeeklyState {
     selectedKey:string;
     selectPatern:string;

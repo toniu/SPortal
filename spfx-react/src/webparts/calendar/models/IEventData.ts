@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * The model for data of an event
+ */
 export interface IEventData {
     Id?: number;
     ID?: number;

@@ -1,4 +1,8 @@
 import { WebPartContext } from "@microsoft/sp-webpart-base";
+
+/**
+ * The props for event recurrence info
+ */
 export interface  IEventRecurrenceInfoProps {
  display:boolean;
   recurrenceData: string;

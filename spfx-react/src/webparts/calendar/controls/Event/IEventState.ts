@@ -3,6 +3,10 @@ import { IEventData } from '../../models/IEventData';
 import { IUserPermissions } from '../../models/IUserPermissions';
 import { DayOfWeek } from 'office-ui-fabric-react/lib/DatePicker';
 import { IDropdownOption } from 'office-ui-fabric-react/';
+
+/**
+ * The state for the event
+ */
 export interface IEventState {
   showPanel: boolean;
   eventData: IEventData;

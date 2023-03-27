@@ -1,3 +1,6 @@
+/**
+ * The state for event recurrence info monthly
+ */
 export interface IEventRecurrenceInfoMonthlyState {
     selectedKey:string;
     selectPatern:string;

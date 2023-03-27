@@ -14,8 +14,12 @@ import {
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
 import { toLocaleShortDateString } from '../../utils/dateUtils';
 
+/* Services */
 import UserEventService from '../../../../services/UserEventService';
 
+/**
+ * The strings for day pickers
+ */
 const DayPickerStrings: IDatePickerStrings = {
   months: [strings.January, strings.February, strings.March, strings.April, strings.May, strings.June, strings.July, strings.August, strings.September, strings.October, strings.November, strings.December],
   shortMonths: [strings.Jan, strings.Feb, strings.Mar, strings.Apr, strings.May, strings.Jun, strings.Jul, strings.Aug, strings.Sep, strings.Oct, strings.Nov, strings.Dez],
@@ -32,13 +36,13 @@ const DayPickerStrings: IDatePickerStrings = {
 };
 
 /**
- *
- *
- * @export
- * @class EventRecurrenceInfoDaily
- * @extends {React.Component<IEventRecurrenceInfoDailyProps, IEventRecurrenceInfoDailyState>}
+ * The component for event recurrence daily
  */
 export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceInfoDailyProps, IEventRecurrenceInfoDailyState> {
+  /**
+   * Constructor: Initial state and binding of functions
+   * @param props the props
+   */
   public constructor(props: IEventRecurrenceInfoDailyProps) {
     super(props);
 
@@ -72,40 +76,31 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {Date} date
-   * @memberof EventRecurrenceInfoDaily
+   * Start date for event recurrence
+   * @param date new date
    */
-   private onStartDateChange(date: Date): void {
-    //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete. 
+  private onStartDateChange(date: Date): void {
+    // Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete. 
     this.setState({ startDate: date }, () => {
       this.applyRecurrence().catch((e: any) => console.log(e));
     });
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {Date} date
-   * @memberof EventRecurrenceInfoDaily
-   */
-   private onEndDateChange(date: Date): void {
-    //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
-      this.setState({ endDate: date}, () => {
+  * End date for event recurrence
+  * @param date new date
+  */
+  private onEndDateChange(date: Date): void {
+    // Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
+    this.setState({ endDate: date }, () => {
       this.applyRecurrence().catch((e: any) => console.log(e));
     });
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {React.SyntheticEvent<HTMLElement>} ev
-   * @param {string} value
-   * @memberof EventRecurrenceInfoDaily
+   * Change of input for number of days 
+   * @param ev event
+   * @param value new value
    */
   private onNumberOfDaysChange(ev: React.SyntheticEvent<HTMLElement>, value: string): void {
     ev.preventDefault();
@@ -116,7 +111,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         value = '1  ';
         errorMessage = 'Allowed values 1 to 255';
       }
-      this.setState({ numberOfDays: value, errorMessageNumberOfDays: errorMessage  });
+      this.setState({ numberOfDays: value, errorMessageNumberOfDays: errorMessage });
       this.applyRecurrence().catch((e: any) => console.log(e));
     }, 2500);
 
@@ -124,12 +119,9 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
 
 
   /**
-   *
-   *
-   * @private
-   * @param {React.SyntheticEvent<HTMLElement>} ev
-   * @param {string} value
-   * @memberof EventRecurrenceInfoDaily
+   * Change of input for number of occurences
+   * @param ev event
+   * @param value new value
    */
   private onNumberOfOcurrencesChange(ev: React.SyntheticEvent<HTMLElement>, value: string): void {
     ev.preventDefault();
@@ -140,26 +132,23 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         value = '1  ';
         errorMessage = 'Allowed values 1 to 999';
       }
-      this.setState({  numberOcurrences: value , errorMessageNumberOcurrences: errorMessage  });
+      this.setState({ numberOcurrences: value, errorMessageNumberOcurrences: errorMessage });
       this.applyRecurrence().catch((e: any) => console.log(e));
     }, 2500);
 
   }
 
   /**
-   *
-   *
-   * @private
-   * @param {React.SyntheticEvent<HTMLElement>} ev
-   * @param {IChoiceGroupOption} option
-   * @memberof EventRecurrenceInfoDaily
+   * Change of input for data range option
+   * @param ev event
+   * @param option option
    */
-   private onDataRangeOptionChange(
+  private onDataRangeOptionChange(
     ev: React.SyntheticEvent<HTMLElement>,
     option: IChoiceGroupOption
   ): void {
     ev.preventDefault();
-    //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
+    // Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
     this.setState(
       {
         selectdateRangeOption: option.key,
@@ -171,13 +160,18 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
       }
     );
   }
-  
+
+  /**
+   * Change of input for pattern change
+   * @param ev event
+   * @param option option
+   */
   private onPatternChange(
     ev: React.SyntheticEvent<HTMLElement>,
     option: IChoiceGroupOption
   ): void {
     ev.preventDefault();
-    //Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
+    // Put the applyRecurrence() function in the callback of the setState() method to make sure that applyRecurrence() applied after the state change is complete.
     this.setState(
       {
         selectPatern: option.key,
@@ -189,13 +183,17 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
     );
   }
 
+  /**
+   * When component mounted, begin loading
+   */
   public async componentDidMount(): Promise<void> {
     //  await this.load();
     await this.load();
   }
 
-
-
+  /**
+   * Loads the recurrence
+   */
   private async load(): Promise<void> {
     let patern: any = {};
     let dateRange: { repeatForever?: string, repeatInstances?: string, windowEnd?: Date } = {};
@@ -222,7 +220,8 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         }
 
       });
-      // daily Patern
+
+      /* Daily Patern */
       if (patern.daily) {
         recurrenceRule = 'daily';
         if (patern.daily.$.dayFrequency) {
@@ -242,7 +241,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         selectDateRangeOption = 'endDate';
       }
 
-      // weekday patern
+      /* Weekday patern */
       this.setState({
         selectedRecurrenceRule: recurrenceRule,
         selectPatern: dailyPatern.dayFrequency ? 'every' : 'everweekday',
@@ -259,16 +258,16 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
     await this.applyRecurrence();
   }
 
-
+  /**
+   * Button click to apply the reccurence
+   * @param ev the event
+   */
   private async onApplyRecurrence(ev: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     await this.applyRecurrence();
   }
+ 
   /**
-   *
-   *
-   * @private
-   * @param {React.MouseEvent<HTMLButtonElement>} ev
-   * @memberof EventRecurrenceInfoDaily
+   * Function to apply the reccurence
    */
   private async applyRecurrence(): Promise<void> {
     const endDate = await UserEventService.getUtcTime(this.state.endDate);
@@ -287,15 +286,14 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
         break;
     }
     const recurrenceXML = `<recurrence><rule><firstDayOfWeek>su</firstDayOfWeek><repeat>` +
-      `<daily ${ this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : 'weekday'}</repeat>${selectDateRangeOption}</rule></recurrence>`;
-  //  console.log(recurrenceXML);
+      `<daily ${this.state.selectPatern === 'every' ? `dayFrequency="${this.state.numberOfDays.trim()}"/>` : 'weekday'}</repeat>${selectDateRangeOption}</rule></recurrence>`;
+    //  console.log(recurrenceXML);
     this.props.returnRecurrenceData(this.state.startDate, recurrenceXML);
   }
+  
   /**
-   *
-   *
-   * @returns {React.ReactElement<IEventRecurrenceInfoDailyProps>}
-   * @memberof EventRecurrenceInfoDaily
+   * The render
+   * @returns JSX element
    */
   public render(): React.ReactElement<IEventRecurrenceInfoDailyProps> {
     return (
@@ -304,7 +302,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
           <div>
             <div style={{ display: 'inline-block', float: 'right', paddingTop: '10px', height: '40px' }} />
             <div style={{ width: '100%', paddingTop: '10px' }}>
-              <Label>{ strings.patternLabel }</Label>
+              <Label>{strings.patternLabel}</Label>
               <ChoiceGroup
                 selectedKey={this.state.selectPatern}
                 options={[
@@ -341,7 +339,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
             </div>
 
             <div style={{ paddingTop: '22px' }}>
-              <Label>{ strings.dateRangeLabel }</Label>
+              <Label>{strings.dateRangeLabel}</Label>
               <div style={{ display: 'inline-block', verticalAlign: 'top', paddingRight: '35px', paddingTop: '10px' }}>
 
                 <DatePicker
@@ -403,7 +401,7 @@ export class EventRecurrenceInfoDaily extends React.Component<IEventRecurrenceIn
                               disabled={this.state.disableNumberOcurrences}
                               errorMessage={this.state.errorMessageNumberOcurrences}
                               onChange={this.onNumberOfOcurrencesChange} />
-                            <Label styles={{ root: { display: 'inline-block', verticalAlign: 'top', paddingLeft: '10px' } }}>{ strings.occurrencesLabel }</Label>
+                            <Label styles={{ root: { display: 'inline-block', verticalAlign: 'top', paddingLeft: '10px' } }}>{strings.occurrencesLabel}</Label>
                           </div>
                         );
                       }
