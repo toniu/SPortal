@@ -16,12 +16,10 @@ describe('Dashboard', () => {
 
       /* Filtered list of 3 events max. past today's date */
       let eventsBefore = events.filter((event: any) => new Date(event.StartDate).getTime() < today);
-      console.log('EB before slice is...', eventsBefore)
       eventsBefore = eventsBefore.slice(0, 3)
 
       /* Filtered list of 3 events max. after today's date */
       let eventsAfter: any = events.filter((event: any) => !(new Date(event.StartDate).getTime() < today));
-      console.log('Before EA: ', eventsAfter)
       eventsAfter = eventsAfter.slice((eventsAfter.length - 3), eventsAfter.length)
 
       /* Format the dates of the recent and upcoming events */
@@ -32,7 +30,6 @@ describe('Dashboard', () => {
         eventsAfter[i].StartDate = new Date(eventsAfter[i].StartDate)
       }
 
-      console.log('EB, EA, ', eventsBefore, eventsAfter)
       return [eventsBefore, eventsAfter]
     }
 

@@ -20,6 +20,7 @@ import { IEventData } from '../webparts/calendar/models/IEventData';
 import * as moment from 'moment';
 import { IUserPermissions } from '../webparts/calendar/models/IUserPermissions';
 import parseRecurrentEvent from '../webparts/calendar/models/parseRecurrentEvent';
+import { IUserInfo } from "../webparts/dashboardApp/models/IUserInfo";
 
 /**
  * Web part service for handling events
@@ -46,6 +47,23 @@ export class UserEventService {
             UserEventService.instance = new UserEventService();
         }
         return UserEventService.instance
+    }
+
+    /**
+     * Get the current logged in user information
+     * @returns the retrieved data of user information
+     */
+    public getCurrentUserInfo = async (): Promise<IUserInfo> => {
+        let userinfo: IUserInfo = null;
+        const currentUserInfo = await this._sp.web.currentUser()
+        userinfo = {
+            ID: currentUserInfo.Id.toString(),
+            Email: currentUserInfo.UserPrincipalName,
+            LoginName: currentUserInfo.LoginName,
+            DisplayName: currentUserInfo.Title,
+            Picture: '/_layouts/15/userphoto.aspx?size=S&username=' + currentUserInfo.UserPrincipalName,
+        };
+        return userinfo;
     }
 
     /**
