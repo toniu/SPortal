@@ -9,7 +9,7 @@ import { IEventData } from '../../calendar/models/IEventData';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 /* Icons */
-
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 /**
  * The main component of the Dashboard web part
  */
@@ -35,7 +35,7 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, ID
 
   private async getCurrentUser(): Promise<void> {
     const userInfo = await UserEventService.getCurrentUserInfo();
-    this.setState({currentUserData: userInfo})
+    this.setState({ currentUserData: userInfo })
     this.forceUpdate()
   }
 
@@ -76,7 +76,7 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, ID
    * @returns JSX element of renders events
    */
   public renderRecentEvents(events: any) {
-    const recentEvents = events.map((e: any) => <li key={e.ID} className="p-2 m-1 block border-l-4 border-black bg-white">
+    const recentEvents = events.map((e: any) => <li key={e.ID} className="p-2 m-1 block border-l-4 border-black bg-white shadow-lg">
       <span className="block"> {e.title} </span>
       <span className="block">  Hosted by <span className="font-bold"> {e.ownerName},</span> <span className="block font-normal">
         {e.EventDate.toLocaleDateString()}  <span className="font-semibold"> {e.EventDate.toLocaleTimeString()} </span> </span>
@@ -91,7 +91,7 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, ID
   * @returns JSX element of renders events
   */
   public renderUpcomingEvents(events: any) {
-    const upcomingEvents = events.map((e: any) => <div key={e.ID} className="m-1 w-1/3 text-sm">
+    const upcomingEvents = events.map((e: any) => <div key={e.ID} className="m-1 w-1/3 text-sm shadow-lg">
 
       <h3 className="p-1 uppercase text-white text-center font-semibold bg-gray-900">
         {e.EventDate.toLocaleDateString()}
@@ -137,30 +137,47 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, ID
       <div className="p-1 m-1">
         {
           currentUserData !== null && currentUserData !== undefined &&
-          <div className="top-section p-3 m-1 flex bg-gray-900 text-white text-base">
-          Welcome&nbsp;<span className="font-bold"> {currentUserData.DisplayName} </span>
-        </div>
+          <div className="top-section p-3 m-1 flex bg-gray-900 text-white text-lg">
+            <Icon className="mx-2 text-lg font-bold" iconName='Contact' />
+            Welcome&nbsp;<span className="font-bold"> {currentUserData.DisplayName} </span>
+          </div>
         }
         <div className="bottom-section p-1 m-1">
-          <div className="p-1 m-1 w-full bg-gray-300 border-t-4 border-indigo-600">
+          <div className="p-1 m-1 w-full bg-gray-100 border-t-4 border-cyan-700">
             <h2 className="p-2 text-black font-semibold text-lg">
               recent meetings
             </h2>
             {
-              this.state.recentEvents && <ul className="p-2">
-              {this.recentEvents}
-            </ul>
+              this.state.recentEvents.length > 0 && <ul className="p-1">
+                {this.recentEvents}
+              </ul>
+            }
+            {
+              this.state.recentEvents.length === 0 &&
+              <div className="p-2 font-semibold text-gray-700 flex">
+                 <Icon className="mx-3" iconName='Event' />
+                There are no recent meetings...
+              </div>
             }
 
           </div>
-          <div className="p-1 m-1 w-full bg-gray-300 border-t-4 border-indigo-600">
+          <div className="p-1 m-1 w-full bg-gray-100 border-t-4 border-cyan-700">
             <h2 className="p-2 text-black font-semibold text-lg">
               upcoming events
             </h2>
-            <div className="p-1 flex">
-              {this.upcomingEvents}
-            </div>
-            <br />
+            {
+              this.state.upcomingEvents.length > 0 && <div className="p-1 flex">
+                {this.upcomingEvents}
+              </div>
+            }
+            {
+              this.state.upcomingEvents.length === 0 &&
+              <div className="p-2 font-semibold text-gray-700 flex">
+                <Icon className="mx-3" iconName='Event' />
+                There are no upcoming meetings...
+              </div>
+            }
+            <br/>
           </div>
         </div>
       </div>

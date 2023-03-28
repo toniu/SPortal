@@ -9,6 +9,8 @@ import GroupList from '../GroupList/GroupList';
 import NewGroup from "../NewGroup/NewGroup";
 import { ActionButton, IIconProps } from 'office-ui-fabric-react';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
+/* Icons */
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 const addGroupIcon: IIconProps = { iconName: 'AddGroup' };
 
@@ -41,18 +43,23 @@ export default class GroupManagement extends React.Component<IGroupManagementPro
     return (
       <div className={styles.groupManagement}>
         <div className={styles.container}>
+        <h1 className="p-2 bg-gray-900 text-white text-lg">
+        <Icon className="mx-3 text-lg font-bold" iconName='Group' />
+          Group management
+          </h1>
           <div className={styles.row}>
             {
               this.state.loadCount === 3 && !this.state.showNewGroupScreen
                 ?
-                <p>
-                  <h1 className={styles.headerMsgStyle}>Group management</h1>
-                  <GroupList flowUrl={this.props.flowUrl} items={this.state.groups} ownerGroups={this.state.ownerGroups} memberGroups={this.state.memberGroups} context={this.props.context}/>
-                  <br />
-                  <ActionButton className={styles.newHeaderLinkStyle} iconProps={addGroupIcon} allowDisabledFocus onClick={this.showNewGroupScreen}>
-                    New Group
-                  </ActionButton>
-                </p>
+                <>           
+                  <p>
+                    <GroupList flowUrl={this.props.flowUrl} items={this.state.groups} ownerGroups={this.state.ownerGroups} memberGroups={this.state.memberGroups} context={this.props.context}/>
+                    <br />
+                    <ActionButton className={styles.newHeaderLinkStyle} iconProps={addGroupIcon} allowDisabledFocus onClick={this.showNewGroupScreen}>
+                      New Group
+                    </ActionButton>
+                  </p>
+                </>
                 :
                 !this.state.showNewGroupScreen &&
                 <Spinner label="Loading Groups..." />

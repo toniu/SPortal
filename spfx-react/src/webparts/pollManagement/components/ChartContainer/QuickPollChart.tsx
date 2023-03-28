@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ChartControl, ChartType } from '@pnp/spfx-controls-react/lib/ChartControl';
 import { IPollAnalyticsInfo } from '../../models';
+import { Icon } from 'office-ui-fabric-react';
 
 /**
  * Props for quick poll chart
@@ -20,7 +21,8 @@ export default class QuickPollChart extends React.Component<IQuickPollChartProps
         <div className="ms-Grid" dir="ltr">
           <div className="ms-Grid-row">
             <div className="ms-Grid-col ms-lg12 ms-md12 ms-sm12">
-              <div className="ms-textAlignLeft ms-font-m-plus ms-fontWeight-semibold">
+              <div className="p-2 my-1 bg-gray-900 text-base text-white flex">
+                <Icon className="mx-3 block text-base font-bold" iconName='PollResults' />
                 {this.props.PollAnalytics ? this.props.PollAnalytics.Question : ''}
               </div>
             </div>
@@ -58,17 +60,17 @@ export default class QuickPollChart extends React.Component<IQuickPollChartProps
               }]
             }} />
         ) : (
-            <ChartControl
-              loadingtemplate={() => <div>Please wait...</div>}
-              type={this.charttype}
-              data={{
-                labels: PollAnalytics.Labels,
-                datasets: [{
-                  label: 'Results',
-                  data: PollAnalytics.PollResponse,
-                }]
-              }} />
-          )
+          <ChartControl
+            loadingtemplate={() => <div>Please wait...</div>}
+            type={this.charttype}
+            data={{
+              labels: PollAnalytics.Labels,
+              datasets: [{
+                label: 'Results',
+                data: PollAnalytics.PollResponse,
+              }]
+            }} />
+        )
       );
     }
   }

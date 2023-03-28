@@ -12,10 +12,11 @@ import UserGroupService from '../../../services/UserGroupService';
 import { UserProfileService } from '../../../services/UserProfileService';
 import { ServiceScope } from '@microsoft/sp-core-library'
 /* Icons */
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from "@fortawesome/free-solid-svg-icons"
-import { faUserGroup } from "@fortawesome/free-solid-svg-icons"
-import { faPeopleGroup } from "@fortawesome/free-solid-svg-icons"
+import { Icon, IIconProps } from 'office-ui-fabric-react/lib/Icon';
+import { ActionButton } from 'office-ui-fabric-react';
+
+const userIcon: IIconProps = { iconName: 'Contact' };
+const backIcon: IIconProps = { iconName: 'NavigateBack' };
 
 
 /**
@@ -89,44 +90,42 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
    */
   public render(): React.ReactElement<IProfileProps> {
     console.log('Rendering using state:', this.state)
-    const renderOwnerGroups = this.state.ownerGroups.map((group: any) => <li key={group.id} className="m-1 p-1 flex bg-white">
-      <FontAwesomeIcon icon={faUserGroup} className="p-1 text-black text-base" />
+    const renderOwnerGroups = this.state.ownerGroups.map((group: any) => <li key={group.id} className="m-1 p-1 flex bg-white border-l-4 border-cyan-600">
+      <Icon className=" text-black text-base font-extrabold" iconName='PartyLeader' />
       <span className="mx-2 text-base"> {group.displayName} </span>
     </li>)
 
-    const renderMemberGroups = this.state.memberGroups.map((group: any) => <li key={group.id} className="m-1 p-1 flex bg-white">
-      <FontAwesomeIcon icon={faPeopleGroup} className="p-1 text-black text-base" />
+    const renderMemberGroups = this.state.memberGroups.map((group: any) => <li key={group.id} className="m-1 p-1 flex bg-white border-l-4 border-cyan-600">
+      <Icon className=" text-black text-base font-extrabold" iconName='Group' />
       <span className="mx-2 text-base"> {group.displayName} </span>
     </li>)
 
-    const renderUsersToDiscover = this.state.usersToDiscover.map((user: any) => <li key={user.Id} className="p-1 m-1 bg-white flex">
-      <div className="w-1/4 text-3xl">
-        <FontAwesomeIcon icon={faUser} className="p-3 m-2 text-white bg-gray-900 rounded-full" />
+    const renderUsersToDiscover = this.state.usersToDiscover.map((user: any) => <li key={user.Id} className="p-1 m-1 bg-white shadow-lg flex">
+      <div className="w-1/4 text-lg mx-1 my-5 p-2">
+        <span className="p-2 bg-gray-900 text-white font-semibold rounded-full">  {user.FirstName.charAt(0)}{user.LastName.charAt(0)} </span>
       </div>
       <div className="suggestion-name-details p-1 w-3/4">
         <h3 className="text-black font-semibold text-sm"> {user.FirstName} {user.LastName} </h3>
         <h4 className="py-1 text-black font-light text-xs"> {user.Department} </h4>
-        <button type="button" onClick={() => this._clickNewProfile(user)} className="flex p-1 mx-1 bg-gray-800 text-white rounded-xl text-xs hover:bg-gray-600 transition 0.2s">
-          <FontAwesomeIcon icon={faUser} className="p-1 mr-2 ml-1 text-gray-800 bg-white rounded-full" />
-          <span className="mr-1"> view profile </span>
-        </button>
+        <ActionButton className="text-sm" iconProps={userIcon} allowDisabledFocus onClick={() => this._clickNewProfile(user)}>
+          view profile
+        </ActionButton>
       </div>
     </li>)
 
     return (
       <div className="container p-1 flex">
-        <div className="profile-box m-1 bg-gray-300 border-t-4 border-indigo-600 w-3/5">
-          <div className="topbar flex p-3 bg-gray-800 bg-opacity-75">
-            <FontAwesomeIcon icon={faUser} className="p-3 bg-gray-700 text-3xl rounded-full text-white border-white border-4" />
+        <div className="profile-box m-1 bg-gray-100 w-3/5">
+          <div className="topbar flex p-3 bg-gray-900">
+            <Icon className="mx-2 text-lg text-white font-bold" iconName='Contact' />
             <div className="profile-icon flex">
-
-              <h1 className="name p-3 text-2xl text-white">
+              <h1 className="name text-lg text-white font-semibold">
                 {this.state.userProfileItems.FirstName} {this.state.userProfileItems.LastName}
               </h1>
             </div>
           </div>
           <div className="roles p-2">
-            <h2 className="p-1 font-light text-xl">
+            <h2 className="p-1 font-light text-lg">
               {this.state.userProfileItems.Title}
             </h2>
             <h3 className="p-1 font-semibold text-base">
@@ -136,42 +135,62 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
           <div className="groups-box p-1 flex">
             <div className="groups p-1 w-1/2">
               <h3 className="p-2 text-base text-black font-semibold">
-                Owner groups
+                owner groups
               </h3>
-              <div className="bg-gray-800">
-                <ul className="groups-list p-1 overflow-y-scroll h-32">
+              <div className="bg-gray-900">
+                {
+                  this.state.ownerGroups.length > 0 &&
+                  <ul className="groups-list p-1 overflow-y-scroll h-32">
                   {renderOwnerGroups}
-                </ul>
+                  </ul>      
+                }
+                {
+                  this.state.ownerGroups.length === 0 &&
+                  <div className="p-3 text-gray-300">
+                    <Icon className="text-center my-2 block text-4xl" iconName='Group' />
+                    {this.state.userProfileItems.FirstName.charAt(0)}. {this.state.userProfileItems.LastName} does not own any groups...
+                  </div>
+                }            
               </div>
             </div>
             <div className="interest-groups p-1 w-1/2">
               <h3 className="p-2 text-base text-black font-semibold">
-                Member groups
+                member groups
               </h3>
-              <div className="bg-gray-800">
-                <ul className="groups-list p-1 overflow-y-scroll h-32">
+              <div className="bg-gray-900">
+                {
+                  this.state.memberGroups.length > 0 &&
+                  <ul className="groups-list p-1 overflow-y-scroll h-32">
                   {renderMemberGroups}
                 </ul>
+                }
+                {
+                  this.state.memberGroups.length === 0 &&
+                  <div className="p-3 text-gray-300">
+                    <Icon className="text-center my-2 block text-4xl" iconName='Group' />
+                    {this.state.userProfileItems.FirstName.charAt(0)}. {this.state.userProfileItems.LastName} is not a member of any group...
+                  </div>
+                }
               </div>
             </div>
           </div>
         </div>
-        <div className="discover-more m-1 w-2/5 bg-gray-300 border-t-4 border-indigo-600">
-          <h2 className="p-2 font-bold text-lg text-black">
-            Discover more
+        <div className="discover-more m-1 w-2/5 bg-gray-100 border-t-4 border-cyan-700">
+          <h2 className="p-2 font-semibold text-lg text-black">
+            discover more
           </h2>
           <ul className="suggestions-box p-1">
             {renderUsersToDiscover}
           </ul>
           {
             this.state.currentUser === this.state.loggedInUser &&
-            <br/>
+            <br />
           }
           {
             this.state.currentUser !== this.state.loggedInUser &&
-            <button type="button" onClick={() => this._returnToOriginalUser()} className="p-3 text-black font-light hover:font-bold transition 0.1s">
-            Return to home user
-          </button>
+            <ActionButton className="p-2 text-black text-sm" iconProps={backIcon} allowDisabledFocus onClick={() => this._returnToOriginalUser()}>
+              return to home user
+            </ActionButton>
           }
         </div>
       </div>
@@ -371,7 +390,7 @@ export default class Profile extends React.Component<IProfileProps, IProfileStat
    */
   public _returnToOriginalUser = () => {
     /* Set state to new clicked profile of another user */
-    this.setState({ currentUser: this.state.loggedInUser})
+    this.setState({ currentUser: this.state.loggedInUser })
     console.log('Return to user: ', this.state.loggedInUser)
     /* Call user properties when state has changed */
     this._getUserProperties('me', false)

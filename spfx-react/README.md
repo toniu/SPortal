@@ -1,10 +1,17 @@
-# samples
+# Portal solution
 
 ## Summary
 
-Short summary on functionality and used technologies.
+The following repository offers the following webparts:
+- Dashboard
+- Profile
+- Group management
+- Poll management
+- Calendar
 
-[picture of the solution in action, if possible]
+# Demo
+The demos for each webpart can be found in the README's of each web part
+
 
 ## Used SharePoint Framework Version
 
@@ -15,7 +22,8 @@ Short summary on functionality and used technologies.
 - [SharePoint Framework](https://aka.ms/spfx)
 - [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
 
-> Get your own free development tenant by subscribing to [Microsoft 365 developer program](http://aka.ms/o365devprogram)
+> If as a developer you are unable to gain administration access into the RHUL SharePoint admin centre then you can get your own free development tenant by subscribing to [Microsoft 365 developer program](http://aka.ms/o365devprogram)
+- The main changes would include the change of the email associated with the tenant e.g. for RHUL it is 'zhac'. Any occurence of 'zhac' and '...@live.rhul.ac.uk' in the code for the web parts would need to be changed to your respective tenant; for example your tenant has the email in the form of userXXX@live.[tenant-url].
 
 ## Prerequisites
 
@@ -46,9 +54,15 @@ Short summary on functionality and used technologies.
 - Ensure that you are at the solution folder
 - in the command-line run:
   - **npm install**
+  - **gulp build**
   - **gulp serve**
 
-> Include any additional steps as needed.
+- To run as hot-reload:
+  -**npm run serve**
+
+- To run unit tests:
+  - **npm test**
+
 
 ## Features
 
@@ -60,14 +74,28 @@ This extension illustrates the following concepts:
 - topic 2
 - topic 3
 
-> Notice that better pictures and documentation will increase the sample usage and the value you are providing for others. Thanks for your submissions advance.
+## Contributors
+The web parts use:
+- PnPjs library
+- office-ui-fabric-react components
+- react big-calendar component
 
-> Share your web part with others through Microsoft 365 Patterns and Practices program to get visibility and exposure. More details on the community, open-source projects and other activities from http://aka.ms/m365pnp.
+- Neka Toni-Uebari 
+(contributors who were spfx-sample developers): 
+- Abderahman Moujahid
+- Eli H. Schei
+- Hugo Bernier
+- João Mendes
+- Mohamed Derhalli
+- Mohammed Amer
+- Nanddeep Nachan
+- Sudharsan K. 
+- Dipen Shah 
+- Smita Nachan
 
 ## References
 
 - [Getting started with SharePoint Framework](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
 - [Building for Microsoft teams](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/build-for-teams-overview)
-- [Use Microsoft Graph in your solution](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/web-parts/get-started/using-microsoft-graph-apis)
 - [Publish SharePoint Framework applications to the Marketplace](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/publish-to-marketplace-overview)
 - [Microsoft 365 Patterns and Practices](https://aka.ms/m365pnp) - Guidance, tooling, samples and open-source controls for your Microsoft 365 development

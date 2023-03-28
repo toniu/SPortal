@@ -18,6 +18,7 @@ import UserPollService from '../../../services/UserPollService';
 import { MessageScope } from '../../../common/enumHelper';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import { Icon } from 'office-ui-fabric-react';
 
 /**
  * Component for poll management
@@ -535,14 +536,15 @@ export default class PollManagement extends React.Component<IPollManagementProps
             <div className="ms-Grid" dir="ltr">
               <div className="ms-Grid-row">
                 <div className="ms-Grid-col ms-lg12 ms-md12 ms-sm12">
-                  <div className="ms-textAlignLeft ms-font-m-plus ms-fontWeight-semibold">
+                  <div className="p-2 bg-gray-900 text-base text-white flex">
+                    <Icon className="mx-3 block text-base font-bold" iconName='SurveyQuestions' />
                     {this.state.currentPoll.DisplayName}
                   </div>
                 </div>
               </div>
               <div className="ms-Grid-row">
                 <div className="ms-Grid-col ms-lg12 ms-md12 ms-sm12">
-                  <div className="ms-textAlignLeft ms-font-m-plus ms-fontWeight-semibold">
+                  <div className="ms-textAlignLeft ms-font-m-plus ms-fontWeight-semibold p-2">
                     <OptionsContainer disabled={!this.state.enableChoices}
                       selectedKey={this._getSelectedKey}
                       options={this.state.currentPoll.Choices}

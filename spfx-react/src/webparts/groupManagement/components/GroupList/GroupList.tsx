@@ -180,7 +180,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
                     closeButtonAriaLabel="Close"
                     target={this._menuButtonElement}
                     onDismiss={this._onDismiss}
-                    headline="Manage O365 Groups"
+                    headline="Manage Groups"
                   >
                     {this.state.techingBubbleMessage}
                   </TeachingBubble>
