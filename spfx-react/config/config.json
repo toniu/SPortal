@@ -2,27 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
   "version": "2.0",
   "bundles": {
-    "poll-app-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/pollApp/PollAppWebPart.js",
-          "manifest": "./src/webparts/pollApp/PollAppWebPart.manifest.json"
-        }
-      ]
-    },
     "profile-web-part": {
       "components": [
         {
           "entrypoint": "./lib/webparts/profile/ProfileWebPart.js",
           "manifest": "./src/webparts/profile/ProfileWebPart.manifest.json"
-        }
-      ]
-    },
-    "feed-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/feed/FeedWebPart.js",
-          "manifest": "./src/webparts/feed/FeedWebPart.manifest.json"
         }
       ]
     },
@@ -63,9 +47,7 @@
   "localizedResources": {
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
     "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js",
-    "PollAppWebPartStrings": "lib/webparts/pollApp/loc/{locale}.js",
     "ProfileWebPartStrings": "lib/webparts/profile/loc/{locale}.js",
-    "FeedWebPartStrings": "lib/webparts/feed/loc/{locale}.js",
     "DashboardAppWebPartStrings": "lib/webparts/dashboardApp/loc/{locale}.js",
     "GroupManagementWebPartStrings": "lib/webparts/groupManagement/loc/{locale}.js",
     "PollManagementWebPartStrings": "lib/webparts/pollManagement/loc/{locale}.js",

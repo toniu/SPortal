@@ -39,23 +39,23 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, ID
     this.forceUpdate()
   }
 
+  /**
+   * Loads the events from calendar list - retrieves the 'upcoming' and 'recent' events
+   */
   private async loadEvents(): Promise<void> {
     try {
-      // Teste Properties
+      /* Check if values for properties exist */
       if (!this.props.list || !this.props.siteUrl || !this.props.eventStartDate.value || !this.props.eventEndDate.value) return;
 
       const eventsData: IEventData[] = await UserEventService.getEvents(escape(this.props.siteUrl), escape(this.props.list), this.props.eventStartDate.value, this.props.eventEndDate.value);
-      console.log('Events data:', eventsData);
 
       const today = new Date().getTime();
       let eventsBefore = eventsData.filter((event: any) => Date.parse(event.EventDate) < today);
       eventsBefore = eventsBefore.slice(0, 3)
-      console.log('EB', eventsBefore)
 
       /* Filtered list of 3 events max. after today's date */
       let eventsAfter: any = eventsData.filter((event: any) => Date.parse(event.EventDate) >= today);
       eventsAfter = eventsAfter.slice(Math.max(eventsAfter.length - 3, 0))
-      console.log('EA', eventsAfter)
 
       /* Use filtered lists to render recent meetings and upcoming meetings */
       this.recentEvents = this.renderRecentEvents(eventsBefore);
@@ -67,7 +67,6 @@ export default class DashboardApp extends React.Component<IDashboardAppProps, ID
     } catch (e) {
       this.setState({ eventData: [], hasError: true })
     }
-
   }
 
   /**

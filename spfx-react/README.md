@@ -33,7 +33,7 @@ The demos for each webpart can be found in the README's of each web part
 
 | Solution    | Author(s)                                               |
 | ----------- | ------------------------------------------------------- |
-| folder name | Author details (name, company, twitter alias with link) |
+| webparts | Neka Toni-Uebari (link) |
 
 ## Version history
 
@@ -79,6 +79,7 @@ The web parts use:
 - PnPjs library
 - office-ui-fabric-react components
 - react big-calendar component
+- SharePoint Lists
 
 - Neka Toni-Uebari 
 (contributors who were spfx-sample developers): 
@@ -96,6 +97,5 @@ The web parts use:
 ## References
 
 - [Getting started with SharePoint Framework](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
-- [Building for Microsoft teams](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/build-for-teams-overview)
 - [Publish SharePoint Framework applications to the Marketplace](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/publish-to-marketplace-overview)
 - [Microsoft 365 Patterns and Practices](https://aka.ms/m365pnp) - Guidance, tooling, samples and open-source controls for your Microsoft 365 development
