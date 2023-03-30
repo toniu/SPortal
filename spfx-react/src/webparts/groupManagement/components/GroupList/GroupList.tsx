@@ -368,7 +368,7 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
           groups: prevState.groups.map(group => group.id === groupId ? { ...group, userRole: "" } : group),
           isTeachingBubbleVisible: true,
           techingBubbleMessage: 'You have deleted group: ' + groupName
-        }));
+        }), () => this.forceUpdate());
 
       }).catch(e => console.log(e));
     }
@@ -378,8 +378,6 @@ export default class GroupList extends React.Component<IGroupListProps, IGroupLi
       showDialog: false,
       selectedGroup: null
     });
-
-    this.forceUpdate();
   }
 
   /**
