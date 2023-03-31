@@ -3,8 +3,8 @@ A repository containing
 - release: The final release of code for the web part repository
     - [Code Repository](/release/README.md)
     - [Deliverables](/release/deliverables): the deliverables
-        -[Documents](/release/deliverables/Documents/): includes required PDF documents (i.e. final report PDF that also includes the user and installation manual in 'Appendices' of the PDF)
-        -[Demos](/release/deliverables/demos/): includes the demos for the web parts (videos and screenshots)
+        - [Documents](/release/deliverables/Documents/): includes required PDF documents (i.e. final report PDF that also includes the user and installation manual in 'Appendices' of the PDF)
+        - [Demos](/release/deliverables/demos/): includes the demos for the web parts (videos and screenshots)
     - [Webparts](/release/src/webparts/): the web parts of the project: includes React components, controls and models
     - [Services](/release/src/services): the services required for PnP and SP list CRUD operations
     - [Tests](/release/src/tests/): the unit tests of the key methods of the web part components in an isolated TDD environment
