@@ -10,10 +10,10 @@ import {
 
 } from 'office-ui-fabric-react';
 
-import { EventRecurrenceInfoDaily } from './../EventRecurrenceInfoDaily/EventRecurrenceInfoDaily';
-import { EventRecurrenceInfoWeekly } from './../EventRecurrenceInfoWeekly/EventRecurrenceInfoWeekly';
-import { EventRecurrenceInfoMonthly } from './../EventRecurrenceInfoMonthly/EventRecurrenceInfoMonthly';
-import { EventRecurrenceInfoYearly } from './../EventRecurrenceInfoYearly/EventRecurrenceInfoYearly';
+import { EventRecurrenceInfoDaily } from '../EventRecurrenceInfoDaily/EventRecurrenceInfoDaily';
+import { EventRecurrenceInfoWeekly } from '../EventRecurrenceInfoWeekly/EventRecurrenceInfoWeekly';
+import { EventRecurrenceInfoMonthly } from '../EventRecurrenceInfoMonthly/EventRecurrenceInfoMonthly';
+import { EventRecurrenceInfoYearly } from '../EventRecurrenceInfoYearly/EventRecurrenceInfoYearly';
 
 /**
  * Component for the event reccurence info

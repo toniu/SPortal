@@ -1,5 +1,5 @@
 import { IPanelModelEnum} from '../controls/Event/IPanelModeEnum';
-import { IEventData } from './../models/IEventData';
+import { IEventData } from '../models/IEventData';
 
 /**
  * The state for the calendar

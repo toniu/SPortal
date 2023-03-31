@@ -38,8 +38,8 @@ import { DisplayMode } from '@microsoft/sp-core-library';
 import UserEventService from '../../../services/UserEventService';
 import { Event } from '../controls/Event/Event';
 import { IPanelModelEnum } from '../controls/Event/IPanelModeEnum';
-import { IEventData } from './../models/IEventData';
-import { IUserPermissions } from './../models/IUserPermissions';
+import { IEventData } from '../models/IEventData';
+import { IUserPermissions } from '../models/IUserPermissions';
 
 const localizer = momentLocalizer(moment);
 

@@ -5,7 +5,7 @@ import * as React from 'react';
 import { IProfileProps } from './IProfileProps';
 /* Components */
 import { IProfileState } from './IProfileState'
-import { IUserProfile } from '../components/IUserProfile'
+import { IUserProfile } from './IUserProfile'
 /* Services */
 import { IDataService } from '../../../services/IDataService';
 import UserGroupService from '../../../services/UserGroupService';

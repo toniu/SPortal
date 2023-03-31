@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IUserProfile } from '../components/IUserProfile'
+import { IUserProfile } from './IUserProfile'
 
 /**
  * The state for the profile

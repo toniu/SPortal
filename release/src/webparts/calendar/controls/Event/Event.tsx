@@ -44,7 +44,7 @@ import htmlToDraft from 'html-to-draftjs';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import UserEventService from '../../../../services/UserEventService';
 import { Map, ICoordinates } from "@pnp/spfx-controls-react/lib/Map";
-import { EventRecurrenceInfo } from '../../controls/EventRecurrenceInfo/EventRecurrenceInfo';
+import { EventRecurrenceInfo } from '../EventRecurrenceInfo/EventRecurrenceInfo';
 import { getGUID } from '@pnp/common';
 import { toLocaleShortDateString } from '../../utils/dateUtils';
 import format from 'string-format';

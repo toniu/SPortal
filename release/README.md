@@ -1,12 +1,12 @@
 # Final Project Solution
 
 ## Summary
-The following repository offers the following [webparts](spfx-react/src/webparts):
-- [Dashboard](/spfx-react/src/webparts/dashboardApp)
-- [Profile](/spfx-react/src/webparts/profile)
-- [Group management](/spfx-react/src/webparts/groupManagement)
-- [Poll management](/spfx-react/src/webparts/pollManagement)
-- [Calendar](/spfx-react/src/webparts/calendar)
+The following repository offers the following [webparts](release/src/webparts):
+- [Dashboard](/release/src/webparts/dashboardApp)
+- [Profile](/release/src/webparts/profile)
+- [Group management](/release/src/webparts/groupManagement)
+- [Poll management](/release/src/webparts/pollManagement)
+- [Calendar](/release/src/webparts/calendar)
 
 ## Used SharePoint Framework Version
 ![version](https://img.shields.io/badge/version-1.16.1-green.svg)
@@ -37,7 +37,7 @@ The web parts use:
 
 ## Testing
 The unit tests can be found under:
-[tests](/spfx-react/src/tests)
+[tests](/release/src/tests)
 
 - To run unit tests:
   - **npm test**
@@ -59,7 +59,7 @@ Final note on deployment:
 
 Any occurence of 'zhac' and '...@live.rhul.ac.uk' in the code for the web parts would need to be changed to your respective tenant; for example your tenant has the email in the form of userXXX@live.[tenant-url].
 The main suggestion is to CTRL + F 'zhac' for any component of the web part: 
-i.e. there is a component, Profile.tsx (/spfx-react/src/webparts/profile/components/Profile.tsx), which has a method, _getUsersToDiscover:
+i.e. there is a component, Profile.tsx (/release/src/webparts/profile/components/Profile.tsx), which has a method, _getUsersToDiscover:
 The occurences of 'zhac' to extract and randomise new users would have to modified to the email template of your personal tenant
 
 

@@ -3,8 +3,8 @@
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { IGroup } from "../webparts/groupManagement/models";
 /* Services */
-import { IDataService } from '../services/IDataService';
-import { UserProfileService } from '../services/UserProfileService';
+import { IDataService } from './IDataService';
+import { UserProfileService } from './UserProfileService';
 
 import { ServiceScope } from '@microsoft/sp-core-library'
 import { IUserProfile } from '../webparts/profile/components/IUserProfile'
