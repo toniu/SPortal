@@ -35,8 +35,9 @@ The web parts use:
 - OR to run as hot-reload:
   -**npm run serve**
 
-# Testing
-The unit tests can be found under /spfx-react/src/tests
+## Testing
+The unit tests can be found under:
+[tests](/spfx-react/src/tests)
 
 - To run unit tests:
   - **npm test**
