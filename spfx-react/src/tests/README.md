@@ -1,0 +1,2 @@
+- To run unit tests:
+  - **npm test**

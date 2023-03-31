@@ -1,0 +1,12 @@
+(Please also refer to README):
+
+The submission including the code repository was too large in Moodle,
+thus the access to the code of the GitLab repository can be found under: https://gitlab.cim.rhul.ac.uk/uyac001/CS4825_202223
+
+This folder only includes the deliverables:
+- Documents: includes the final report PDF ('under Documents')
+- Demos of the web parts:
+    - Videos of the web part demos
+    - Screenshots of the web part demos
+
+- The installation and user manual can be found under in the 'Appendices' of the final report PDF
