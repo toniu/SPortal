@@ -67,7 +67,7 @@ The occurences of 'zhac' to extract and randomise new users would have to modifi
 The Web Parts Use PnPjs library, Office-ui-fabric-react components, react Big-Calendar Component
 Solution|Author(s)
 --------|---------
-All Web Parts|[Neka Toni-Uebari](https://gitlab.cim.rhul.ac.uk/zhac032)
+All Web Parts|[Neka Toni-Uebari](https://github.com/toniu)
 (From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[Abderahman Moujahid](https://github.com/Abderahman88)
 (From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[Eli H. Schei](https://github.com/Eli-Schei)
 (From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[Hugo Bernier](https://github.com/hugoabernier) ([@bernier](https://twitter.com/bernierh), [Tahoe Ninjas](https://tahoeninjas.blog/))
