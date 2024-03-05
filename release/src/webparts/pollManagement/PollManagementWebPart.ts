@@ -166,7 +166,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
                                             title: strings.Q_Title_Title,
                                             type: CustomCollectionFieldType.custom,
                                             required: true,
-                                            onCustomRender: (field, value, onUpdate, item, itemId) => {
+                                            onCustomRender: (field: { id: any; }, value: any, onUpdate: (arg0: any, arg1: string) => void, item: { QDisabled: any; }, itemId: any) => {
                                                 return (
                                                     React.createElement("div", null,
                                                         React.createElement("textarea",
@@ -189,7 +189,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
                                             title: strings.Q_Options_Title,
                                             type: CustomCollectionFieldType.custom,
                                             required: true,
-                                            onCustomRender: (field, value, onUpdate, item, itemId) => {
+                                            onCustomRender: (field: { id: any; }, value: any, onUpdate: (arg0: any, arg1: string) => void, item: { QDisabled: any; }, itemId: any) => {
                                                 return (
                                                     React.createElement("div", null,
                                                         React.createElement("textarea",
@@ -219,7 +219,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
                                             title: strings.Q_StartDate_Title,
                                             type: CustomCollectionFieldType.custom,
                                             required: false,
-                                            onCustomRender: (field, value, onUpdate, item, itemId) => {
+                                            onCustomRender: (field: { id: any; }, value: string | number | Date, onUpdate: (arg0: any, arg1: Date) => void, item: any, itemId: any) => {
                                                 return (
                                                     React.createElement(DateTimePicker, {
                                                         key: itemId,
@@ -241,7 +241,7 @@ export default class PollManagementWebPart extends BaseClientSideWebPart<IPollMa
                                             title: strings.Q_EndDate_Title,
                                             type: CustomCollectionFieldType.custom,
                                             required: false,
-                                            onCustomRender: (field, value, onUpdate, item, itemId) => {
+                                            onCustomRender: (field: { id: any; }, value: string | number | Date, onUpdate: (arg0: any, arg1: Date) => void, item: any, itemId: any) => {
                                                 return (
                                                     React.createElement(DateTimePicker, {
                                                         key: itemId,
