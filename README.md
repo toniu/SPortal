@@ -1,7 +1,7 @@
 
 A SPFx React TypeScript project which includes a set of web parts designed for a particular Sharepoint website regarding the management of users, groups and informational within a Sharepoint portal.
 Technology stack: SPFx framework, TypeScript, React, Jest, Gulp, SharePoint Lists
-# The features of the project include...
+## The features of the project include...
 
 **Calendar web part:** The management of events of the calendar. This includes the configuration, viewing, adding, editing and deleting events, including search for the location on the maps. There is also a special feature to handle recurrences of events too.
 ![calendar-1](release/deliverables/demos/calendar/screenshots/add-edit-event.png)
