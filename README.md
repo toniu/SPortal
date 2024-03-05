@@ -1,5 +1,5 @@
-
 A SPFx React TypeScript project which includes a set of web parts designed for a particular Sharepoint website regarding the management of users, groups and informational within a Sharepoint portal.
+
 Technology stack: SPFx framework, TypeScript, React, Jest, Gulp, SharePoint Lists
 ## The features of the project include...
 
