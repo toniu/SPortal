@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SPortal - SharePoint Intranet Portal Demo</title>
-  <link rel="icon" type="image/x-icon" href="logos/favicon.ico.png">
-  <link rel="apple-touch-icon" href="logos/favicon.ico.png">
+  <link rel="icon" type="image/x-icon" href="logos/favicon.ico">
+  <link rel="apple-touch-icon" href="logos/sp-logo.png">
   <meta name="theme-color" content="#008c96">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -288,7 +288,7 @@ app.innerHTML = `
         <img src="logos/sp-logo.png" alt="SPortal" class="sp-logo" />
         <div style="text-align:left">
           <h1><span class="brand-accent">SP</span>ortal</h1>
-          <p style="max-width:640px">A suite of SharePoint Framework web parts forming an intranet portal — calendar, dashboard, groups, polls and profiles.</p>
+          <p style="max-width:640px">A suite of SharePoint Framework web parts forming an intranet portal - calendar, dashboard, groups, polls and profiles.</p>
           <div class="tech-badges">${techBadges.map(b=>`<span class="tech-badge">${b}</span>`).join('')}</div>
         </div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:12px"></div>
@@ -332,35 +332,59 @@ app.innerHTML = `
               `
             ).join('');
             const vidsSlides = vidsArr.map(m=>{
-              // determine a sensible poster for each video:
-              // 1) explicit poster on video object (m.poster)
-              // 2) find a screenshot in imgsArr with a similar filename
-              // 3) fall back to the first screenshot in the section
-              // 4) fall back to remote video thumbnail or empty string
+              // Improved poster matching and deploy-safe source fallbacks
+              // Poster selection strategy:
+              // 1) explicit `m.poster`
+              // 2) token-match video filename to screenshot filenames (robust token matching)
+              // 3) loose token match (2-char tokens)
+              // 4) first screenshot in the section
+              // 5) remote video thumbnail or empty
               let posterSrc = '';
               if(m.poster){ posterSrc = m.poster; }
               else {
                 const vFile = (m.mp4 || m.mov || '').split('/').pop() || '';
-                const vBase = vFile.split('.').slice(0,-1).join('.') || vFile.replace(/\.[^/.]+$/, '');
+                const vBase = vFile.replace(/\.[^/.]+$/, '').toLowerCase();
+                const tokenize = str => (str||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').split(' ').filter(Boolean).filter(t=>t.length>2);
+                const vTokens = tokenize(vBase);
                 let matched = null;
-                if(vBase && imgsArr && imgsArr.length){
+                if(vTokens.length && imgsArr && imgsArr.length){
                   matched = imgsArr.find(img=>{
                     const imgFile = (img.src || img.remote || '').split('/').pop() || '';
-                    const imgBase = imgFile.split('.').slice(0,-1).join('.') || imgFile.replace(/\.[^/.]+$/, '');
-                    if(!imgBase) return false;
-                    return imgBase.includes(vBase) || vBase.includes(imgBase);
+                    const imgBase = imgFile.replace(/\.[^/.]+$/, '').toLowerCase();
+                    const imgTokens = tokenize(imgBase);
+                    return vTokens.some(t=> imgTokens.includes(t));
                   });
                 }
                 if(matched){ posterSrc = matched.remote || matched.src || ''; }
-                else if(imgsArr && imgsArr.length){ posterSrc = imgsArr[0].remote || imgsArr[0].src || ''; }
+                else if(imgsArr && imgsArr.length){
+                  // loose match: look for any shared 2-char token
+                  const looseMatched = imgsArr.find(img=>{
+                    const imgFile = (img.src || img.remote || '').split('/').pop() || '';
+                    const imgBase = imgFile.replace(/\.[^/.]+$/, '').toLowerCase();
+                    const imgTokens = (imgBase||'').split(/[^a-z0-9]+/).filter(Boolean);
+                    return imgTokens.some(t=> t.length>=2 && vTokens.some(vt=> vt.includes(t) || t.includes(vt)));
+                  });
+                  posterSrc = (looseMatched && (looseMatched.remote || looseMatched.src)) || (imgsArr[0].remote || imgsArr[0].src || '');
+                }
                 else { posterSrc = m.remoteMp4 || m.remote || ''; }
               }
+
+              // Build a prioritized list of sources so deployed (docs/) sites can fall back to raw.github
+              const sources = [];
+              if(m.mp4) sources.push({src: m.mp4, type: 'video/mp4'});
+              if(m.remoteMp4 && m.remoteMp4 !== m.mp4) sources.push({src: m.remoteMp4, type: 'video/mp4'});
+              if(m.mov) sources.push({src: m.mov, type: 'video/quicktime'});
+              if(m.remoteMov && m.remoteMov !== m.mov) sources.push({src: m.remoteMov, type: 'video/quicktime'});
+              // ensure at least one remote source if local ones are missing
+              if(sources.length === 0){ if(m.remoteMp4) sources.push({src: m.remoteMp4, type:'video/mp4'}); else if(m.remoteMov) sources.push({src:m.remoteMov,type:'video/quicktime'}); }
+              const sourcesStr = sources.map(s=>`<source src="${s.src}" type="${s.type}">`).join('');
+              const fallback = m.remoteMp4 || m.remote || 'https://via.placeholder.com/800x450?text=Video+unavailable';
+
               return `
                 <div class="carousel-slide">
                   <div class="media-frame video-wrap">
-                    <video controls muted playsinline preload="metadata" ${posterSrc?`poster="${posterSrc}"`:''} crossorigin="anonymous" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-frame&quot;><img src=&quot;${m.remoteMp4||m.remote||'https://via.placeholder.com/800x450?text=Video+unavailable'}&quot; alt=&quot;Video unavailable&quot;></div>'">
-                      <source src="${m.mp4}" type="video/mp4">
-                      <source src="${m.mov}" type="video/quicktime">
+                    <video controls muted playsinline preload="metadata" ${posterSrc?`poster="${posterSrc}"`:''} crossorigin="anonymous" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-frame&quot;><img src=&quot;${fallback}&quot; alt=&quot;Video unavailable&quot;></div>'">
+                      ${sourcesStr}
                     </video>
                     <button class="video-play" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z" fill="currentColor"/></svg></button>
                   </div>
