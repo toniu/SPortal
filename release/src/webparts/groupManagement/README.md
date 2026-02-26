@@ -1,20 +1,21 @@
 # Group Management Web Part
 
-## What it does
+A group administration interface backed by three SharePoint Lists (`Groups`, `GroupOwners`, `GroupMembers`). Users can browse, filter, join and leave public groups, while group owners get full CRUD control over their own groups.
 
-Lets users browse, create, edit and delete groups within a SharePoint site. Members can join or leave public groups, and owners can manage groups they created. Data is stored across three SharePoint Lists: Groups, GroupOwners and GroupMembers.
+> **Built with:** SPFx · React · PnPjs · Office UI Fabric React
 
-## Key features
+---
 
-- View and filter groups by name or type
-- Join and leave public groups
-- Create new groups
-- Edit or delete groups you own
+## Features
 
-## Built with
+- **Browse and Filter** — View all groups with name and type filters
+- **Join / Leave** — One-click join and leave for public groups
+- **Create Groups** — Owners can create new groups with a name, description and visibility setting
+- **Edit / Delete** — Owners can rename, reconfigure or delete groups they created
+- **Three-List Data Model** — Separate lists for groups, owners and members keeps the schema clean and queryable
 
-- SPFx, React, PnPjs, Office UI Fabric React
+---
 
 ## Author
 
-[Neka Toni-Uebari](https://github.com/toniu)
+**[Neka Toni-Uebari](https://github.com/toniu)**

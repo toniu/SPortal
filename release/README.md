@@ -1,67 +1,98 @@
-# SPortal — Setup and Development Guide
+# SPortal — Development Guide
 
-## Overview
+Detailed setup, configuration and deployment instructions for the SPortal web parts. See the [root README](../README.md) for an overview of the project, features and screenshots.
 
-This project contains five SharePoint Framework (SPFx) web parts that together form a small intranet portal. Each one is a standalone React component backed by SharePoint Lists.
+> **Built with:** SPFx 1.16 · TypeScript · React · PnPjs · Office UI Fabric React · Jest · Gulp
 
-| Web Part | What it does |
-|----------|-------------|
-| [Dashboard](src/webparts/dashboardApp) | Greets the user and shows their recent and upcoming meetings |
-| [Profile](src/webparts/profile) | Displays the current user's profile and suggests other people to connect with |
-| [Group Management](src/webparts/groupManagement) | Create, edit, delete, join and leave groups |
-| [Poll Management](src/webparts/pollManagement) | Vote on polls and view results with configurable chart types |
-| [Calendar](src/webparts/calendar) | Manage events — supports recurrence, location search and permission checks |
+---
 
-## SPFx Version
+## Table of Contents
+
+- [Web Parts](#web-parts)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Tenant Configuration](#tenant-configuration)
+- [Contributors](#contributors)
+- [References](#references)
+
+---
+
+## Web Parts
+
+| Web Part | Description | README |
+|----------|-------------|--------|
+| Dashboard | Personalised welcome screen with recent and upcoming meetings | [README](src/webparts/dashboardApp/README.md) |
+| Profile | Current user's profile card with suggested connections | [README](src/webparts/profile/README.md) |
+| Group Management | Create, edit, delete, join and leave groups | [README](src/webparts/groupManagement/README.md) |
+| Poll Management | Vote on polls and view chart-based analytics | [README](src/webparts/pollManagement/README.md) |
+| Calendar | Full event lifecycle with recurrence and location search | [README](src/webparts/calendar/README.md) |
+
+### SPFx Version
 
 ![version](https://img.shields.io/badge/version-1.16.1-green.svg)
 
-## Compatibility
-
-- [SharePoint Framework](https://aka.ms/spfx)
-- [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
+---
 
 ## Prerequisites
 
-- Node.js (LTS)
-- PnPjs library
-- office-ui-fabric-react
-- react-big-calendar
-- At least one SharePoint site with the required lists (see individual web part READMEs for specifics)
+- [Node.js](https://nodejs.org/) (v16 LTS)
+- npm (bundled with Node.js)
+- [SharePoint Framework](https://aka.ms/spfx) development environment
+- A [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant) with at least one SharePoint site
+- SharePoint Lists configured for each web part (see individual READMEs)
+
+Key dependencies installed via npm:
+
+| Package | Purpose |
+|---------|---------|
+| `@pnp/sp` | SharePoint REST API wrapper |
+| `office-ui-fabric-react` | Microsoft's component library for consistent SP styling |
+| `react-big-calendar` | Month/week/day calendar view (used by the Calendar web part) |
+
+---
 
 ## Getting Started
 
-1. Clone the repository and navigate to this folder.
-2. Install dependencies and build:
-
 ```bash
+# 1. Clone the repository
+git clone https://github.com/toniu/SPortal.git
+cd SPortal/release
+
+# 2. Install dependencies
 npm install
+
+# 3. Build
 gulp build
-```
 
-3. Start the local workbench:
-
-```bash
+# 4. Start the local workbench
 gulp serve
 ```
 
-Or use hot-reload for a faster feedback loop:
+For a faster feedback loop during development:
 
 ```bash
 npm run serve
 ```
 
+---
+
 ## Testing
 
-Unit tests are in [src/tests](src/tests/). Run them with:
+Unit tests live in [`src/tests/`](src/tests/):
 
 ```bash
 npm test
 ```
 
+Tests use **Jest** and cover the core service methods and component logic for each web part.
+
+---
+
 ## Deployment
 
-Build a production bundle, then upload the package to your tenant's App Catalogue:
+Build a production bundle and package the solution:
 
 ```bash
 gulp build
@@ -69,24 +100,33 @@ gulp bundle --ship
 gulp package-solution --ship
 ```
 
-This produces a `.sppkg` file. Upload it to your **App Catalogue** and click **Deploy**.
+This produces a `.sppkg` file in `sharepoint/solution/`. Upload it to your tenant's **App Catalogue** and click **Deploy**.
 
-For a step-by-step walkthrough, see Microsoft's guide:
-[Serve your web part in a SharePoint page](https://learn.microsoft.com/en-us/sharepoint/dev/spfx/web-parts/get-started/serve-your-web-part-in-a-sharepoint-page)
+For the full walkthrough, see Microsoft's guide: [Serve your web part in a SharePoint page](https://learn.microsoft.com/en-us/sharepoint/dev/spfx/web-parts/get-started/serve-your-web-part-in-a-sharepoint-page).
 
-### Adapting to a different tenant
+---
 
-The code references a specific tenant email pattern (`zhac...@live.rhul.ac.uk`). To run on your own tenant, search for `zhac` across the codebase and replace it with your tenant's email format. The most notable place is the `_getUsersToDiscover` method in `Profile.tsx`.
+## Tenant Configuration
 
-> No admin access? You can get a free dev tenant via the [Microsoft 365 Developer Program](http://aka.ms/o365devprogram).
+The source code references a specific tenant email pattern (`zhac...@live.rhul.ac.uk`). To deploy to a different tenant:
+
+1. Search the codebase for `zhac`
+2. Replace all occurrences with your tenant's email format (e.g. `user@yourdomain.onmicrosoft.com`)
+3. The most notable file is `Profile.tsx` — the `_getUsersToDiscover` method filters users by this domain
+
+> No admin access to a SharePoint tenant? Get a free dev tenant via the [Microsoft 365 Developer Program](http://aka.ms/o365devprogram).
+
+---
 
 ## Contributors
 
-Solution | Author(s)
----------|----------
-All Web Parts | [Neka Toni-Uebari](https://github.com/toniu)
-Calendar (based on [react-calendar](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)) | Abderahman Moujahid, Eli H. Schei, Hugo Bernier, Joao Mendes, Mohamed Derhalli, Mohammed Amer, Nanddeep Nachan
-Poll Management (based on [react-quick-poll](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-quick-poll)) | Sudharsan K., Dipen Shah
+| Solution | Author(s) |
+|----------|-----------|
+| All Web Parts | [Neka Toni-Uebari](https://github.com/toniu) |
+| Calendar (based on [react-calendar](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)) | Abderahman Moujahid, Eli H. Schei, Hugo Bernier, Joao Mendes, Mohamed Derhalli, Mohammed Amer, Nanddeep Nachan |
+| Poll Management (based on [react-quick-poll](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-quick-poll)) | Sudharsan K., Dipen Shah |
+
+---
 
 ## References
 
@@ -94,6 +134,8 @@ Poll Management (based on [react-quick-poll](https://github.com/pnp/sp-dev-fx-we
 - [Publish SPFx apps to the Marketplace](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/publish-to-marketplace-overview)
 - [Microsoft 365 Patterns and Practices](https://aka.ms/m365pnp)
 - [Deploying web parts](https://learn.microsoft.com/en-us/sharepoint/dev/spfx/web-parts/get-started/serve-your-web-part-in-a-sharepoint-page)
+
+---
 
 ## Licence
 

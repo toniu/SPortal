@@ -1,31 +1,35 @@
 # Calendar Web Part
 
-## What it does
+A full-featured event calendar for SharePoint Online. Users select a SharePoint Events list through the property pane, then browse, create, edit and delete events. The web part checks the current user's list permissions before allowing changes, and supports recurring events and location search.
 
-A full-featured event calendar for SharePoint. Users pick a SharePoint Events list through the property pane, then they can browse, create, edit and delete events. The web part checks the current user's permissions before allowing changes, and supports recurring events and location search out of the box.
+> **Built with:** SPFx · React · PnPjs · Office UI Fabric React · react-big-calendar
 
-## Key features
+---
 
-- Configure which Events list to use
-- Multiple calendar views (month, week, day)
-- Add and edit events with attendees, all-day flags, recurrence rules and location search
-- Delete events (with permission checks)
+## Features
 
-## Configuration properties
+- **Configurable Data Source** — Pick any Events-type list on the site via the property pane
+- **Multiple Views** — Switch between month, week and day layouts
+- **Event CRUD** — Add and edit events with attendee selection, all-day toggles, recurrence rules and map-based location search
+- **Permission Gating** — Delete and edit buttons only appear when the user has the required list permissions
+
+---
+
+## Configuration Properties
 
 | Property | Type | Required | Notes |
 |----------|------|----------|-------|
-| Site URL of Calendar List | Text | Yes | URL of the site containing the list |
-| Calendar list | Dropdown | Yes | Populated with all Events-type lists on the site |
+| Site URL of Calendar List | Text | Yes | URL of the site containing the Events list |
+| Calendar list | Dropdown | Yes | Auto-populated with all Events-type lists on the site |
 | Start Date | Date | Yes | Earliest date to retrieve events from |
 | End Date | Date | Yes | Latest date to retrieve events until |
 
-## Built with
-
-- SPFx, React, PnPjs, Office UI Fabric React, react-big-calendar
+---
 
 ## Author
 
-[Neka Toni-Uebari](https://github.com/toniu)
+**[Neka Toni-Uebari](https://github.com/toniu)**
 
-Calendar functionality draws on the open-source [react-calendar](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar) sample by Abderahman Moujahid, Eli H. Schei, Hugo Bernier, Joao Mendes, Mohamed Derhalli, Mohammed Amer and Nanddeep Nachan.
+### Acknowledgements
+
+Calendar functionality builds on the [react-calendar](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar) community sample by Abderahman Moujahid, Eli H. Schei, Hugo Bernier, Joao Mendes, Mohamed Derhalli, Mohammed Amer and Nanddeep Nachan.
