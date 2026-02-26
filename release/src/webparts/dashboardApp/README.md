@@ -1,33 +1,27 @@
-### Dashboard web part
+# Dashboard Web Part
 
-## Summary
-This component is developed to welcome the user and display the recent and upcoming events based on the SharePoint events list selected.
+## What it does
 
-# Demo
-- [Demo videos](/final/demos/dashboard/)
+Welcomes the logged-in user and shows their recent and upcoming calendar events. The events are pulled from a SharePoint Events list that the site owner configures through the web part property pane.
 
-## Features of this component:
-- Configure the event list that will be used
-- Displays the recent and upcoming events 
+## Key features
 
-## Web Part properties
-Property |Type|Required| comments
---------------------|----|--------|----------
-Site Url of Calendar List | Text| yes|
-Calendar list| Choice/Dropdown | yes|  this is filled with all list of  type "event list" created
-Start Date | Date | yes | Event Date
-End Date| Date| yes | Event Date
+- Configurable event list — pick any Events-type list on the site
+- Shows past and future meetings in a clean summary view
 
-## Applies to
-- [SharePoint Framework](https://aka.ms/spfx)
-- [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
+## Configuration properties
 
-## Prerequisites
-SharePoint Lists
+| Property | Type | Required | Notes |
+|----------|------|----------|-------|
+| Site URL of Calendar List | Text | Yes | URL of the site containing the list |
+| Calendar list | Dropdown | Yes | Populated with all Events-type lists on the site |
+| Start Date | Date | Yes | Earliest date to retrieve events from |
+| End Date | Date | Yes | Latest date to retrieve events until |
 
-## Solution and Contributors
-The Web Part Use PnPjs library, Office-ui-fabric-react components.
+## Built with
 
-Solution|Author(s)
---------|---------
-Dashboard App Web Part|[Neka Toni-Uebari](https://gitlab.cim.rhul.ac.uk/zhac032)
+- SPFx, React, PnPjs, Office UI Fabric React
+
+## Author
+
+[Neka Toni-Uebari](https://github.com/toniu)

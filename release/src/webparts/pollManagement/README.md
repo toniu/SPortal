@@ -1,42 +1,34 @@
-### Poll management web part
+# Poll Management Web Part
 
-## Summary
-This component is developed for the configuration and management of polls. It requires a SharePoint list 'Polls'.
+## What it does
 
-# Demo
-- [Demo videos](/final/demos/poll-management/)
+Lets site users participate in polls and view the results through configurable charts. Administrators define poll questions, choices and date ranges in the property pane; end users cast votes and see live analytics.
 
-## Features of this component:
-- Submit votes - submit a vote into a poll
-- Configure polls - display polls based on date; CRUD operations of polls
-- Configure chart type - for displaying poll results
+## Key features
 
-## Web Part properties
-1. **Display poll based on date** - This property will check for the **Start Date** and **End Date** on the poll questions to display the correct poll question to the end user. The **Start Date** and **End Date** on the poll question will be enabled only when this property is turned on.
-2. **Poll Questions** - Manage the collection of poll questions and choices.
-    * **Question Title** - Title of the question.
-    * **Choices** - Choices separated by comma.
-    * **Active** - Whether the poll is active or not
-    * **Start Date** - Date when the end user can start seeing the poll question.
-    * **End Date** - Last day of the poll question visible to the end user.
-3. **Success Message** - Message to be displayed to the user after a successful submission. It is optional, if not provided the default message '**Thank you for your submission**' will be displayed.
-4. **Response Message** - Message to be displayed to the user with the user response, once the user has submitted. It is optional, if not provided the default message '**You voted for: ~User Response~**' will be displayed below the chart.
-5. **Submit button text** - Text to be displayed on the submit button. It is optional, if not provided the default text '**Submit Vote**' will be displayed.
-6. **Preferred Chart Type** - Chart type to display the overall response for the question.
+- Submit votes on active polls
+- View poll results as bar, pie or doughnut charts (configurable)
+- Date-driven display — polls appear and expire automatically based on start/end dates
+- Customisable success, response and button text
 
-## Applies to
-- [SharePoint Framework](https://aka.ms/spfx)
-- [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
+## Configuration properties
 
-## Prerequisites
-SharePoint Lists
+| Property | Type | Notes |
+|----------|------|-------|
+| Display poll based on date | Toggle | When on, uses Start Date / End Date to control visibility |
+| Poll Questions | Collection | Each entry has a title, comma-separated choices, active flag and optional date range |
+| Success Message | Text | Shown after a vote is submitted (default: "Thank you for your submission") |
+| Response Message | Text | Shown with the user's choice (default: "You voted for: ~User Response~") |
+| Submit button text | Text | Label on the vote button (default: "Submit Vote") |
+| Preferred Chart Type | Dropdown | Chart style for displaying results |
 
-## Solution and Contributors
-The Web Part Use PnPjs library, Office-ui-fabric-react components.
+## Built with
 
-Solution|Author(s)
---------|---------
-Poll Management Web Part|[Neka Toni-Uebari](https://gitlab.cim.rhul.ac.uk/zhac032)
-From (react-quick-poll: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-quick-poll) | [Sudharsan K.](https://github.com/sudharsank) ([@sudharsank](https://twitter.com/sudharsank), [Know More](https://spknowledge.com/))
-From (react-quick-poll: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-quick-poll) | [Dipen Shah](https://github.com/dips365) ([@Dips_365](https://twitter.com/Dips_365))
+- SPFx, React, PnPjs, Office UI Fabric React
+
+## Author
+
+[Neka Toni-Uebari](https://github.com/toniu)
+
+Poll functionality draws on the open-source [react-quick-poll](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-quick-poll) sample by Sudharsan K. and Dipen Shah.
 

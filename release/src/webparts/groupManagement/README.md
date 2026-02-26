@@ -1,29 +1,20 @@
-### Group management web part
+# Group Management Web Part
 
-## Summary
-This component is developed for the management of groups; especially the groups that the user owns or is a member of.
-The web part uses the SharePoint Lists: 'Groups', 'GroupOwners' and 'GroupMembers'
+## What it does
 
-# Demo
-- [Demo videos](/final/demos/group-management/)
+Lets users browse, create, edit and delete groups within a SharePoint site. Members can join or leave public groups, and owners can manage groups they created. Data is stored across three SharePoint Lists: Groups, GroupOwners and GroupMembers.
 
-## Features of this component:
-- View and filter groups
+## Key features
+
+- View and filter groups by name or type
 - Join and leave public groups
-- Create a new group
-- Edit a group owned by the user
-- Delete a group owned by the user
+- Create new groups
+- Edit or delete groups you own
 
-## Applies to
-- [SharePoint Framework](https://aka.ms/spfx)
-- [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
+## Built with
 
-## Prerequisites
-SharePoint Lists
+- SPFx, React, PnPjs, Office UI Fabric React
 
-## Solution and Contributors
-The Web Part Use PnPjs library, Office-ui-fabric-react components.
+## Author
 
-Solution|Author(s)
---------|---------
-Group Management Web Part|[Neka Toni-Uebari](https://gitlab.cim.rhul.ac.uk/zhac032)
+[Neka Toni-Uebari](https://github.com/toniu)

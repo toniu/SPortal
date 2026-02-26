@@ -1,25 +1,18 @@
-### Profile web part
+# Profile Web Part
 
-## Summary
-This component is developed for displaying the user's profile and other profiles of suggested users within the tenant.
+## What it does
 
-# Demo
-- [Demo videos](/final/demos/profile/)
+Displays the current user's SharePoint profile — name, job title, department and the groups they own or belong to. It also suggests other users in the tenant for the viewer to discover.
 
-## Features of this component:
-- Displays the user's profile: includes their name, title, department and the groups they own or are a member of
-- Suggestion of other user profiles to visit
+## Key features
 
-## Applies to
-- [SharePoint Framework](https://aka.ms/spfx)
-- [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
+- Full profile card for the logged-in user
+- "People you might know" section that surfaces other tenant members
 
-## Prerequisites
-SharePoint Lists
+## Built with
 
-## Solution and Contributors
-The Web Part Use PnPjs library, Office-ui-fabric-react components.
+- SPFx, React, PnPjs, Office UI Fabric React
 
-Solution|Author(s)
---------|---------
-Profile Web Part|[Neka Toni-Uebari](https://gitlab.cim.rhul.ac.uk/zhac032)
+## Author
+
+[Neka Toni-Uebari](https://github.com/toniu)

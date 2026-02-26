@@ -1,43 +1,31 @@
-### Calendar web part
+# Calendar Web Part
 
-## Summary
-This component is developed for the configuration and management of events in a calendar. It uses a SharePoint Events list configured by the user to retrieve and manage events with. The web part also checks for user permissions of the CRUD operations for the events.
+## What it does
 
-# Demo
-- [Demo for this web part](/final/demos/calendar/)
+A full-featured event calendar for SharePoint. Users pick a SharePoint Events list through the property pane, then they can browse, create, edit and delete events. The web part checks the current user's permissions before allowing changes, and supports recurring events and location search out of the box.
 
-## Features of this component:
-- Configure events list
-- Select view of calendar and view events
-- Edit/Add events (including setting atendees, all-day, recurrence, location search)
-- Delete events
+## Key features
 
-## Web Part properties
-Property |Type|Required| comments
---------------------|----|--------|----------
-Site Url of Calendar List | Text| yes|
-Calendar list| Choice/Dropdown | yes|  this is filled with all list of  type "event list" created
-Start Date | Date | yes | Event Date
-End Date| Date| yes | Event Date
+- Configure which Events list to use
+- Multiple calendar views (month, week, day)
+- Add and edit events with attendees, all-day flags, recurrence rules and location search
+- Delete events (with permission checks)
 
-## Applies to
-- [SharePoint Framework](https://aka.ms/spfx)
-- [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
+## Configuration properties
 
-## Prerequisites
-SharePoint Lists
+| Property | Type | Required | Notes |
+|----------|------|----------|-------|
+| Site URL of Calendar List | Text | Yes | URL of the site containing the list |
+| Calendar list | Dropdown | Yes | Populated with all Events-type lists on the site |
+| Start Date | Date | Yes | Earliest date to retrieve events from |
+| End Date | Date | Yes | Latest date to retrieve events until |
 
-## Solution and Contributors
-The Web Part Use PnPjs library, Office-ui-fabric-react components. react Big-Calendar Component
+## Built with
 
-Solution|Author(s)
---------|---------
-Calendar Web Part|[Neka Toni-Uebari](https://gitlab.cim.rhul.ac.uk/zhac032)
-(From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[Abderahman Moujahid](https://github.com/Abderahman88)
-(From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[Eli H. Schei](https://github.com/Eli-Schei)
-(From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[Hugo Bernier](https://github.com/hugoabernier) ([@bernier](https://twitter.com/bernierh), [Tahoe Ninjas](https://tahoeninjas.blog/))
-(From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[João Mendes](https://github.com/joaojmendes)
-(From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[Mohamed Derhalli](https://github.com/derhallim)
-(From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[Mohammed Amer](https://github.com/mohammadamer) ([@Mohammad3mer](https://twitter.com/Mohammad3mer), https://www.linkedin.com/in/mohammad3mer/)
-(From react-calendar: https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)|[Nanddeep Nachan](https://github.com/nanddeepn) ([@NanddeepNachan](https://twitter.com/NanddeepNachan))
+- SPFx, React, PnPjs, Office UI Fabric React, react-big-calendar
 
+## Author
+
+[Neka Toni-Uebari](https://github.com/toniu)
+
+Calendar functionality draws on the open-source [react-calendar](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar) sample by Abderahman Moujahid, Eli H. Schei, Hugo Bernier, Joao Mendes, Mohamed Derhalli, Mohammed Amer and Nanddeep Nachan.
