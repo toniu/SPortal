@@ -383,7 +383,7 @@ app.innerHTML = `
               return `
                 <div class="carousel-slide">
                   <div class="media-frame video-wrap">
-                    <video controls muted playsinline preload="metadata" ${posterSrc?`poster="${posterSrc}"`:''} crossorigin="anonymous" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-frame&quot;><img src=&quot;${fallback}&quot; alt=&quot;Video unavailable&quot;></div>'">
+                    <video controls muted playsinline preload="metadata" ${posterSrc?`poster="${posterSrc}"`:''} data-remote-mp4="${m.remoteMp4||''}" data-remote-mov="${m.remoteMov||''}">
                       ${sourcesStr}
                     </video>
                     <button class="video-play" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z" fill="currentColor"/></svg></button>
@@ -511,6 +511,42 @@ function initCarousels(){
       const btn = wrap.querySelector('.video-play');
       const vid = wrap.querySelector('video');
       if(!btn || !vid) return;
+      // prepare fallback attempt state
+      vid._fallbackTried = 0;
+      const gatherCandidates = ()=>{
+        const candidates = [];
+        // existing <source> elements (in order)
+        Array.from(vid.querySelectorAll('source')).forEach(s=>{ if(s.src) candidates.push(s.src); });
+        // data-remote attributes
+        const rmp4 = vid.getAttribute('data-remote-mp4');
+        const rmov = vid.getAttribute('data-remote-mov');
+        if(rmp4) candidates.push(rmp4);
+        if(rmov) candidates.push(rmov);
+        return candidates.filter(Boolean);
+      };
+      const replaceWithFallbackImage = (src)=>{
+        const parent = vid.parentNode;
+        if(parent){ parent.innerHTML = `<div class="media-frame"><img src="${src}" alt="Video unavailable"></div>`; }
+      };
+      const tryNextCandidate = ()=>{
+        const cand = gatherCandidates();
+        if(vid._fallbackTried >= cand.length){
+          // all candidates failed -> show fallback image
+          const fallbackImg = cand.length? cand[cand.length-1] : (vid.getAttribute('data-remote-mp4') || vid.getAttribute('data-remote-mov') || 'https://via.placeholder.com/800x450?text=Video+unavailable');
+          replaceWithFallbackImage(fallbackImg);
+          return;
+        }
+        const next = cand[vid._fallbackTried++];
+        try{
+          // remove existing sources and set a single src for mobile compatibility
+          while(vid.firstChild) vid.removeChild(vid.firstChild);
+          vid.src = next;
+          vid.load();
+        }catch(e){
+          // attempt next on exception
+          setTimeout(tryNextCandidate, 200);
+        }
+      };
       // toggle overlay when video plays/pauses/ends
       const onPlay = ()=> wrap.classList.add('playing');
       const onHide = ()=> wrap.classList.remove('playing');
@@ -518,6 +554,10 @@ function initCarousels(){
       vid.addEventListener('playing', onPlay);
       vid.addEventListener('pause', onHide);
       vid.addEventListener('ended', onHide);
+      // if an error occurs (commonly on mobile due to CORS/codec), try fallback candidates
+      vid.addEventListener('error', (ev)=>{
+        tryNextCandidate();
+      });
       // clicking overlay starts playback (and focuses video controls)
       btn.addEventListener('click', (e)=>{
         e.preventDefault();
