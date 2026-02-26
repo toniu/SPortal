@@ -98,12 +98,14 @@
     .carousel-track{display:flex;transition:transform .32s cubic-bezier(.2,.9,.2,1);will-change:transform}
     .carousel-slide{min-width:100%;flex:0 0 100%;box-sizing:border-box;padding:0}
     .carousel-slide .media-frame{border-radius:8px}
-    .carousel-controls{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 6px;pointer-events:none}
-    .carousel-controls button{pointer-events:auto;background:rgba(255,255,255,0.92);border:1px solid var(--card-border);width:38px;height:38px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
-    .carousel-controls button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.08)}
-    .carousel-dots{display:flex;gap:8px;justify-content:center;margin-top:10px}
-    .carousel-dot{width:10px;height:10px;border-radius:50%;background:rgba(0,0,0,0.12);border:0;cursor:pointer;transition:background .12s ease,transform .12s ease}
-    .carousel-dot.active{background:var(--sp-blue);transform:scale(1.05)}
+    .carousel-controls{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 8px;pointer-events:none}
+    .carousel-controls button{pointer-events:auto;background:rgba(0,0,0,0.55);border:0;width:44px;height:44px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:20px;line-height:1;transition:transform .12s ease,box-shadow .12s ease}
+    .carousel-controls button:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,0.16)}
+    .carousel-dots{display:flex;gap:10px;justify-content:center;margin-top:12px}
+    .carousel-dot{display:inline-block;flex:0 0 auto;width:12px;height:12px;border-radius:50%;background:rgba(0,0,0,0.12);border:1px solid rgba(0,0,0,0.06);cursor:pointer;transition:background .12s ease,transform .12s ease}
+    .carousel-dot.active{background:var(--sp-blue);transform:scale(1.08);border-color:rgba(0,0,0,0.08)}
+    .carousel-header{font-size:.95rem;font-weight:700;color:var(--sp-muted);margin-bottom:8px}
+    .carousel-index{position:absolute;right:10px;top:8px;background:rgba(255,255,255,0.9);padding:6px 8px;border-radius:999px;font-size:.82rem;color:var(--sp-muted);border:1px solid var(--card-border)}
     @media (min-width:900px){
       .carousel-slide{padding:12px}
     }
@@ -333,8 +335,8 @@ app.innerHTML = `
             const imgsDots = imgsArr.map((_,i)=>`<button class="carousel-dot" data-index="${i}" aria-label="Go to slide ${i+1}"></button>`).join('');
             const vidsDots = vidsArr.map((_,i)=>`<button class="carousel-dot" data-index="${i}" aria-label="Go to video ${i+1}"></button>`).join('');
             return `
-              ${imgsArr.length ? `<div class="carousel" data-carousel="${s.id}-images"><div class="carousel-track">${imgsSlides}</div><div class="carousel-controls"><button class="carousel-prev" aria-label="Previous">‹</button><button class="carousel-next" aria-label="Next">›</button></div><div class="carousel-dots">${imgsDots}</div></div>` : ''}
-              ${vidsArr.length ? `<div class="carousel" data-carousel="${s.id}-videos"><div class="carousel-track">${vidsSlides}</div><div class="carousel-controls"><button class="carousel-prev" aria-label="Previous">‹</button><button class="carousel-next" aria-label="Next">›</button></div><div class="carousel-dots">${vidsDots}</div></div>` : ''}
+              ${imgsArr.length ? `<div class="carousel" data-carousel="${s.id}-images"><div class="carousel-header">Screenshots</div><div class="carousel-index"></div><div class="carousel-track">${imgsSlides}</div><div class="carousel-controls"><button class="carousel-prev" aria-label="Previous">‹</button><button class="carousel-next" aria-label="Next">›</button></div><div class="carousel-dots">${imgsDots}</div></div>` : ''}
+              ${vidsArr.length ? `<div class="carousel" data-carousel="${s.id}-videos"><div class="carousel-header">Demo videos</div><div class="carousel-index"></div><div class="carousel-track">${vidsSlides}</div><div class="carousel-controls"><button class="carousel-prev" aria-label="Previous">‹</button><button class="carousel-next" aria-label="Next">›</button></div><div class="carousel-dots">${vidsDots}</div></div>` : ''}
             `;
         })()}
       </div>
@@ -431,6 +433,9 @@ function initCarousels(){
       if(dotsWrap){
         Array.from(dotsWrap.children).forEach((d,i)=> d.classList.toggle('active', i===index));
       }
+      // update index overlay
+      const idxEl = carousel.querySelector('.carousel-index');
+      if(idxEl){ idxEl.textContent = `${index+1} / ${slides.length}`; }
     }
     function prevSlide(){ index = Math.max(0, index-1); update(); }
     function nextSlide(){ index = Math.min(slides.length-1, index+1); update(); }
