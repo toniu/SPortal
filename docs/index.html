@@ -68,7 +68,8 @@ const icons = {
   github: `<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.48 2.87 8.28 6.84 9.63.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.36-3.37-1.36-.45-1.18-1.1-1.5-1.1-1.5-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 6.84c.85.004 1.7.12 2.5.34 1.9-1.33 2.74-1.05 2.74-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.8 0 .26.18.58.69.48A10.01 10.01 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></svg>`
 };
 
-// content data
+// content data — use local release/ paths first with remote raw.github fallback
+const rawBase = 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos';
 const sections = [
   {
     id: 'dashboard',
@@ -79,7 +80,8 @@ const sections = [
       {title: 'Activity', desc: 'Recent actions and notifications.'}
     ],
     media: [
-      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/dashboard/screenshots/overview.png', alt: 'Dashboard overview', caption: 'Dashboard overview'}
+      {type: 'img', src: '../release/deliverables/demos/dashboard/screenshots/dashboard.png', remote: rawBase + '/dashboard/screenshots/dashboard.png', alt: 'Dashboard overview', caption: 'Dashboard overview'},
+      {type: 'video', mp4: '../release/deliverables/demos/dashboard/demo-videos/dashboard-demo.mp4', mov: '../release/deliverables/demos/dashboard/demo-videos/dashboard-demo.mov', remoteMp4: rawBase + '/dashboard/demo-videos/dashboard-demo.mp4', remoteMov: rawBase + '/dashboard/demo-videos/dashboard-demo.mov', caption: 'Dashboard demo'}
     ]
   },
   {
@@ -91,7 +93,16 @@ const sections = [
       {title: 'Event details', desc: 'Quick view and join links.'}
     ],
     media: [
-      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/screenshots/calendar.png', alt: 'Calendar', caption: 'Calendar view'}
+      {type:'img', src:'../release/deliverables/demos/calendar/screenshots/add-edit-event.png', remote: rawBase + '/calendar/screenshots/add-edit-event.png', alt:'Add/Edit event', caption:'Add/Edit event'},
+      {type:'img', src:'../release/deliverables/demos/calendar/screenshots/delete-event.png', remote: rawBase + '/calendar/screenshots/delete-event.png', alt:'Delete event', caption:'Delete event'},
+      {type:'img', src:'../release/deliverables/demos/calendar/screenshots/edit-add-event-ocation-search.png', remote: rawBase + '/calendar/screenshots/edit-add-event-ocation-search.png', alt:'Location search', caption:'Location search'},
+      {type:'img', src:'../release/deliverables/demos/calendar/screenshots/edit-add-event-recurrences.png', remote: rawBase + '/calendar/screenshots/edit-add-event-recurrences.png', alt:'Recurrences', caption:'Recurrence settings'},
+      {type:'img', src:'../release/deliverables/demos/calendar/screenshots/view-events.png', remote: rawBase + '/calendar/screenshots/view-events.png', alt:'View events', caption:'View events'},
+      {type:'video', mp4:'../release/deliverables/demos/calendar/demo-videos/configuration-and-views-demo.mp4', mov:'../release/deliverables/demos/calendar/demo-videos/configuration-and-views-demo.mov', remoteMp4: rawBase + '/calendar/demo-videos/configuration-and-views-demo.mp4', remoteMov: rawBase + '/calendar/demo-videos/configuration-and-views-demo.mov', caption:'Configuration and views demo'},
+      {type:'video', mp4:'../release/deliverables/demos/calendar/demo-videos/delete-event-demo.mp4', mov:'../release/deliverables/demos/calendar/demo-videos/delete-event-demo.mov', remoteMp4: rawBase + '/calendar/demo-videos/delete-event-demo.mp4', remoteMov: rawBase + '/calendar/demo-videos/delete-event-demo.mov', caption:'Delete event demo'},
+      {type:'video', mp4:'../release/deliverables/demos/calendar/demo-videos/edit-add-event-demo.mp4', mov:'../release/deliverables/demos/calendar/demo-videos/edit-add-event-demo.mov', remoteMp4: rawBase + '/calendar/demo-videos/edit-add-event-demo.mp4', remoteMov: rawBase + '/calendar/demo-videos/edit-add-event-demo.mov', caption:'Edit/Add event demo'},
+      {type:'video', mp4:'../release/deliverables/demos/calendar/demo-videos/edit-recurrences-demo.mp4', mov:'../release/deliverables/demos/calendar/demo-videos/edit-recurrences-demo.mov', remoteMp4: rawBase + '/calendar/demo-videos/edit-recurrences-demo.mp4', remoteMov: rawBase + '/calendar/demo-videos/edit-recurrences-demo.mov', caption:'Edit recurrences demo'},
+      {type:'video', mp4:'../release/deliverables/demos/calendar/demo-videos/recurrences-demo.mp4', mov:'../release/deliverables/demos/calendar/demo-videos/recurrences-demo.mov', remoteMp4: rawBase + '/calendar/demo-videos/recurrences-demo.mp4', remoteMov: rawBase + '/calendar/demo-videos/recurrences-demo.mov', caption:'Recurrences demo'}
     ]
   },
   {
@@ -104,8 +115,16 @@ const sections = [
       {title: 'Group CRUD', desc: 'Owners can create and manage groups.'}
     ],
     media: [
-      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/screenshots/view-filter-groups.png', alt: 'Groups', caption: 'Filter groups'},
-      {type: 'video', mp4: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/demo-videos/create-group-demo.mp4', mov: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/demo-videos/create-group-demo.mov', caption: 'Creating a group'}
+      {type:'img', src:'../release/deliverables/demos/group-management/screenshots/view-filter-groups.png', remote: rawBase + '/group-management/screenshots/view-filter-groups.png', alt:'Filter groups', caption:'View and filter groups'},
+      {type:'img', src:'../release/deliverables/demos/group-management/screenshots/create-group.png', remote: rawBase + '/group-management/screenshots/create-group.png', alt:'Create group', caption:'Creating a new group'},
+      {type:'img', src:'../release/deliverables/demos/group-management/screenshots/edit-group.png', remote: rawBase + '/group-management/screenshots/edit-group.png', alt:'Edit group', caption:'Editing a group'},
+      {type:'img', src:'../release/deliverables/demos/group-management/screenshots/join-public-group.png', remote: rawBase + '/group-management/screenshots/join-public-group.png', alt:'Join group', caption:'Joining a public group'},
+      {type:'img', src:'../release/deliverables/demos/group-management/screenshots/leave-public-group.png', remote: rawBase + '/group-management/screenshots/leave-public-group.png', alt:'Leave group', caption:'Leaving a group'},
+      {type:'img', src:'../release/deliverables/demos/group-management/screenshots/delete-group.png', remote: rawBase + '/group-management/screenshots/delete-group.png', alt:'Delete group', caption:'Delete group confirmation'},
+      {type:'video', mp4:'../release/deliverables/demos/group-management/demo-videos/create-group-demo.mp4', mov:'../release/deliverables/demos/group-management/demo-videos/create-group-demo.mov', remoteMp4: rawBase + '/group-management/demo-videos/create-group-demo.mp4', remoteMov: rawBase + '/group-management/demo-videos/create-group-demo.mov', caption:'Creating a new group'},
+      {type:'video', mp4:'../release/deliverables/demos/group-management/demo-videos/join-leave-filter-groups-demo.mp4', mov:'../release/deliverables/demos/group-management/demo-videos/join-leave-filter-groups-demo.mov', remoteMp4: rawBase + '/group-management/demo-videos/join-leave-filter-groups-demo.mp4', remoteMov: rawBase + '/group-management/demo-videos/join-leave-filter-groups-demo.mov', caption:'Joining, leaving and filtering groups'},
+      {type:'video', mp4:'../release/deliverables/demos/group-management/demo-videos/edit-group-demo.mp4', mov:'../release/deliverables/demos/group-management/demo-videos/edit-group-demo.mov', remoteMp4: rawBase + '/group-management/demo-videos/edit-group-demo.mp4', remoteMov: rawBase + '/group-management/demo-videos/edit-group-demo.mov', caption:'Editing a group'},
+      {type:'video', mp4:'../release/deliverables/demos/group-management/demo-videos/delete-group-demo.mp4', mov:'../release/deliverables/demos/group-management/demo-videos/delete-group-demo.mov', remoteMp4: rawBase + '/group-management/demo-videos/delete-group-demo.mp4', remoteMov: rawBase + '/group-management/demo-videos/delete-group-demo.mov', caption:'Deleting a group'}
     ]
   },
   {
@@ -117,8 +136,11 @@ const sections = [
       {title: 'Chart Analytics', desc: 'View aggregated results.'}
     ],
     media: [
-      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/screenshots/poll-vote.png', alt: 'Poll vote', caption: 'Casting a vote'},
-      {type: 'video', mp4: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/demo-videos/poll-vote-analytics-demo.mp4', mov: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/demo-videos/poll-vote-analytics-demo.mov', caption: 'Poll analytics demo'}
+      {type:'img', src:'../release/deliverables/demos/poll-management/screenshots/poll-analytics.png', remote: rawBase + '/poll-management/screenshots/poll-analytics.png', alt:'Poll analytics', caption:'Poll results analytics'},
+      {type:'img', src:'../release/deliverables/demos/poll-management/screenshots/poll-vote.png', remote: rawBase + '/poll-management/screenshots/poll-vote.png', alt:'Poll vote', caption:'Casting a vote'},
+      {type:'img', src:'../release/deliverables/demos/poll-management/screenshots/preferred-chart-type.png', remote: rawBase + '/poll-management/screenshots/preferred-chart-type.png', alt:'Chart type', caption:'Preferred chart type'},
+      {type:'video', mp4:'../release/deliverables/demos/poll-management/demo-videos/poll-vote-analytics-demo.mp4', mov:'../release/deliverables/demos/poll-management/demo-videos/poll-vote-analytics-demo.mov', remoteMp4: rawBase + '/poll-management/demo-videos/poll-vote-analytics-demo.mp4', remoteMov: rawBase + '/poll-management/demo-videos/poll-vote-analytics-demo.mov', caption:'Voting and viewing analytics'},
+      {type:'video', mp4:'../release/deliverables/demos/poll-management/demo-videos/poll-configuration-demo.mp4', mov:'../release/deliverables/demos/poll-management/demo-videos/poll-configuration-demo.mov', remoteMp4: rawBase + '/poll-management/demo-videos/poll-configuration-demo.mp4', remoteMov: rawBase + '/poll-management/demo-videos/poll-configuration-demo.mov', caption:'Poll configuration'}
     ]
   },
   {
@@ -130,7 +152,8 @@ const sections = [
       {title: 'Suggestions', desc: 'People you might know.'}
     ],
     media: [
-      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/profile/screenshots/profile.png', alt: 'Profile', caption: 'User profile'}
+      {type:'img', src:'../release/deliverables/demos/profile/screenshots/profile.png', remote: rawBase + '/profile/screenshots/profile.png', alt:'Profile', caption:'User profile'},
+      {type:'video', mp4:'../release/deliverables/demos/profile/demo-videos/profile-demo.mp4', mov:'../release/deliverables/demos/profile/demo-videos/profile-demo.mov', remoteMp4: rawBase + '/profile/demo-videos/profile-demo.mp4', remoteMov: rawBase + '/profile/demo-videos/profile-demo.mov', caption:'Profile walkthrough'}
     ]
   }
 ];
@@ -165,7 +188,9 @@ app.innerHTML = `
           ${s.features.map(f=>`<div class="feature-card"><h3 style="font-weight:600">${f.title}</h3><p style="font-weight:400">${f.desc}</p></div>`).join('')}
         </div>
         <div class="media-grid">
-          ${s.media.map(m=> m.type === 'img' ? `<div class="media-item"><img src="${m.src}" alt="${m.alt}" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x450?text=Image+missing'"><div class="caption">${m.caption}</div></div>` : `<div class="media-item"><video controls muted playsinline preload="metadata" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-item&quot;><img src=&quot;https://via.placeholder.com/800x450?text=Video+unavailable&quot; alt=&quot;Video unavailable&quot;><div class=&quot;caption&quot;>${m.caption}</div></div>'"><source src="${m.mp4}" type="video/mp4"><source src="${m.mov}" type="video/quicktime"></video><div class="caption">${m.caption}</div></div>`).join('')}
+          ${s.media.map(m=> m.type === 'img' ?
+            `<div class="media-item"><img src="${m.src}" alt="${m.alt}" onerror="this.onerror=null;this.src='${m.remote||('https://via.placeholder.com/800x450?text=Image+missing')}'"><div class="caption">${m.caption}</div></div>` :
+            `<div class="media-item"><video controls muted playsinline preload="metadata" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-item&quot;><img src=&quot;${m.remoteMp4||m.remote||'https://via.placeholder.com/800x450?text=Video+unavailable'}&quot; alt=&quot;Video unavailable&quot;><div class=&quot;caption&quot;>${m.caption}</div></div>'"><source src="${m.mp4}" type="video/mp4"><source src="${m.mov}" type="video/quicktime"></video><div class="caption">${m.caption}</div></div>`).join('')}
         </div>
       </div>
     </section>
