@@ -34,8 +34,8 @@
     header p{color:var(--sp-muted);max-width:640px;margin:8px auto}
     .tech-badge{display:inline-block;background:var(--sp-bg);border:1px solid var(--sp-border);border-radius:6px;padding:4px 12px;font-size:.85rem;color:var(--sp-muted);margin:4px}
     .btn{display:inline-block;margin-top:16px;padding:10px 20px;background:linear-gradient(90deg,var(--sp-accent) 60%,var(--sp-teal) 100%);color:#fff;text-decoration:none;border-radius:28px;font-weight:600}
-    nav{position:sticky;top:0;background:var(--sp-surface);border-bottom:1px solid var(--sp-border);z-index:100;padding:10px 0}
-    nav .container{display:flex;gap:18px;overflow-x:auto}
+    nav{position:sticky;top:0;background:var(--sp-surface);border-bottom:1px solid var(--sp-border);z-index:100;padding:8px 12px;display:flex;align-items:center}
+    nav .container{display:flex;gap:18px;overflow-x:auto;justify-content:flex-end;align-items:center}
     nav a{color:var(--sp-muted);text-decoration:none;white-space:nowrap;padding-bottom:2px}
     nav a:hover{color:var(--sp-accent)}
     nav a svg{vertical-align:middle;margin-right:8px}
@@ -56,6 +56,8 @@
     /* Mobile nav toggle */
     .nav-toggle{display:none;background:transparent;border:0;padding:8px;border-radius:8px;cursor:pointer}
     .nav-toggle svg{width:22px;height:22px;color:var(--sp-muted)}
+    .nav-logo{display:inline-flex;align-items:center;margin-left:8px}
+    .nav-logo img{width:40px;height:40px;object-fit:contain;border-radius:8px}
     nav .container{transition:transform .28s ease,opacity .22s ease}
     nav.open .container{transform:none;opacity:1}
     @media(max-width:640px){
@@ -63,9 +65,10 @@
       .media-grid{grid-template-columns:1fr}
     }
     @media(max-width:880px){
-      /* mobile nav becomes full-width dropdown */
+      /* mobile nav: hamburger left, logo centered, links dropdown */
       .nav-toggle{display:inline-block}
-      nav .container{position:fixed;left:0;right:0;top:64px;background:var(--sp-surface);flex-direction:column;padding:12px 20px;border-bottom:1px solid var(--sp-border);transform:translateY(-110%);opacity:0;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+      .nav-logo{position:absolute;left:50%;transform:translateX(-50%)}
+      nav .container{position:fixed;left:0;right:0;top:56px;background:var(--sp-surface);flex-direction:column;padding:12px 20px;border-bottom:1px solid var(--sp-border);transform:translateY(-110%);opacity:0;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
       nav.open .container{transform:translateY(0);opacity:1}
       nav .container a{display:block;padding:12px 8px;margin:6px 0}
     }
@@ -195,6 +198,9 @@ app.innerHTML = `
     <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
     </button>
+    <a class="nav-logo" href="/">
+      <img src="logos/sp-logo.png" alt="SPortal" />
+    </a>
     <div class="container">
       ${sections.map(s=>`<a href="#${s.id}">${icons[s.id]||''}<span style="margin-left:6px">${s.title}</span></a>`).join('')}
     </div>
