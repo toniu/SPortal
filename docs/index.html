@@ -403,7 +403,7 @@ app.innerHTML = `
               return `
                 <div class="carousel-slide">
                   <div class="media-frame video-wrap">
-                    <video controls muted playsinline preload="metadata" ${posterSrc?`poster="${posterSrc}"`:''} data-remote-mp4="${m.remoteMp4||''}" data-remote-mov="${m.remoteMov||''}">
+                    <video controls muted playsinline preload="metadata" ${posterSrc?`poster="${posterSrc}"`:''} controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;" data-remote-mp4="${m.remoteMp4||''}" data-remote-mov="${m.remoteMov||''}">
                       ${sourcesStr}
                     </video>
                     <button class="video-play" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z" fill="currentColor"/></svg></button>
