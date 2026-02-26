@@ -1,0 +1,10 @@
+{
+  "name": "sportal-demo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "sh -c 'PORT=${PORT:-8000}; python3 -m http.server $PORT'",
+    "stop": "sh -c 'pids=$(lsof -ti tcp:${PORT:-8000}); if [ -n \"$pids\" ]; then kill $pids || true; echo \"Stopped $pids\"; else echo \"No process on port ${PORT:-8000}\"; fi'",
+    "status": "sh -c 'pids=$(lsof -ti tcp:${PORT:-8000}); if [ -n \"$pids\" ]; then echo \"Running: $pids\"; else echo \"Not running\"; fi'"
+  }
+}
