@@ -18,7 +18,16 @@ This project contains five SharePoint Framework (SPFx) web parts that together f
 
 ## Compatibility
 
-- [SharePoint Frame- [SharePoint Frame- [SharePoint Frame- [SharePoint Frame-//docs.microsoft.com/en-us/sharepoint/dev/spf- [SharePoour- [SharePoint Frame- [SharePoint Frame- [SharePoint Frame- [SharePoint Frame-//docs.microsoft.com/en-us/sharepoint/dev/spf- [SharePoour- [SharePoint Frame- [SharePoint Frame-e ind- [SharePoint Frame- [Ss for specifics)
+- [SharePoint Framework](https://aka.ms/spfx)
+- [Microsoft 365 tenant](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
+
+## Prerequisites
+
+- Node.js (LTS)
+- PnPjs library
+- office-ui-fabric-react
+- react-big-calendar
+- At least one SharePoint site with the required lists (see individual web part READMEs for specifics)
 
 ## Getting Started
 
@@ -26,7 +35,43 @@ This project contains five SharePoint Framework (SPFx) web parts that together f
 2. Install dependencies and build:
 
 ```bash
-npmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmneedbnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnp Run thnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnant'snpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnp filenpmnpmnpmnpmno yonpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnpmnalkthrough, see Microsoft's guide:
+npm install
+gulp build
+```
+
+3. Start the local workbench:
+
+```bash
+gulp serve
+```
+
+Or use hot-reload for a faster feedback loop:
+
+```bash
+npm run serve
+```
+
+## Testing
+
+Unit tests are in [src/tests](src/tests/). Run them with:
+
+```bash
+npm test
+```
+
+## Deployment
+
+Build a production bundle, then upload the package to your tenant's App Catalogue:
+
+```bash
+gulp build
+gulp bundle --ship
+gulp package-solution --ship
+```
+
+This produces a `.sppkg` file. Upload it to your **App Catalogue** and click **Deploy**.
+
+For a step-by-step walkthrough, see Microsoft's guide:
 [Serve your web part in a SharePoint page](https://learn.microsoft.com/en-us/sharepoint/dev/spfx/web-parts/get-started/serve-your-web-part-in-a-sharepoint-page)
 
 ### Adapting to a different tenant
@@ -41,4 +86,15 @@ Solution | Author(s)
 ---------|----------
 All Web Parts | [Neka Toni-Uebari](https://github.com/toniu)
 Calendar (based on [react-calendar](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-calendar)) | Abderahman Moujahid, Eli H. Schei, Hugo Bernier, Joao Mendes, Mohamed Derhalli, Mohammed Amer, Nanddeep Nachan
-Poll Management (based on [react-quick-poll](https://github.com/pnp/sp-dev-fx-webpartPoll Management (based on [react-quick-poll](https://github.com/pnp/sp-dev-fx-webpartPoll Management (based on [react-quick-poll](https://github.com/pnp/sp-devs/sPoll Management (based on your-develPoll Management (based on [react-quick-poll](https://github.com/pnp/sp-dev-fx-webpartPoll Management (based on [react-quick-poll](https://github.com/pnp/sp-dev-fx-webpartPoll Management (based on [react-quick-poll](https://github.com/pnp/sp-devs/sPoll Management (barepoinPoll Management (based on [react-quick-poll](https://github.com/pnp/sp-dev-fx-webpartPoll Management (based on [react-quout warranty of any Poll Management (implied.
+Poll Management (based on [react-quick-poll](https://github.com/pnp/sp-dev-fx-webparts/tree/main/samples/react-quick-poll)) | Sudharsan K., Dipen Shah
+
+## References
+
+- [Getting started with SharePoint Framework](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/set-up-your-developer-tenant)
+- [Publish SPFx apps to the Marketplace](https://docs.microsoft.com/en-us/sharepoint/dev/spfx/publish-to-marketplace-overview)
+- [Microsoft 365 Patterns and Practices](https://aka.ms/m365pnp)
+- [Deploying web parts](https://learn.microsoft.com/en-us/sharepoint/dev/spfx/web-parts/get-started/serve-your-web-part-in-a-sharepoint-page)
+
+## Licence
+
+This code is provided as-is without warranty of any kind, express or implied.
