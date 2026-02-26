@@ -39,29 +39,32 @@
     nav a{color:var(--sp-muted);text-decoration:none;white-space:nowrap;padding-bottom:2px}
     nav a:hover{color:var(--sp-accent)}
     nav a svg{vertical-align:middle;margin-right:8px}
-    /* Nav spacing and responsive behavior */
-    nav a{padding:10px 12px;border-radius:8px;transition:background .18s, color .18s, transform .18s}
+    /* Nav spacing and responsive behavior (more compact) */
+    nav a{padding:8px 10px;border-radius:8px;transition:background .18s, color .18s, transform .18s}
     nav a:hover{background:rgba(4,156,166,0.06);transform:translateY(-1px)}
-    section{padding:48px 0;border-bottom:1px solid var(--sp-border)}
+    /* tighter section spacing for compact layout */
+    section{padding:36px 0;border-bottom:1px solid var(--sp-border)}
     section h2{font-size:1.25rem;color:var(--sp-accent);margin-bottom:8px}
     .subtitle{color:var(--sp-muted);margin-bottom:20px}
     .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:20px}
-    .feature-card{background:var(--sp-surface);border:1px solid var(--sp-border);border-radius:10px;padding:14px;font-family:Inter, 'Segoe UI', sans-serif;font-weight:400}
+    .feature-card{background:var(--sp-surface);border:1px solid var(--sp-border);border-radius:8px;padding:12px;font-family:Inter, 'Segoe UI', sans-serif;font-weight:400}
     .media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
     .media-item{background:var(--sp-surface);border:1px solid var(--sp-border);border-radius:10px;overflow:hidden}
     .media-item img,.media-item video{width:100%;display:block}
     .media-item .caption{padding:10px 12px;color:var(--sp-muted);font-size:.9rem}
     section h2 svg{vertical-align:middle;margin-right:8px}
-    footer{padding:36px 0;text-align:center;color:var(--sp-muted);background:var(--sp-surface);border-top:1px solid var(--sp-border)}
+    footer{padding:28px 0;text-align:center;color:var(--sp-muted);background:var(--sp-surface);border-top:1px solid var(--sp-border)}
     /* Mobile nav toggle */
     .nav-toggle{display:none;background:transparent;border:0;padding:8px;border-radius:8px;cursor:pointer}
     .nav-toggle svg{width:22px;height:22px;color:var(--sp-muted)}
-    .nav-logo{display:inline-flex;align-items:center;margin-left:8px}
-    .nav-logo img{width:40px;height:40px;object-fit:contain;border-radius:8px}
+    /* nav logo hidden until scrolled (keeps layout compact) */
+    .nav-logo{display:inline-flex;align-items:center;margin-left:0;opacity:0;transform:translateY(-6px) scale(.95);transition:opacity .22s, transform .22s, width .2s;visibility:hidden;width:0;overflow:hidden}
+    .nav-logo img{width:40px;height:40px;object-fit:contain;border-radius:8px;display:block}
     nav .container{transition:transform .28s ease,opacity .22s ease}
     nav.open .container{transform:none;opacity:1}
     @media(max-width:640px){
-      header h1{font-size:1.6rem}
+      header h1{font-size:1.5rem}
+      header{padding:22px 0 14px}
       .media-grid{grid-template-columns:1fr}
     }
     @media(max-width:880px){
@@ -76,7 +79,7 @@
         nav .container a{display:block;padding:12px 8px;margin:6px 0}
         /* when scrolled, hamburger anchored left and logo centered and bigger */
         nav.scrolled .nav-toggle{left:12px;transform:none}
-        nav.scrolled .nav-logo{position:absolute;left:50%;transform:translateX(-50%)}
+        nav.scrolled .nav-logo{position:absolute;left:50%;transform:translateX(-50%);visibility:visible;width:auto;opacity:1}
         nav .nav-logo img{width:40px;height:40px}
         nav.scrolled .nav-logo img{width:52px;height:52px}
     }
