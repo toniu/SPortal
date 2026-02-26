@@ -39,6 +39,9 @@
     nav a{color:var(--sp-muted);text-decoration:none;white-space:nowrap;padding-bottom:2px}
     nav a:hover{color:var(--sp-accent)}
     nav a svg{vertical-align:middle;margin-right:8px}
+    /* Nav spacing and responsive behavior */
+    nav a{padding:10px 12px;border-radius:8px;transition:background .18s, color .18s, transform .18s}
+    nav a:hover{background:rgba(4,156,166,0.06);transform:translateY(-1px)}
     section{padding:48px 0;border-bottom:1px solid var(--sp-border)}
     section h2{font-size:1.25rem;color:var(--sp-accent);margin-bottom:8px}
     .subtitle{color:var(--sp-muted);margin-bottom:20px}
@@ -50,7 +53,23 @@
     .media-item .caption{padding:10px 12px;color:var(--sp-muted);font-size:.9rem}
     section h2 svg{vertical-align:middle;margin-right:8px}
     footer{padding:36px 0;text-align:center;color:var(--sp-muted);background:var(--sp-surface);border-top:1px solid var(--sp-border)}
-    @media(max-width:640px){header h1{font-size:1.6rem}.media-grid{grid-template-columns:1fr}}
+    /* Mobile nav toggle */
+    .nav-toggle{display:none;background:transparent;border:0;padding:8px;border-radius:8px;cursor:pointer}
+    .nav-toggle svg{width:22px;height:22px;color:var(--sp-muted)}
+    nav{position:relative}
+    nav .container{transition:transform .28s ease,opacity .22s ease}
+    nav.open .container{transform:none;opacity:1}
+    @media(max-width:640px){
+      header h1{font-size:1.6rem}
+      .media-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:880px){
+      /* mobile nav becomes full-width dropdown */
+      .nav-toggle{display:inline-block}
+      nav .container{position:fixed;left:0;right:0;top:64px;background:var(--sp-surface);flex-direction:column;padding:12px 20px;border-bottom:1px solid var(--sp-border);transform:translateY(-110%);opacity:0;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+      nav.open .container{transform:translateY(0);opacity:1}
+      nav .container a{display:block;padding:12px 8px;margin:6px 0}
+    }
   </style>
 </head>
 <body>
@@ -174,6 +193,9 @@ app.innerHTML = `
   </header>
 
   <nav>
+    <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+    </button>
     <div class="container">
       ${sections.map(s=>`<a href="#${s.id}">${icons[s.id]||''}<span style="margin-left:6px">${s.title}</span></a>`).join('')}
     </div>
@@ -200,6 +222,23 @@ app.innerHTML = `
     <div class="container"><p>Built by <a href="https://github.com/toniu">Neka Toni-Uebari</a> · <a href="https://github.com/toniu/SPortal">Source on GitHub</a></p></div>
   </footer>
 `;
+// wire up mobile nav toggle and auto-close on link click
+const navToggle = document.getElementById('nav-toggle');
+const navEl = document.querySelector('nav');
+if(navToggle && navEl){
+  navToggle.addEventListener('click', ()=>{
+    const open = navEl.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  // close nav when link clicked on small screens
+  navEl.querySelectorAll('.container a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      if(window.innerWidth <= 880){ navEl.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); }
+    });
+  });
+  // close on resize if desktop
+  window.addEventListener('resize', ()=>{ if(window.innerWidth > 880 && navEl.classList.contains('open')){ navEl.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); } });
+}
 </script>
 
 </body>
