@@ -4,17 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SPortal — SharePoint Intranet Portal Demo</title>
-  <link rel="icon" type="image/png" href="logos/sp-favicon.ico.png">
-  <link rel="apple-touch-icon" href="logos/sp-favicon.ico.png">
+  <link rel="icon" type="image/x-icon" href="logos/favicon.ico.png">
+  <link rel="apple-touch-icon" href="logos/favicon.ico.png">
   <meta name="theme-color" content="#0078d4">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    html {
-      scroll-behavior: smooth;
-    }
-    :root {
+    :root{
       --sp-blue: #049ca6;
       --sp-blue-dark: #037c85;
       --sp-teal: #00b7c3;
@@ -26,563 +21,154 @@
       --sp-accent: var(--sp-blue);
       --sp-accent-hover: var(--sp-blue-dark);
     }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-      background: var(--sp-bg);
-      color: var(--sp-text);
-      line-height: 1.6;
-      font-size: 1.08rem;
-      letter-spacing: 0.01em;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;font-family: 'Segoe UI', Inter, system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background:var(--sp-bg);color:var(--sp-text);line-height:1.6;font-size:1.02rem
     }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Header */
-    header {
-      padding: 48px 0 32px;
-      text-align: center;
-      background: var(--sp-surface);
-      border-bottom: 1px solid var(--sp-border);
-      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.04);
-      position: relative;
-    }
-
-    .sp-logo {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 12px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.10);
-      background: #fff;
-      object-fit: contain;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--sp-accent);
-      letter-spacing: -1.5px;
-      text-shadow: 0 2px 8px rgba(0,120,212,0.07);
-    }
-
-    header p {
-      font-size: 1.15rem;
-      color: var(--sp-muted);
-      max-width: 640px;
-      margin: 0 auto 20px;
-    }
-
-    .tech-badge {
-      display: inline-block;
-      background: var(--sp-bg);
-      border: 1px solid var(--sp-border);
-      border-radius: 6px;
-      padding: 4px 12px;
-      font-size: 0.85rem;
-      color: var(--sp-muted);
-      margin: 4px;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 24px;
-      background: var(--sp-accent);
-      color: #fff;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: background 0.2s;
-      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.08);
-    }
-
-    .btn:hover { background: var(--sp-accent-hover); }
-
-    /* Nav */
-    nav {
-      position: sticky;
-      top: 0;
-      background: var(--sp-surface);
-      border-bottom: 1px solid var(--sp-border);
-      z-index: 100;
-      padding: 12px 0;
-      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.03);
-    }
-
-    nav .container {
-      display: flex;
-      gap: 24px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    nav a {
-      color: var(--sp-muted);
-      font-family: 'Segoe UI', 'Inter', sans-serif;
-      font-size: 1.08rem;
-      letter-spacing: -0.5px;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 0.2s, border-bottom 0.2s;
-      padding-bottom: 2px;
-      line-height: 1.7;
-      border-bottom: 2px solid transparent;
-    }
-
-    nav a:hover, nav a.active {
-      color: var(--sp-accent);
-      border-bottom: 2px solid var(--sp-accent);
-    }
-
-    /* Sections */
-    section {
-      padding: 48px 0;
-      border-bottom: 1px solid var(--sp-border);
-      background: var(--sp-bg);
-      font-family: 'Segoe UI', 'Inter', sans-serif;
-      font-size: 1.08rem;
-      letter-spacing: 0.02em;
-    }
-
-    section:last-child { border-bottom: none; }
-
-    section h2 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      color: var(--sp-accent);
-      font-family: 'Segoe UI', 'Inter', sans-serif;
-      letter-spacing: -1px;
-      text-shadow: 0 2px 8px rgba(0,120,212,0.04);
-    }
-
-    section .subtitle {
-      color: var(--sp-muted);
-      margin-bottom: 28px;
-      font-size: 0.95rem;
-    }
-
-    /* Feature grid */
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .feature-card {
-      background: var(--sp-surface);
-      border: 1px solid var(--sp-border);
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.04);
-      transition: box-shadow 0.2s, border 0.2s;
-      font-family: 'Inter', 'Segoe UI', sans-serif;
-    }
-    .feature-card:hover {
-      border: 1.5px solid var(--sp-accent);
-      box-shadow: 0 4px 16px 0 rgba(0,120,212,0.10);
-    }
-
-    .feature-card h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--sp-blue-dark);
-    }
-
-    .feature-card p {
-      font-size: 0.9rem;
-      color: var(--sp-muted);
-    }
-
-    /* Media grid */
-    .media-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-    }
-
-    .media-item {
-      background: var(--sp-surface);
-      border: 1px solid var(--sp-border);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.04);
-    }
-
-    .media-item img,
-    .media-item video {
-      width: 100%;
-      display: block;
-      background: #f3f2f1;
-    }
-
-    .media-item .caption {
-      padding: 12px 16px;
-      font-size: 0.85rem;
-      color: var(--sp-muted);
-    }
-
-    /* Footer */
-    footer {
-      padding: 40px 0;
-      text-align: center;
-      color: var(--sp-muted);
-      font-size: 0.85rem;
-      background: var(--sp-surface);
-      border-top: 1px solid var(--sp-border);
-      margin-top: 48px;
-    }
-
-    footer a {
-      color: var(--sp-accent);
-      text-decoration: none;
-    }
-
-    @media (max-width: 640px) {
-      header h1 { font-size: 1.8rem; }
-      section h2 { font-size: 1.3rem; }
-      .media-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Header */
-    header {
-      padding: 60px 0 40px;
-      text-align: center;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    header p {
-      font-size: 1.15rem;
-      color: var(--muted);
-      max-width: 640px;
-      margin: 0 auto 20px;
-    }
-
-    .tech-badge {
-      display: inline-block;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 4px 12px;
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin: 4px;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 24px;
-      background: var(--accent);
-      color: #fff;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-
-    .btn:hover { background: var(--accent-hover); }
-
-    /* Nav */
-    nav {
-      position: sticky;
-      top: 0;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      z-index: 100;
-      padding: 12px 0;
-    }
-
-    nav .container {
-      display: flex;
-      gap: 24px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    nav a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      white-space: nowrap;
-      transition: color 0.2s;
-    }
-
-    nav a:hover, nav a.active { color: var(--text); }
-
-    /* Sections */
-    section {
-      padding: 48px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    section:last-child { border-bottom: none; }
-
-    section h2 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    section .subtitle {
-      color: var(--muted);
-      margin-bottom: 28px;
-      font-size: 0.95rem;
-    }
-
-    /* Feature grid */
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .feature-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-    }
-
-    .feature-card h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .feature-card p {
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    /* Media grid */
-    .media-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-    }
-
-    .media-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .media-item img,
-    .media-item video {
-      width: 100%;
-      display: block;
-    }
-
-    .media-item .caption {
-      padding: 12px 16px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    /* Footer */
-    footer {
-      padding: 40px 0;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    @media (max-width: 640px) {
-      header h1 { font-size: 1.8rem; }
-      section h2 { font-size: 1.3rem; }
-      .media-grid { grid-template-columns: 1fr; }
-    }
+    .container{max-width:1100px;margin:0 auto;padding:0 24px}
+    header{padding:48px 0 32px;text-align:center;background:var(--sp-surface);border-bottom:1px solid var(--sp-border);box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+    .sp-logo{width:64px;height:64px;margin-bottom:12px;border-radius:12px;object-fit:contain;background:#fff}
+    header h1{font-size:2rem;color:var(--sp-accent);margin:6px 0}
+    header p{color:var(--sp-muted);max-width:640px;margin:8px auto}
+    .tech-badge{display:inline-block;background:var(--sp-bg);border:1px solid var(--sp-border);border-radius:6px;padding:4px 12px;font-size:.85rem;color:var(--sp-muted);margin:4px}
+    .btn{display:inline-block;margin-top:16px;padding:10px 20px;background:linear-gradient(90deg,var(--sp-accent) 60%,var(--sp-teal) 100%);color:#fff;text-decoration:none;border-radius:28px;font-weight:600}
+    nav{position:sticky;top:0;background:var(--sp-surface);border-bottom:1px solid var(--sp-border);z-index:100;padding:10px 0}
+    nav .container{display:flex;gap:18px;overflow-x:auto}
+    nav a{color:var(--sp-muted);text-decoration:none;white-space:nowrap;padding-bottom:2px}
+    nav a:hover{color:var(--sp-accent)}
+    section{padding:48px 0;border-bottom:1px solid var(--sp-border)}
+    section h2{font-size:1.25rem;color:var(--sp-accent);margin-bottom:8px}
+    .subtitle{color:var(--sp-muted);margin-bottom:20px}
+    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:20px}
+    .feature-card{background:var(--sp-surface);border:1px solid var(--sp-border);border-radius:10px;padding:16px}
+    .media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+    .media-item{background:var(--sp-surface);border:1px solid var(--sp-border);border-radius:10px;overflow:hidden}
+    .media-item img,.media-item video{width:100%;display:block}
+    .media-item .caption{padding:10px 12px;color:var(--sp-muted);font-size:.9rem}
+    footer{padding:36px 0;text-align:center;color:var(--sp-muted);background:var(--sp-surface);border-top:1px solid var(--sp-border)}
+    @media(max-width:640px){header h1{font-size:1.6rem}.media-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
 
-
 <div id="app-root"></div>
 
 <script>
-// --- DATA ---
+// icons
+const icons = {
+  github: `<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.48 2.87 8.28 6.84 9.63.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.36-3.37-1.36-.45-1.18-1.1-1.5-1.1-1.5-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 6.84c.85.004 1.7.12 2.5.34 1.9-1.33 2.74-1.05 2.74-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.8 0 .26.18.58.69.48A10.01 10.01 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></svg>`
+};
+
+// content data
 const sections = [
   {
-    id: "dashboard",
-    title: "Dashboard",
-    subtitle: "Personalised landing page showing the user's recent and upcoming meetings.",
+    id: 'dashboard',
+    title: 'Dashboard',
+    subtitle: "Personalized landing page showing user's recent and upcoming items.",
     features: [
-      { title: "Personalised Greeting", desc: "Welcomes the logged-in user by name on page load." },
-      { title: "Meeting Summary", desc: "Shows past and upcoming events pulled from a configurable SharePoint Events list." }
+      {title: 'Overview', desc: 'At-a-glance widgets for key items.'},
+      {title: 'Activity', desc: 'Recent actions and notifications.'}
     ],
     media: [
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/dashboard/screenshots/dashboard.png", alt: "Dashboard overview", caption: "Dashboard overview with upcoming meetings" },
-      { type: "video", mp4: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/dashboard/demo-videos/dashboard-demo.mp4", mov: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/dashboard/demo-videos/dashboard-demo.mov", caption: "Dashboard walkthrough" }
+      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/dashboard/screenshots/overview.png', alt: 'Dashboard overview', caption: 'Dashboard overview'}
     ]
   },
   {
-    id: "calendar",
-    title: "Calendar",
-    subtitle: "Full event lifecycle with recurrence, location search and permission checks.",
+    id: 'calendar',
+    title: 'Calendar',
+    subtitle: 'Integrated calendar showing events and meetings.',
     features: [
-      { title: "Multiple Views", desc: "Switch between month, week and day layouts via react-big-calendar." },
-      { title: "Event CRUD", desc: "Create, edit and delete events with attendee selection, all-day toggles and recurrence rules." },
-      { title: "Location Search", desc: "Search for event locations using an integrated map picker." },
-      { title: "Permission Checks", desc: "Edit and delete buttons only appear when the user has the required list permissions." }
+      {title: 'Monthly view', desc: 'See events across the month.'},
+      {title: 'Event details', desc: 'Quick view and join links.'}
     ],
     media: [
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/screenshots/view-events.png", alt: "View events", caption: "Calendar month view" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/screenshots/add-edit-event.png", alt: "Add/edit event", caption: "Add or edit an event" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/screenshots/edit-add-event-recurrences.png", alt: "Recurrences", caption: "Recurrence configuration" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/screenshots/edit-add-event-ocation-search.png", alt: "Location search", caption: "Map-based location search" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/screenshots/delete-event.png", alt: "Delete event", caption: "Delete event confirmation" },
-      { type: "video", mp4: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/demo-videos/edit-add-event-demo.mp4", mov: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/demo-videos/edit-add-event-demo.mov", caption: "Adding and editing events" },
-      { type: "video", mp4: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/demo-videos/configuration-and-views-demo.mp4", mov: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/demo-videos/configuration-and-views-demo.mov", caption: "Calendar configuration and views" },
-      { type: "video", mp4: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/demo-videos/edit-recurrences-demo.mp4", mov: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/demo-videos/edit-recurrences-demo.mov", caption: "Editing recurrence rules" }
+      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/calendar/screenshots/calendar.png', alt: 'Calendar', caption: 'Calendar view'}
     ]
   },
   {
-    id: "groups",
-    title: "Group Management",
-    subtitle: "Create, browse, join and manage groups backed by three SharePoint Lists.",
+    id: 'groups',
+    title: 'Group Management',
+    subtitle: 'Create, browse, join and manage groups backed by SharePoint Lists.',
     features: [
-      { title: "Browse and Filter", desc: "View all groups with name and type filters for quick discovery." },
-      { title: "Join and Leave", desc: "One-click join and leave for public groups." },
-      { title: "Group CRUD", desc: "Owners can create, rename, reconfigure or delete groups they own." }
+      {title: 'Browse and Filter', desc: 'View all groups with filters.'},
+      {title: 'Join and Leave', desc: 'One-click join/leave for public groups.'},
+      {title: 'Group CRUD', desc: 'Owners can create and manage groups.'}
     ],
     media: [
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/screenshots/view-filter-groups.png", alt: "Filter groups", caption: "View and filter groups" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/screenshots/create-group.png", alt: "Create group", caption: "Creating a new group" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/screenshots/edit-group.png", alt: "Edit group", caption: "Editing a group" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/screenshots/join-public-group.png", alt: "Join group", caption: "Joining a public group" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/screenshots/leave-public-group.png", alt: "Leave group", caption: "Leaving a group" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/screenshots/delete-group.png", alt: "Delete group", caption: "Delete group confirmation" },
-      { type: "video", mp4: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/demo-videos/create-group-demo.mp4", mov: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/demo-videos/create-group-demo.mov", caption: "Creating a new group" },
-      { type: "video", mp4: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/demo-videos/join-leave-filter-groups-demo.mp4", mov: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/demo-videos/join-leave-filter-groups-demo.mov", caption: "Joining, leaving and filtering groups" }
+      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/screenshots/view-filter-groups.png', alt: 'Groups', caption: 'Filter groups'},
+      {type: 'video', mp4: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/demo-videos/create-group-demo.mp4', mov: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/group-management/demo-videos/create-group-demo.mov', caption: 'Creating a group'}
     ]
   },
   {
-    id: "polls",
-    title: "Poll Management",
-    subtitle: "Vote on polls and view results with configurable chart analytics.",
+    id: 'polls',
+    title: 'Poll Management',
+    subtitle: 'Vote on polls and view results with chart analytics.',
     features: [
-      { title: "One-Click Voting", desc: "Submit a vote on any active poll with a single click." },
-      { title: "Chart Analytics", desc: "View aggregated results as bar, pie or doughnut charts." },
-      { title: "Date-Driven Visibility", desc: "Polls appear and expire automatically based on configured start and end dates." }
+      {title: 'One-Click Voting', desc: 'Submit a vote quickly.'},
+      {title: 'Chart Analytics', desc: 'View aggregated results.'}
     ],
     media: [
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/screenshots/poll-vote.png", alt: "Poll voting", caption: "Casting a vote" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/screenshots/poll-analytics.png", alt: "Poll analytics", caption: "Poll results analytics" },
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/screenshots/preferred-chart-type.png", alt: "Chart type config", caption: "Configuring chart type" },
-      { type: "video", mp4: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/demo-videos/poll-vote-analytics-demo.mp4", mov: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/demo-videos/poll-vote-analytics-demo.mov", caption: "Voting and viewing analytics" },
-      { type: "video", mp4: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/demo-videos/poll-configuration-demo.mp4", mov: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/demo-videos/poll-configuration-demo.mov", caption: "Poll configuration" }
+      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/screenshots/poll-vote.png', alt: 'Poll vote', caption: 'Casting a vote'},
+      {type: 'video', mp4: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/demo-videos/poll-vote-analytics-demo.mp4', mov: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/poll-management/demo-videos/poll-vote-analytics-demo.mov', caption: 'Poll analytics demo'}
     ]
   },
   {
-    id: "profile",
-    title: "Profile",
-    subtitle: "User profile card with suggested connections across the tenant.",
+    id: 'profile',
+    title: 'Profile',
+    subtitle: 'User profile card with suggested connections.',
     features: [
-      { title: "Profile Card", desc: "Displays the current user's name, title, department and group memberships." },
-      { title: "People You Might Know", desc: "Surfaces other users in the tenant for discovery and networking." }
+      {title: 'Profile Card', desc: 'Shows user details and memberships.'},
+      {title: 'Suggestions', desc: 'People you might know.'}
     ],
     media: [
-      { type: "img", src: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/profile/screenshots/profile.png", alt: "Profile view", caption: "User profile with suggested connections" },
-      { type: "video", mp4: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/profile/demo-videos/profile-demo.mp4", mov: "https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/profile/demo-videos/profile-demo.mov", caption: "Profile walkthrough" }
+      {type: 'img', src: 'https://raw.githubusercontent.com/toniu/SPortal/main/release/deliverables/demos/profile/screenshots/profile.png', alt: 'Profile', caption: 'User profile'}
     ]
   }
 ];
 
-const techBadges = ["SPFx 1.16", "TypeScript", "React", "PnPjs", "Office UI Fabric", "Jest"];
+const techBadges = ["SPFx 1.16","TypeScript","React","PnPjs","Office UI Fabric","Jest"];
 
-// --- RENDER ---
+// render
 const app = document.getElementById('app-root');
 app.innerHTML = `
-<header>
-  <div class="container">
-    <img src="logos/sp-logo.png" alt="SPortal Logo" class="sp-logo" />
-    <h1>SPortal</h1>
-    <p>A suite of five SharePoint Framework web parts that form a self-contained intranet portal — calendar, dashboard, groups, polls and profiles.</p>
-    <div>
-      ${techBadges.map(b => `<span class="tech-badge">${b}</span>`).join('')}
+  <header>
+    <div class="container">
+      <img src="logos/sp-logo.png" alt="SPortal" class="sp-logo" />
+      <h1>SPortal</h1>
+      <p>A suite of SharePoint Framework web parts forming an intranet portal — calendar, dashboard, groups, polls and profiles.</p>
+      <div>${techBadges.map(b=>`<span class="tech-badge">${b}</span>`).join('')}</div>
+      <a class="btn" href="https://github.com/toniu/SPortal" target="_blank" rel="noopener">${icons.github} View on GitHub</a>
     </div>
-    <a class="btn" href="https://github.com/toniu/SPortal">View on GitHub</a>
-  </div>
-</header>
+  </header>
 
-<nav>
-  <div class="container">
-    ${sections.map(s => `<a href="#${s.id}">${s.title}</a>`).join('')}
-  </div>
-</nav>
-
-${sections.map(s => `
-<section id="${s.id}">
-  <div class="container">
-    <h2>${s.title}</h2>
-    <p class="subtitle">${s.subtitle}</p>
-    <div class="feature-grid">
-      ${s.features.map(f => `<div class="feature-card"><h3>${f.title}</h3><p>${f.desc}</p></div>`).join('')}
+  <nav>
+    <div class="container">
+      ${sections.map(s=>`<a href="#${s.id}">${s.title}</a>`).join('')}
     </div>
-    <div class="media-grid">
-      ${s.media.map(m => m.type === 'img' ?
-        `<div class="media-item"><img src="${m.src}" alt="${m.alt}"><div class="caption">${m.caption}</div></div>` :
-        `<div class="media-item"><video controls muted playsinline preload="metadata"><source src="${m.mp4}" type="video/mp4"><source src="${m.mov}" type="video/quicktime"></video><div class="caption">${m.caption}</div></div>`
-      ).join('')}
-    </div>
-  </div>
-</section>
-`).join('')}
+  </nav>
 
-<footer>
-  <div class="container">
-    <p>Built by <a href="https://github.com/toniu">Neka Toni-Uebari</a> &middot; <a href="https://github.com/toniu/SPortal">Source on GitHub</a></p>
-  </div>
-</footer>
+  ${sections.map(s=>`
+    <section id="${s.id}">
+      <div class="container">
+        <h2>${s.title}</h2>
+        <p class="subtitle">${s.subtitle}</p>
+        <div class="feature-grid">
+          ${s.features.map(f=>`<div class="feature-card"><h3>${f.title}</h3><p>${f.desc}</p></div>`).join('')}
+        </div>
+        <div class="media-grid">
+          ${s.media.map(m=> m.type === 'img' ? `<div class="media-item"><img src="${m.src}" alt="${m.alt}"><div class="caption">${m.caption}</div></div>` : `<div class="media-item"><video controls muted playsinline preload="metadata"><source src="${m.mp4}" type="video/mp4"><source src="${m.mov}" type="video/quicktime"></video><div class="caption">${m.caption}</div></div>`).join('')}
+        </div>
+      </div>
+    </section>
+  `).join('')}
+
+  <footer>
+    <div class="container"><p>Built by <a href="https://github.com/toniu">Neka Toni-Uebari</a> · <a href="https://github.com/toniu/SPortal">Source on GitHub</a></p></div>
+  </footer>
 `;
 </script>
-
-<footer>
-  <div class="container">
-    <p>Built by <a href="https://github.com/toniu">Neka Toni-Uebari</a> &middot; <a href="https://github.com/toniu/SPortal">Source on GitHub</a></p>
-  </div>
-</footer>
 
 </body>
 </html>
