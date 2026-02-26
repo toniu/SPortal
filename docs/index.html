@@ -4,16 +4,265 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SPortal — SharePoint Intranet Portal Demo</title>
+  <link rel="icon" type="image/png" href="logos/sp-favicon.ico.png">
+  <link rel="apple-touch-icon" href="logos/sp-favicon.ico.png">
+  <meta name="theme-color" content="#0078d4">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #0f1117;
-      --surface: #1a1d27;
-      --border: #2a2d3a;
-      --text: #e4e4e7;
-      --muted: #9ca3af;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
+    html {
+      scroll-behavior: smooth;
     }
+    :root {
+      --sp-blue: #049ca6;
+      --sp-blue-dark: #037c85;
+      --sp-teal: #00b7c3;
+      --sp-bg: #f3f2f1;
+      --sp-surface: #fff;
+      --sp-border: #e1dfdd;
+      --sp-text: #323130;
+      --sp-muted: #605e5c;
+      --sp-accent: var(--sp-blue);
+      --sp-accent-hover: var(--sp-blue-dark);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: var(--sp-bg);
+      color: var(--sp-text);
+      line-height: 1.6;
+      font-size: 1.08rem;
+      letter-spacing: 0.01em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 48px 0 32px;
+      text-align: center;
+      background: var(--sp-surface);
+      border-bottom: 1px solid var(--sp-border);
+      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.04);
+      position: relative;
+    }
+
+    .sp-logo {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.10);
+      background: #fff;
+      object-fit: contain;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--sp-accent);
+      letter-spacing: -1.5px;
+      text-shadow: 0 2px 8px rgba(0,120,212,0.07);
+    }
+
+    header p {
+      font-size: 1.15rem;
+      color: var(--sp-muted);
+      max-width: 640px;
+      margin: 0 auto 20px;
+    }
+
+    .tech-badge {
+      display: inline-block;
+      background: var(--sp-bg);
+      border: 1px solid var(--sp-border);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 0.85rem;
+      color: var(--sp-muted);
+      margin: 4px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 24px;
+      background: var(--sp-accent);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.08);
+    }
+
+    .btn:hover { background: var(--sp-accent-hover); }
+
+    /* Nav */
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--sp-surface);
+      border-bottom: 1px solid var(--sp-border);
+      z-index: 100;
+      padding: 12px 0;
+      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.03);
+    }
+
+    nav .container {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    nav a {
+      color: var(--sp-muted);
+        font-family: 'Segoe UI', 'Inter', sans-serif;
+        font-size: 1.08rem;
+        letter-spacing: -0.5px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      transition: color 0.2s, border-bottom 0.2s;
+      padding-bottom: 2px;
+        line-height: 1.7;
+      border-bottom: 2px solid transparent;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--sp-accent);
+      border-bottom: 2px solid var(--sp-accent);
+    }
+
+    /* Sections */
+    section {
+      padding: 48px 0;
+      border-bottom: 1px solid var(--sp-border);
+      background: var(--sp-bg);
+        font-family: 'Segoe UI', 'Inter', sans-serif;
+        font-size: 1.08rem;
+        letter-spacing: 0.02em;
+    }
+
+    section:last-child { border-bottom: none; }
+
+    section h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--sp-accent);
+    }
+
+        font-family: 'Segoe UI', 'Inter', sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+    section .subtitle {
+      color: var(--sp-muted);
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+
+    /* Feature grid */
+        font-family: 'Segoe UI', 'Inter', sans-serif;
+        letter-spacing: -1px;
+        text-shadow: 0 2px 8px rgba(0,120,212,0.04);
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        letter-spacing: 0.01em;
+
+    .feature-card {
+      background: var(--sp-surface);
+      border: 1px solid var(--sp-border);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.04);
+      transition: box-shadow 0.2s, border 0.2s;
+    }
+
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+    .feature-card:hover {
+      border: 1.5px solid var(--sp-accent);
+      box-shadow: 0 4px 16px 0 rgba(0,120,212,0.10);
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--sp-blue-dark);
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--sp-muted);
+    }
+
+    /* Media grid */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .media-item {
+      background: var(--sp-surface);
+      border: 1px solid var(--sp-border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px 0 rgba(0,120,212,0.04);
+    }
+
+    .media-item img,
+    .media-item video {
+      width: 100%;
+      display: block;
+      background: #f3f2f1;
+    }
+
+    .media-item .caption {
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      color: var(--sp-muted);
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 0;
+      text-align: center;
+      color: var(--sp-muted);
+      font-size: 0.85rem;
+      background: var(--sp-surface);
+      border-top: 1px solid var(--sp-border);
+      margin-top: 48px;
+    }
+
+    footer a {
+      color: var(--sp-accent);
+      text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 1.8rem; }
+      section h2 { font-size: 1.3rem; }
+      .media-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -197,6 +446,7 @@
 
 <header>
   <div class="container">
+    <img src="logos/sp-logo.png" alt="SPortal Logo" class="sp-logo" />
     <h1>SPortal</h1>
     <p>A suite of five SharePoint Framework web parts that form a self-contained intranet portal — calendar, dashboard, groups, polls and profiles.</p>
     <div>
