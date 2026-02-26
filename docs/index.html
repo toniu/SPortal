@@ -6,83 +6,147 @@
   <title>SPortal - SharePoint Intranet Portal Demo</title>
   <link rel="icon" type="image/x-icon" href="logos/favicon.ico.png">
   <link rel="apple-touch-icon" href="logos/favicon.ico.png">
-  <meta name="theme-color" content="#0078d4">
+  <meta name="theme-color" content="#008c96">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Segoe+UI:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --sp-blue: #049ca6;
-      --sp-blue-dark: #037c85;
-      --sp-teal: #00b7c3;
-      --sp-bg: #f3f2f1;
-      --sp-surface: #fff;
-      --sp-border: #e1dfdd;
-      --sp-text: #323130;
-      --sp-muted: #605e5c;
-      --sp-accent: var(--sp-blue);
-      --sp-accent-hover: var(--sp-blue-dark);
+      --sp-blue: #008c96;
+      --sp-cyan: #00b7c3;
+      --sp-green: #107C10;
+      --sp-bg: #f6f7f8;
+      --sp-surface: #ffffff;
+      --sp-muted: #6b6b6b;
+      --text: #222222;
+      --card-border: #e6e6e6;
+      --glass: rgba(255,255,255,0.6);
+      --nav-height:64px;
+      --radius:10px;
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{
-      margin:0;font-family: 'Segoe UI', Inter, system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-      background:var(--sp-bg);color:var(--sp-text);line-height:1.6;font-size:1.02rem
+    body{margin:0;font-family:Inter, 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;background:var(--sp-bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+    /* Links and interactive reset */
+    a{color:var(--sp-blue);text-decoration:none;transition:color .16s ease,transform .12s ease}
+    a:visited{color:var(--sp-blue)}
+    a:focus{outline:2px solid rgba(0,120,212,0.12);outline-offset:2px;border-radius:6px}
+    /* Remove tap highlight on mobile */
+    a,button,.nav-toggle,.nav-logo,nav .container a,footer a.footer-link,.btn{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+
+    .container{max-width:1100px;margin:0 auto;padding:0 20px}
+
+    /* Header */
+    header{background:linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));backdrop-filter:saturate(120%) blur(4px);padding:26px 0 12px;border-bottom:1px solid var(--card-border)}
+    .sp-logo{width:48px;height:48px;border-radius:8px;background:#fff;object-fit:cover;transition:transform .18s ease,box-shadow .18s ease;cursor:pointer}
+    header .meta{display:flex;align-items:center;gap:14px;justify-content:center}
+    header h1{margin:0;font-size:1.35rem;color:var(--text);font-weight:700}
+    .brand-accent{color:var(--sp-blue);font-weight:800;letter-spacing:-0.6px}
+    header p{margin:8px 0 0;color:var(--sp-muted);font-size:.95rem;max-width:760px}
+    .tech-badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+    .tech-badge{background:rgba(0,140,150,0.06);color:var(--sp-muted);padding:6px 10px;border-radius:999px;font-size:.82rem;border:1px solid var(--card-border)}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--sp-blue);color:#fff;border-radius:12px;font-weight:700;font-size:.95rem;border:0;transition:transform .14s ease,box-shadow .14s ease,filter .12s ease}
+    .btn svg{width:16px;height:16px;fill:currentColor;color:inherit}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,0.08);filter:brightness(.98)}
+    .btn:focus{outline:2px solid rgba(0,140,150,0.14);outline-offset:3px}
+    /* ensure svg icons inside non-primary links keep sensible fill/stroke */
+    .footer-link svg{width:16px;height:16px;fill:currentColor}
+
+    /* Top nav */
+    nav{position:sticky;top:0;background:var(--sp-surface);border-bottom:1px solid var(--card-border);z-index:180;height:var(--nav-height);display:flex;align-items:center}
+    nav .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+    nav .links{display:flex;gap:8px;align-items:center}
+    nav a.nav-link{color:var(--sp-muted);font-weight:600;font-size:.82rem;padding:4px 6px;border-radius:8px;text-transform:capitalize;letter-spacing:.01em}
+    nav a.nav-link:hover{color:var(--sp-blue);background:rgba(0,140,150,0.04);transform:translateY(-1px)}
+    /* hide toggle by default (desktop) - will be shown explicitly at mobile breakpoints */
+    .nav-toggle{display:none !important;background:transparent;border:0;padding:8px;border-radius:8px;cursor:pointer}
+    .nav-toggle svg{width:20px;height:20px;color:var(--sp-muted);display:block}
+    .nav-logo{display:inline-flex;align-items:center;gap:8px;opacity:0;visibility:hidden;transition:opacity .18s,transform .18s}
+    .nav-logo{width:0;overflow:hidden}
+    nav.scrolled .nav-logo{opacity:1;visibility:visible;width:auto}
+    .nav-logo img{width:36px;height:36px;display:block;border-radius:6px;transition:transform .18s ease,box-shadow .18s ease;cursor:pointer}
+    nav.scrolled .nav-logo img{width:44px;height:44px}
+    /* hover/active effects for logos */
+    .sp-logo:hover, .nav-logo img:hover{transform:scale(1.08)}
+    .sp-logo:active, .nav-logo img:active{transform:scale(1)}
+    /* hide mobile dropdown by default (prevent desktop layout shift) */
+    .nav-dropdown{display:none}
+    /* ensure nav inner takes full nav height and centers children */
+    nav .nav-inner{height:100%;align-items:center}
+    nav .nav-inner > *{display:flex;align-items:center}
+
+    /* Section & features */
+    section{padding:22px 0;border-bottom:1px solid var(--card-border)}
+    section h2{font-size:.98rem;margin:0 0 8px;color:var(--sp-blue);display:flex;align-items:center;gap:10px;font-weight:700}
+    .subtitle{color:var(--sp-muted);margin:6px 0 14px}
+    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:14px}
+    .feature-card{background:var(--sp-surface);border:1px solid var(--card-border);border-radius:10px;padding:12px;display:flex;gap:10px;align-items:flex-start}
+    .feature-card .icon{width:44px;height:44px;border-radius:8px;flex:0 0 44px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.02),rgba(0,0,0,0.01));border:1px solid rgba(0,0,0,0.02)}
+    .feature-card h3{margin:0;font-size:.96rem}
+    .feature-card p{margin:4px 0 0;color:var(--sp-muted);font-size:.9rem}
+
+    /* media */
+    .media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+    .media-item{border-radius:10px;overflow:hidden;background:var(--sp-surface);border:1px solid var(--card-border);display:flex;flex-direction:column}
+    .media-frame{width:100%;aspect-ratio:16/9;display:block;background:#f0f0f0}
+    .media-frame img,.media-frame video{width:100%;height:100%;object-fit:cover;display:block}
+    .caption{padding:10px 12px;color:var(--sp-muted);font-size:.9rem}
+    .media-images{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:12px}
+    .media-videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:8px}
+
+    /* footer */
+    footer{padding:20px 0;background:var(--sp-surface);border-top:1px solid var(--card-border);color:var(--sp-muted)}
+    footer .footer-line{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+    footer a.footer-link{display:inline-flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;color:var(--sp-muted);font-weight:600;transition:transform .12s ease,color .12s ease,background .12s ease}
+    footer a.footer-link:hover{color:var(--sp-blue);background:rgba(0,140,150,0.04);transform:translateY(-1px)}
+
+    /* responsive */
+    @media (max-width:880px){
+      /* show toggle only on small screens */
+      .nav-toggle{display:inline-flex !important}
+      nav .links{display:none}
+      /* mobile: make the nav fixed at the top so it's always visible */
+      nav{position:fixed;top:0;left:0;right:0;z-index:220}
+      /* avoid content being hidden under the fixed nav on mobile */
+      body{padding-top:var(--nav-height)}
+
+      /* dropdown hidden by default; only render when nav.open to avoid overlay artifacts */
+      nav .nav-dropdown{display:none}
+      nav.open .nav-dropdown{display:block;position:fixed;left:0;right:0;top:var(--nav-height);background:rgba(255,255,255,0.995);padding:12px;box-shadow:0 12px 40px rgba(0,0,0,0.08);z-index:170}
+      /* make dropdown inert until opened */
+      nav .nav-dropdown{pointer-events:none;opacity:0;transform:translateY(-6px)}
+      nav.open .nav-dropdown{pointer-events:auto;opacity:1;transform:none}
+      nav .nav-dropdown a{display:flex;align-items:center;gap:10px;padding:8px 6px;margin:6px 0;color:var(--sp-muted);font-weight:600;font-size:.82rem;text-transform:capitalize;border-radius:8px;transition:background .12s ease,transform .12s ease,color .12s ease}
+      nav .nav-dropdown a svg{width:18px;height:18px;flex:0 0 18px}
+      nav .nav-dropdown a:hover{background:rgba(0,140,150,0.04);color:var(--sp-blue);transform:translateY(-1px)}
+      .nav-toggle{transition:transform .12s ease,color .12s ease}
+      .nav-toggle:hover{transform:scale(1.06);color:var(--sp-blue)}
+      .nav-toggle:active{transform:scale(1)}
+      /* position toggle nicely in the left and keep logo centered */
+      .nav-toggle{margin-left:6px}
+      /* center the logo absolutely so it's always centered on mobile */
+      .nav-inner{position:relative}
+      .nav-logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:auto;opacity:0;visibility:hidden;transition:opacity .18s,transform .18s}
+      nav.scrolled .nav-logo{opacity:1;visibility:visible}
+      header .meta{flex-direction:column}
     }
-    .container{max-width:1100px;margin:0 auto;padding:0 24px}
-    header{padding:48px 0 32px;text-align:center;background:var(--sp-surface);border-bottom:1px solid var(--sp-border);box-shadow:0 2px 8px rgba(0,0,0,0.03)}
-    .sp-logo{width:64px;height:64px;margin-bottom:12px;border-radius:12px;object-fit:contain;background:#fff}
-    header h1{font-size:2rem;color:var(--sp-accent);margin:6px 0}
-    header p{color:var(--sp-muted);max-width:640px;margin:8px auto}
-    .tech-badge{display:inline-block;background:var(--sp-bg);border:1px solid var(--sp-border);border-radius:6px;padding:4px 12px;font-size:.85rem;color:var(--sp-muted);margin:4px}
-    .btn{display:inline-block;margin-top:16px;padding:10px 20px;background:linear-gradient(90deg,var(--sp-accent) 60%,var(--sp-teal) 100%);color:#fff;text-decoration:none;border-radius:28px;font-weight:600}
-    nav{position:sticky;top:0;background:var(--sp-surface);border-bottom:1px solid var(--sp-border);z-index:100;padding:8px 12px;display:flex;align-items:center}
-    nav .container{display:flex;gap:18px;overflow-x:auto;justify-content:flex-end;align-items:center}
-    nav a{color:var(--sp-muted);text-decoration:none;white-space:nowrap;padding-bottom:2px}
-    nav a:hover{color:var(--sp-accent)}
-    nav a svg{vertical-align:middle;margin-right:8px}
-    /* Nav spacing and responsive behavior (more compact) */
-    nav a{padding:8px 10px;border-radius:8px;transition:background .18s, color .18s, transform .18s}
-    nav a:hover{background:rgba(4,156,166,0.06);transform:translateY(-1px)}
-    /* tighter section spacing for compact layout */
-    section{padding:36px 0;border-bottom:1px solid var(--sp-border)}
-    section h2{font-size:1.25rem;color:var(--sp-accent);margin-bottom:8px}
-    .subtitle{color:var(--sp-muted);margin-bottom:20px}
-    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:20px}
-    .feature-card{background:var(--sp-surface);border:1px solid var(--sp-border);border-radius:8px;padding:12px;font-family:Inter, 'Segoe UI', sans-serif;font-weight:400}
-    .media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
-    .media-item{background:var(--sp-surface);border:1px solid var(--sp-border);border-radius:10px;overflow:hidden}
-    .media-item img,.media-item video{width:100%;display:block}
-    .media-item .caption{padding:10px 12px;color:var(--sp-muted);font-size:.9rem}
-    section h2 svg{vertical-align:middle;margin-right:8px}
-    footer{padding:28px 0;text-align:center;color:var(--sp-muted);background:var(--sp-surface);border-top:1px solid var(--sp-border)}
-    /* Mobile nav toggle */
-    .nav-toggle{display:none;background:transparent;border:0;padding:8px;border-radius:8px;cursor:pointer}
-    .nav-toggle svg{width:22px;height:22px;color:var(--sp-muted)}
-    /* nav logo hidden until scrolled (keeps layout compact) */
-    .nav-logo{display:inline-flex;align-items:center;margin-left:0;opacity:0;transform:translateY(-6px) scale(.95);transition:opacity .22s, transform .22s, width .2s;visibility:hidden;width:0;overflow:hidden}
-    .nav-logo img{width:40px;height:40px;object-fit:contain;border-radius:8px;display:block}
-    nav .container{transition:transform .28s ease,opacity .22s ease}
-    nav.open .container{transform:none;opacity:1}
-    @media(max-width:640px){
-      header h1{font-size:1.5rem}
-      header{padding:22px 0 14px}
-      .media-grid{grid-template-columns:1fr}
+
+    /* hide header GitHub button and only show the small nav GitHub when scrolled */
+    header .meta .btn{display:none}
+    /* hide any nav inline .btn by default and only reveal on scrolled */
+    nav .nav-inner .btn{display:none}
+    nav.scrolled .nav-inner .btn{display:inline-flex}
+    @media (max-width:640px){
+      header{padding:18px 0}
+      header h1{font-size:1.1rem}
+      .feature-card{padding:10px}
     }
-    @media(max-width:880px){
-      /* mobile nav: hamburger left, logo centered, links dropdown */
-        .nav-toggle{display:inline-block}
-        /* hamburger centered when NOT scrolled; moves left when nav.scrolled */
-        .nav-toggle{position:absolute;left:50%;transform:translateX(-50%)}
-        .nav-logo{position:relative;opacity:0;transform:translateY(-6px) scale(.95);transition:opacity .22s, transform .22s}
-        nav.scrolled .nav-logo{opacity:1;transform:translateY(0) scale(1)}
-        nav .container{position:fixed;left:0;right:0;top:56px;background:var(--sp-surface);flex-direction:column;padding:12px 20px;border-bottom:1px solid var(--sp-border);transform:translateY(-110%);opacity:0;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
-        nav.open .container{transform:translateY(0);opacity:1}
-        nav .container a{display:block;padding:12px 8px;margin:6px 0}
-        /* when scrolled, hamburger anchored left and logo centered and bigger */
-        nav.scrolled .nav-toggle{left:12px;transform:none}
-        nav.scrolled .nav-logo{position:absolute;left:50%;transform:translateX(-50%);visibility:visible;width:auto;opacity:1}
-        nav .nav-logo img{width:40px;height:40px}
-        nav.scrolled .nav-logo img{width:52px;height:52px}
-    }
+    /* per-section accent variables */
+    section#dashboard{--accent:var(--sp-blue)}
+    section#calendar{--accent:var(--sp-cyan)}
+    section#groups{--accent:var(--sp-green)}
+    section#polls{--accent:var(--sp-blue)}
+    section#profile{--accent:var(--sp-cyan)}
   </style>
 </head>
 <body>
@@ -106,7 +170,7 @@ const sections = [
   {
     id: 'dashboard',
     title: 'Dashboard',
-    subtitle: "Personalized landing page showing user's recent and upcoming items.",
+    subtitle: "Personalised landing page showing user's recent and upcoming items.",
     features: [
       {title: 'Overview', desc: 'At-a-glance widgets for key items.'},
       {title: 'Activity', desc: 'Recent actions and notifications.'}
@@ -197,63 +261,117 @@ const app = document.getElementById('app-root');
 app.innerHTML = `
   <header>
     <div class="container">
-      <img src="logos/sp-logo.png" alt="SPortal" class="sp-logo" />
-      <h1>SPortal</h1>
-      <p>A suite of SharePoint Framework web parts forming an intranet portal — calendar, dashboard, groups, polls and profiles.</p>
-      <div>${techBadges.map(b=>`<span class="tech-badge">${b}</span>`).join('')}</div>
-      <a class="btn" href="https://github.com/toniu/SPortal" target="_blank" rel="noopener">${icons.github} View on GitHub</a>
+      <div class="meta">
+        <img src="logos/sp-logo.png" alt="SPortal" class="sp-logo" />
+        <div style="text-align:left">
+          <h1><span class="brand-accent">SP</span>ortal</h1>
+          <p style="max-width:640px">A suite of SharePoint Framework web parts forming an intranet portal — calendar, dashboard, groups, polls and profiles.</p>
+          <div class="tech-badges">${techBadges.map(b=>`<span class="tech-badge">${b}</span>`).join('')}</div>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:12px"></div>
+      </div>
     </div>
   </header>
 
   <nav>
-    <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
-    </button>
-    <a class="nav-logo" href="/">
-      <img src="logos/sp-logo.png" alt="SPortal" />
-    </a>
-    <div class="container">
-      ${sections.map(s=>`<a href="#${s.id}">${icons[s.id]||''}<span style="margin-left:6px">${s.title}</span></a>`).join('')}
+    <div class="container nav-inner">
+      <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+      </button>
+      <a class="nav-logo" href="/">
+        <img src="logos/sp-logo.png" alt="SPortal" />
+      </a>
+      <div class="links">
+        ${sections.map(s=>`<a class="nav-link" href="#${s.id}">${icons[s.id]||''}<span style="margin-left:8px">${s.title}</span></a>`).join('')}
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center"></div>
     </div>
+    <div class="nav-dropdown">${sections.map(s=>`<a class="nav-mobile-link" href="#${s.id}">${icons[s.id]||''}<span style="margin-left:8px">${s.title}</span></a>`).join('')}</div>
   </nav>
 
   ${sections.map(s=>`
     <section id="${s.id}">
       <div class="container">
-        <h2>${icons[s.id]||''}<span style="margin-left:8px">${s.title}</span></h2>
+        <h2>${icons[s.id]||''}<span>${s.title}</span></h2>
         <p class="subtitle">${s.subtitle}</p>
         <div class="feature-grid">
-          ${s.features.map(f=>`<div class="feature-card"><h3 style="font-weight:600">${f.title}</h3><p style="font-weight:400">${f.desc}</p></div>`).join('')}
+          ${s.features.map(f=>`<div class="feature-card"><div class="icon">${icons[s.id]||''}</div><div><h3>${f.title}</h3><p>${f.desc}</p></div></div>`).join('')}
         </div>
-        <div class="media-grid">
-          ${s.media.map(m=> m.type === 'img' ?
-            `<div class="media-item"><img src="${m.src}" alt="${m.alt}" onerror="this.onerror=null;this.src='${m.remote||('https://via.placeholder.com/800x450?text=Image+missing')}'"><div class="caption">${m.caption}</div></div>` :
-            `<div class="media-item"><video controls muted playsinline preload="metadata" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-item&quot;><img src=&quot;${m.remoteMp4||m.remote||'https://via.placeholder.com/800x450?text=Video+unavailable'}&quot; alt=&quot;Video unavailable&quot;><div class=&quot;caption&quot;>${m.caption}</div></div>'"><source src="${m.mp4}" type="video/mp4"><source src="${m.mov}" type="video/quicktime"></video><div class="caption">${m.caption}</div></div>`).join('')}
-        </div>
+        ${(() => {
+            const imgs = s.media.filter(m=>m.type === 'img').map(m=>
+              `<div class="media-item"><div class="media-frame"><img src="${m.src}" alt="${m.alt}" onerror="this.onerror=null;this.src='${m.remote||('https://via.placeholder.com/800x450?text=Image+missing')}'"></div><div class="caption">${m.caption}</div></div>`
+            ).join('');
+            const vids = s.media.filter(m=>m.type === 'video').map(m=>
+              `<div class="media-item"><div class="media-frame"><video controls muted playsinline preload="metadata" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-frame&quot;><img src=&quot;${m.remoteMp4||m.remote||'https://via.placeholder.com/800x450?text=Video+unavailable'}&quot; alt=&quot;Video unavailable&quot;></div>'"><source src="${m.mp4}" type="video/mp4"><source src="${m.mov}" type="video/quicktime"></video></div><div class="caption">${m.caption}</div></div>`
+            ).join('');
+            return `
+              ${imgs ? `<div class="media-images">${imgs}</div>` : ''}
+              ${vids ? `<div class="media-videos">${vids}</div>` : ''}
+            `;
+        })()}
       </div>
     </section>
   `).join('')}
 
   <footer>
-    <div class="container"><p>Built by <a href="https://github.com/toniu">Neka Toni-Uebari</a> · <a href="https://github.com/toniu/SPortal">Source on GitHub</a></p></div>
+    <div class="container">
+      <div class="footer-line">
+        <div>Built by <a class="footer-link" href="https://toniu.github.io/toni-portfolio/" target="_blank" rel="noopener">Neka Toni-Uebari</a></div>
+        <div><a class="footer-link" href="https://github.com/toniu/SPortal" target="_blank" rel="noopener">${icons.github} Source on GitHub</a></div>
+      </div>
+    </div>
   </footer>
 `;
 // wire up mobile nav toggle and auto-close on link click
 const navToggle = document.getElementById('nav-toggle');
 const navEl = document.querySelector('nav');
-if(navToggle && navEl){
+  if(navToggle && navEl){
+  const hamburgerSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>';
+  const closeSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M6 18L18 6"/></svg>';
+  function setNavToggleIcon(open){
+    navToggle.innerHTML = open ? closeSvg : hamburgerSvg;
+    navToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Toggle navigation');
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  // initialize icon
+  setNavToggleIcon(navEl.classList.contains('open'));
+
   navToggle.addEventListener('click', ()=>{
     const open = navEl.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    setNavToggleIcon(open);
   });
-  // close nav when link clicked on small screens
-  navEl.querySelectorAll('.container a').forEach(a=>{
-    a.addEventListener('click', ()=>{
-      if(window.innerWidth <= 880){ navEl.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); }
+  // close nav when link clicked on small screens — attach to all in-nav anchors (desktop + mobile dropdown)
+  navEl.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      const href = a.getAttribute('href');
+      if(href && href.startsWith('#')){
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if(target){
+          // compute offset so the section heading is visible below the sticky nav
+          const navHeight = navEl.offsetHeight || 64;
+          const rectTop = target.getBoundingClientRect().top + window.scrollY;
+          const scrollTo = Math.max(0, rectTop - navHeight - 8);
+          window.scrollTo({top: scrollTo, behavior: 'smooth'});
+        }
+      }
+      if(window.innerWidth <= 880){ navEl.classList.remove('open'); setNavToggleIcon(false); }
     });
   });
   // close on resize if desktop
-  window.addEventListener('resize', ()=>{ if(window.innerWidth > 880 && navEl.classList.contains('open')){ navEl.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); } });
+  window.addEventListener('resize', ()=>{ if(window.innerWidth > 880 && navEl.classList.contains('open')){ navEl.classList.remove('open'); setNavToggleIcon(false); } });
+}
+
+// header/nav logo click -> scroll to top
+const headerLogo = document.querySelector('header .sp-logo');
+const navLogoLink = document.querySelector('.nav-logo');
+if(headerLogo){
+  headerLogo.addEventListener('click', (e)=>{ e.preventDefault(); window.scrollTo({top:0, behavior:'smooth'}); });
+  headerLogo.style.cursor = 'pointer';
+}
+if(navLogoLink){
+  navLogoLink.addEventListener('click', (e)=>{ e.preventDefault(); window.scrollTo({top:0, behavior:'smooth'}); if(navEl && navEl.classList.contains('open')){ navEl.classList.remove('open'); if(typeof setNavToggleIcon === 'function'){ setNavToggleIcon(false); } } });
+  navLogoLink.style.cursor = 'pointer';
 }
 
 // show logo only after scrolling past header
