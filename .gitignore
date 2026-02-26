@@ -1,0 +1,18 @@
+# Local diary folder (private notes)
+diary/
+
+# Local server PID file
+.http.server.pid
+
+# Node modules
+node_modules/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# logs
+*.log
