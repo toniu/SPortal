@@ -112,11 +112,10 @@
     .video-wrap .video-play svg{width:26px;height:26px}
     .video-wrap.playing .video-play{display:none}
 
-    /* Hide native big overlay play buttons (WebKit/Blink) so custom play doesn't collide */
+    /* Hide only the large overlay play buttons so custom play doesn't collide; keep the control panel (seek/time/fullscreen) visible */
     .video-wrap video::-webkit-media-controls-overlay-play-button,
-    .video-wrap video::-webkit-media-controls-start-playback-button,
-    .video-wrap video::-webkit-media-controls-panel { display:none !important; -webkit-appearance:none !important; }
-    /* Try to hide Chromium's overlay play button */
+    .video-wrap video::-webkit-media-controls-start-playback-button { display:none !important; -webkit-appearance:none !important; }
+    /* Try to hide Chromium's overlay play button while preserving the control panel */
     video::-webkit-media-controls-play-button { display:none !important; }
     .carousel-header{font-size:.95rem;font-weight:700;color:var(--sp-muted);margin-bottom:8px}
     .carousel-index{position:absolute;right:10px;top:8px;background:rgba(255,255,255,0.9);padding:6px 8px;border-radius:999px;font-size:.82rem;color:var(--sp-muted);border:1px solid var(--card-border)}
