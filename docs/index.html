@@ -160,6 +160,10 @@
       header .meta{flex-direction:column}
     }
 
+    /* mobile nav overlay to block page interactions when dropdown is open */
+    #mobile-nav-overlay{position:fixed;left:0;right:0;top:var(--nav-height);bottom:0;background:rgba(0,0,0,0.32);z-index:160;display:none}
+    #mobile-nav-overlay.active{display:block}
+
     /* hide header GitHub button and only show the small nav GitHub when scrolled */
     header .meta .btn{display:none}
     /* hide any nav inline .btn by default and only reveal on scrolled */
@@ -446,9 +450,34 @@ const navEl = document.querySelector('nav');
   // initialize icon
   setNavToggleIcon(navEl.classList.contains('open'));
 
+  // overlay helper: create/remove a backdrop that blocks interactions while mobile nav is open
+  let _mobileOverlay = null;
+  function createMobileOverlay(){
+    if(_mobileOverlay) return;
+    _mobileOverlay = document.createElement('div');
+    _mobileOverlay.id = 'mobile-nav-overlay';
+    _mobileOverlay.addEventListener('click', ()=>{
+      // clicking overlay closes the nav
+      if(navEl.classList.contains('open')){
+        navEl.classList.remove('open'); setNavToggleIcon(false); removeMobileOverlay();
+      }
+    });
+    document.body.appendChild(_mobileOverlay);
+    // allow CSS to show
+    requestAnimationFrame(()=> _mobileOverlay.classList.add('active'));
+  }
+  function removeMobileOverlay(){
+    if(!_mobileOverlay) return;
+    _mobileOverlay.classList.remove('active');
+    // remove after transition frame
+    setTimeout(()=>{ if(_mobileOverlay && _mobileOverlay.parentNode) _mobileOverlay.parentNode.removeChild(_mobileOverlay); _mobileOverlay = null; }, 220);
+  }
+
   navToggle.addEventListener('click', ()=>{
     const open = navEl.classList.toggle('open');
     setNavToggleIcon(open);
+    if(open){ createMobileOverlay(); }
+    else { removeMobileOverlay(); }
   });
   // close nav when link clicked on small screens — attach to all in-nav anchors (desktop + mobile dropdown)
   navEl.querySelectorAll('a[href^="#"]').forEach(a=>{
@@ -466,10 +495,12 @@ const navEl = document.querySelector('nav');
         }
       }
       if(window.innerWidth <= 880){ navEl.classList.remove('open'); setNavToggleIcon(false); }
+      // also remove overlay when closing nav via link
+      removeMobileOverlay();
     });
   });
   // close on resize if desktop
-  window.addEventListener('resize', ()=>{ if(window.innerWidth > 880 && navEl.classList.contains('open')){ navEl.classList.remove('open'); setNavToggleIcon(false); } });
+  window.addEventListener('resize', ()=>{ if(window.innerWidth > 880 && navEl.classList.contains('open')){ navEl.classList.remove('open'); setNavToggleIcon(false); removeMobileOverlay(); } });
 }
 
 // header/nav logo click -> scroll to top
