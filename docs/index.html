@@ -108,9 +108,16 @@
     .carousel-strip.active{background:var(--sp-blue);transform:scaleY(1.06);border-color:rgba(0,0,0,0.08)}
     /* video play overlay */
     .video-wrap{position:relative}
-    .video-wrap .video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:999px;background:rgba(0,0,0,0.6);display:inline-flex;align-items:center;justify-content:center;color:#fff;border:0;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.28);font-size:22px}
+    .video-wrap .video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:999px;background:rgba(0,0,0,0.6);display:inline-flex;align-items:center;justify-content:center;color:#fff;border:0;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.28);font-size:22px;z-index:1001}
     .video-wrap .video-play svg{width:26px;height:26px}
     .video-wrap.playing .video-play{display:none}
+
+    /* Hide native big overlay play buttons (WebKit/Blink) so custom play doesn't collide */
+    .video-wrap video::-webkit-media-controls-overlay-play-button,
+    .video-wrap video::-webkit-media-controls-start-playback-button,
+    .video-wrap video::-webkit-media-controls-panel { display:none !important; -webkit-appearance:none !important; }
+    /* Try to hide Chromium's overlay play button */
+    video::-webkit-media-controls-play-button { display:none !important; }
     .carousel-header{font-size:.95rem;font-weight:700;color:var(--sp-muted);margin-bottom:8px}
     .carousel-index{position:absolute;right:10px;top:8px;background:rgba(255,255,255,0.9);padding:6px 8px;border-radius:999px;font-size:.82rem;color:var(--sp-muted);border:1px solid var(--card-border)}
     @media (min-width:900px){
