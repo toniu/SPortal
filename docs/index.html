@@ -170,6 +170,17 @@
     section#groups{--accent:var(--sp-green)}
     section#polls{--accent:var(--sp-blue)}
     section#profile{--accent:var(--sp-cyan)}
+    /* lightbox / zoom for screenshots */
+    .lb-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);display:none;align-items:center;justify-content:center;z-index:400}
+    .lb-overlay.open{display:flex}
+    .lb-content{position:relative;max-width:94vw;max-height:94vh;display:flex;flex-direction:column;align-items:center;gap:12px}
+    .lb-image-wrap{background:#111;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;max-width:100%;max-height:calc(100vh - 120px)}
+    .lb-image{display:block;max-width:100%;max-height:100%;transform-origin:center center;transition:transform .18s ease}
+    .lb-caption{color:#fff;opacity:.92;font-size:.95rem;max-width:92vw;text-align:center}
+    .lb-controls{position:absolute;right:8px;top:8px;display:flex;gap:8px}
+    .lb-controls button{background:rgba(255,255,255,0.08);border:0;color:#fff;padding:8px;border-radius:8px;cursor:pointer;font-weight:700}
+    .lb-controls button:hover{background:rgba(255,255,255,0.12)}
+    @media (max-width:640px){ .lb-controls button{padding:6px;font-size:.95rem} }
   </style>
 </head>
 <body>
@@ -572,6 +583,63 @@ function initCarousels(){
   });
 }
 window.addEventListener('load', ()=>{ initCarousels(); });
+
+// Lightbox / zoom for demo screenshots
+function initLightbox(){
+  const overlay = document.createElement('div');
+  overlay.className = 'lb-overlay';
+  overlay.innerHTML = `
+    <div class="lb-content" role="dialog" aria-modal="true">
+      <div class="lb-controls">
+        <button class="lb-zoom-in" aria-label="Zoom in">+</button>
+        <button class="lb-zoom-out" aria-label="Zoom out">−</button>
+        <button class="lb-close" aria-label="Close">✕</button>
+      </div>
+      <div class="lb-image-wrap"><img class="lb-image" src="" alt=""></div>
+      <div class="lb-caption"></div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  const imgEl = overlay.querySelector('.lb-image');
+  const captionEl = overlay.querySelector('.lb-caption');
+  const zoomInBtn = overlay.querySelector('.lb-zoom-in');
+  const zoomOutBtn = overlay.querySelector('.lb-zoom-out');
+  const closeBtn = overlay.querySelector('.lb-close');
+  let scale = 1;
+  const setScale = (s)=>{ scale = Math.max(0.5, Math.min(4, s)); imgEl.style.transform = `scale(${scale})`; };
+  const open = (src, caption)=>{
+    imgEl.src = src;
+    imgEl.alt = caption || '';
+    captionEl.textContent = caption || '';
+    setScale(1);
+    overlay.classList.add('open');
+    // prevent body scroll
+    document.body.style.overflow = 'hidden';
+  };
+  const close = ()=>{ overlay.classList.remove('open'); document.body.style.overflow = ''; imgEl.src=''; };
+  // buttons
+  zoomInBtn.addEventListener('click', ()=> setScale(scale + 0.25));
+  zoomOutBtn.addEventListener('click', ()=> setScale(scale - 0.25));
+  closeBtn.addEventListener('click', close);
+  // click outside image to close
+  overlay.addEventListener('click', (e)=>{ if(e.target === overlay) close(); });
+  // keyboard
+  window.addEventListener('keydown', (e)=>{
+    if(!overlay.classList.contains('open')) return;
+    if(e.key === 'Escape') close();
+    if(e.key === '+' || e.key === '=') setScale(scale + 0.25);
+    if(e.key === '-' || e.key === '_') setScale(scale - 0.25);
+  });
+  // double-click toggles between 1x and 2x
+  imgEl.addEventListener('dblclick', ()=> setScale(scale>1?1:2));
+  // bind existing screenshot images
+  document.querySelectorAll('.media-frame img').forEach(img=>{
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', (e)=>{ e.preventDefault(); open(img.src, img.alt || (img.closest('.carousel-slide')?.querySelector('.caption')?.textContent||'')); });
+  });
+}
+
+window.addEventListener('load', ()=>{ initLightbox(); });
 </script>
 
 </body>
