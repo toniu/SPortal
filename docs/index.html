@@ -106,6 +106,11 @@
     /* much narrower fixed-width strips for compact appearance */
     .carousel-strip{flex:0 0 36px;width:36px;height:8px;border-radius:999px;background:rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06);cursor:pointer;transition:background .12s ease,transform .12s ease}
     .carousel-strip.active{background:var(--sp-blue);transform:scaleY(1.06);border-color:rgba(0,0,0,0.08)}
+    /* video play overlay */
+    .video-wrap{position:relative}
+    .video-wrap .video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:999px;background:rgba(0,0,0,0.6);display:inline-flex;align-items:center;justify-content:center;color:#fff;border:0;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.28);font-size:22px}
+    .video-wrap .video-play svg{width:26px;height:26px}
+    .video-wrap.playing .video-play{display:none}
     .carousel-header{font-size:.95rem;font-weight:700;color:var(--sp-muted);margin-bottom:8px}
     .carousel-index{position:absolute;right:10px;top:8px;background:rgba(255,255,255,0.9);padding:6px 8px;border-radius:999px;font-size:.82rem;color:var(--sp-muted);border:1px solid var(--card-border)}
     @media (min-width:900px){
@@ -330,7 +335,13 @@ app.innerHTML = `
               const posterSrc = (imgsArr && imgsArr.length) ? (imgsArr[0].remote || imgsArr[0].src) : (m.remoteMp4 || m.remote || '');
               return `
                 <div class="carousel-slide">
-                  <div class="media-frame"><video controls muted playsinline preload="metadata" ${posterSrc?`poster="${posterSrc}"`:''} crossorigin="anonymous" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-frame&quot;><img src=&quot;${m.remoteMp4||m.remote||'https://via.placeholder.com/800x450?text=Video+unavailable'}&quot; alt=&quot;Video unavailable&quot;></div>'"><source src="${m.mp4}" type="video/mp4"><source src="${m.mov}" type="video/quicktime"></video></div>
+                  <div class="media-frame video-wrap">
+                    <video controls muted playsinline preload="metadata" ${posterSrc?`poster="${posterSrc}"`:''} crossorigin="anonymous" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-frame&quot;><img src=&quot;${m.remoteMp4||m.remote||'https://via.placeholder.com/800x450?text=Video+unavailable'}&quot; alt=&quot;Video unavailable&quot;></div>'">
+                      <source src="${m.mp4}" type="video/mp4">
+                      <source src="${m.mov}" type="video/quicktime">
+                    </video>
+                    <button class="video-play" aria-label="Play video">${/* play svg */ ''}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z" fill="currentColor"/></svg></button>
+                  </div>
                   <div class="caption">${m.caption}</div>
                 </div>
               `;
@@ -449,6 +460,25 @@ function initCarousels(){
         d.addEventListener('click', ()=>{ index = Number(d.dataset.index); update(); });
       });
     }
+    // video play overlays: bind play button and video events
+    carousel.querySelectorAll('.video-wrap').forEach(wrap=>{
+      const btn = wrap.querySelector('.video-play');
+      const vid = wrap.querySelector('video');
+      if(!btn || !vid) return;
+      // toggle overlay when video plays/pauses/ends
+      const onPlay = ()=> wrap.classList.add('playing');
+      const onHide = ()=> wrap.classList.remove('playing');
+      vid.addEventListener('play', onPlay);
+      vid.addEventListener('playing', onPlay);
+      vid.addEventListener('pause', onHide);
+      vid.addEventListener('ended', onHide);
+      // clicking overlay starts playback (and focuses video controls)
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        if(vid.paused){ vid.play().catch(()=>{}); }
+        else { vid.pause(); }
+      });
+    });
     // handle resize to recalc transform
     window.addEventListener('resize', ()=>{ update(); });
     // initial
