@@ -93,6 +93,20 @@
     .caption{padding:10px 12px;color:var(--sp-muted);font-size:.9rem}
     .media-images{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:12px}
     .media-videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:8px}
+    /* carousel */
+    .carousel{position:relative;overflow:hidden;border-radius:10px}
+    .carousel-track{display:flex;transition:transform .32s cubic-bezier(.2,.9,.2,1);will-change:transform}
+    .carousel-slide{min-width:100%;flex:0 0 100%;box-sizing:border-box;padding:0}
+    .carousel-slide .media-frame{border-radius:8px}
+    .carousel-controls{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 6px;pointer-events:none}
+    .carousel-controls button{pointer-events:auto;background:rgba(255,255,255,0.92);border:1px solid var(--card-border);width:38px;height:38px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
+    .carousel-controls button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.08)}
+    .carousel-dots{display:flex;gap:8px;justify-content:center;margin-top:10px}
+    .carousel-dot{width:10px;height:10px;border-radius:50%;background:rgba(0,0,0,0.12);border:0;cursor:pointer;transition:background .12s ease,transform .12s ease}
+    .carousel-dot.active{background:var(--sp-blue);transform:scale(1.05)}
+    @media (min-width:900px){
+      .carousel-slide{padding:12px}
+    }
 
     /* footer */
     footer{padding:20px 0;background:var(--sp-surface);border-top:1px solid var(--card-border);color:var(--sp-muted)}
@@ -298,15 +312,29 @@ app.innerHTML = `
           ${s.features.map(f=>`<div class="feature-card"><div class="icon">${icons[s.id]||''}</div><div><h3>${f.title}</h3><p>${f.desc}</p></div></div>`).join('')}
         </div>
         ${(() => {
-            const imgs = s.media.filter(m=>m.type === 'img').map(m=>
-              `<div class="media-item"><div class="media-frame"><img src="${m.src}" alt="${m.alt}" onerror="this.onerror=null;this.src='${m.remote||('https://via.placeholder.com/800x450?text=Image+missing')}'"></div><div class="caption">${m.caption}</div></div>`
+            const imgsArr = s.media.filter(m=>m.type === 'img');
+            const vidsArr = s.media.filter(m=>m.type === 'video');
+            const imgsSlides = imgsArr.map(m=>
+              `
+                <div class="carousel-slide">
+                  <div class="media-frame"><img src="${m.src}" alt="${m.alt}" onerror="this.onerror=null;this.src='${m.remote||('https://via.placeholder.com/800x450?text=Image+missing')}'"></div>
+                  <div class="caption">${m.caption}</div>
+                </div>
+              `
             ).join('');
-            const vids = s.media.filter(m=>m.type === 'video').map(m=>
-              `<div class="media-item"><div class="media-frame"><video controls muted playsinline preload="metadata" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-frame&quot;><img src=&quot;${m.remoteMp4||m.remote||'https://via.placeholder.com/800x450?text=Video+unavailable'}&quot; alt=&quot;Video unavailable&quot;></div>'"><source src="${m.mp4}" type="video/mp4"><source src="${m.mov}" type="video/quicktime"></video></div><div class="caption">${m.caption}</div></div>`
+            const vidsSlides = vidsArr.map(m=>
+              `
+                <div class="carousel-slide">
+                  <div class="media-frame"><video controls muted playsinline preload="metadata" onerror="this.onerror=null;this.outerHTML='<div class=&quot;media-frame&quot;><img src=&quot;${m.remoteMp4||m.remote||'https://via.placeholder.com/800x450?text=Video+unavailable'}&quot; alt=&quot;Video unavailable&quot;></div>'"><source src="${m.mp4}" type="video/mp4"><source src="${m.mov}" type="video/quicktime"></video></div>
+                  <div class="caption">${m.caption}</div>
+                </div>
+              `
             ).join('');
+            const imgsDots = imgsArr.map((_,i)=>`<button class="carousel-dot" data-index="${i}" aria-label="Go to slide ${i+1}"></button>`).join('');
+            const vidsDots = vidsArr.map((_,i)=>`<button class="carousel-dot" data-index="${i}" aria-label="Go to video ${i+1}"></button>`).join('');
             return `
-              ${imgs ? `<div class="media-images">${imgs}</div>` : ''}
-              ${vids ? `<div class="media-videos">${vids}</div>` : ''}
+              ${imgsArr.length ? `<div class="carousel" data-carousel="${s.id}-images"><div class="carousel-track">${imgsSlides}</div><div class="carousel-controls"><button class="carousel-prev" aria-label="Previous">‹</button><button class="carousel-next" aria-label="Next">›</button></div><div class="carousel-dots">${imgsDots}</div></div>` : ''}
+              ${vidsArr.length ? `<div class="carousel" data-carousel="${s.id}-videos"><div class="carousel-track">${vidsSlides}</div><div class="carousel-controls"><button class="carousel-prev" aria-label="Previous">‹</button><button class="carousel-next" aria-label="Next">›</button></div><div class="carousel-dots">${vidsDots}</div></div>` : ''}
             `;
         })()}
       </div>
@@ -387,6 +415,39 @@ function updateNavOnScroll(){
 window.addEventListener('scroll', updateNavOnScroll, {passive:true});
 window.addEventListener('load', updateNavOnScroll);
 window.addEventListener('resize', updateNavOnScroll);
+
+// initialize manual carousels (images and videos)
+function initCarousels(){
+  document.querySelectorAll('.carousel').forEach(carousel => {
+    const track = carousel.querySelector('.carousel-track');
+    const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
+    const prev = carousel.querySelector('.carousel-prev');
+    const next = carousel.querySelector('.carousel-next');
+    const dotsWrap = carousel.querySelector('.carousel-dots');
+    let index = 0;
+    function update(){
+      const w = carousel.clientWidth;
+      track.style.transform = `translateX(${ -index * w }px)`;
+      if(dotsWrap){
+        Array.from(dotsWrap.children).forEach((d,i)=> d.classList.toggle('active', i===index));
+      }
+    }
+    function prevSlide(){ index = Math.max(0, index-1); update(); }
+    function nextSlide(){ index = Math.min(slides.length-1, index+1); update(); }
+    if(prev) prev.addEventListener('click', prevSlide);
+    if(next) next.addEventListener('click', nextSlide);
+    if(dotsWrap){
+      dotsWrap.querySelectorAll('.carousel-dot').forEach(d=>{
+        d.addEventListener('click', ()=>{ index = Number(d.dataset.index); update(); });
+      });
+    }
+    // handle resize to recalc transform
+    window.addEventListener('resize', ()=>{ update(); });
+    // initial
+    update();
+  });
+}
+window.addEventListener('load', ()=>{ initCarousels(); });
 </script>
 
 </body>
