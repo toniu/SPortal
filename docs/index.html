@@ -66,11 +66,19 @@
     }
     @media(max-width:880px){
       /* mobile nav: hamburger left, logo centered, links dropdown */
-      .nav-toggle{display:inline-block}
-      .nav-logo{position:absolute;left:50%;transform:translateX(-50%)}
-      nav .container{position:fixed;left:0;right:0;top:56px;background:var(--sp-surface);flex-direction:column;padding:12px 20px;border-bottom:1px solid var(--sp-border);transform:translateY(-110%);opacity:0;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
-      nav.open .container{transform:translateY(0);opacity:1}
-      nav .container a{display:block;padding:12px 8px;margin:6px 0}
+        .nav-toggle{display:inline-block}
+        /* hamburger centered when NOT scrolled; moves left when nav.scrolled */
+        .nav-toggle{position:absolute;left:50%;transform:translateX(-50%)}
+        .nav-logo{position:relative;opacity:0;transform:translateY(-6px) scale(.95);transition:opacity .22s, transform .22s}
+        nav.scrolled .nav-logo{opacity:1;transform:translateY(0) scale(1)}
+        nav .container{position:fixed;left:0;right:0;top:56px;background:var(--sp-surface);flex-direction:column;padding:12px 20px;border-bottom:1px solid var(--sp-border);transform:translateY(-110%);opacity:0;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+        nav.open .container{transform:translateY(0);opacity:1}
+        nav .container a{display:block;padding:12px 8px;margin:6px 0}
+        /* when scrolled, hamburger anchored left and logo centered and bigger */
+        nav.scrolled .nav-toggle{left:12px;transform:none}
+        nav.scrolled .nav-logo{position:absolute;left:50%;transform:translateX(-50%)}
+        nav .nav-logo img{width:40px;height:40px}
+        nav.scrolled .nav-logo img{width:52px;height:52px}
     }
   </style>
 </head>
@@ -244,6 +252,20 @@ if(navToggle && navEl){
   // close on resize if desktop
   window.addEventListener('resize', ()=>{ if(window.innerWidth > 880 && navEl.classList.contains('open')){ navEl.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); } });
 }
+
+// show logo only after scrolling past header
+const headerEl = document.querySelector('header');
+function updateNavOnScroll(){
+  const threshold = headerEl ? headerEl.offsetHeight : 120;
+  if(window.scrollY > threshold){
+    navEl.classList.add('scrolled');
+  } else {
+    navEl.classList.remove('scrolled');
+  }
+}
+window.addEventListener('scroll', updateNavOnScroll, {passive:true});
+window.addEventListener('load', updateNavOnScroll);
+window.addEventListener('resize', updateNavOnScroll);
 </script>
 
 </body>
