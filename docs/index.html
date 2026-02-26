@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPortal — SharePoint Intranet Portal Demo</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --text: #e4e4e7;
+      --muted: #9ca3af;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 60px 0 40px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    header p {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 20px;
+    }
+
+    .tech-badge {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 4px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 24px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: var(--accent-hover); }
+
+    /* Nav */
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      padding: 12px 0;
+    }
+
+    nav .container {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    nav a:hover, nav a.active { color: var(--text); }
+
+    /* Sections */
+    section {
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    section:last-child { border-bottom: none; }
+
+    section h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    section .subtitle {
+      color: var(--muted);
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+
+    /* Feature grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* Media grid */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .media-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .media-item img,
+    .media-item video {
+      width: 100%;
+      display: block;
+    }
+
+    .media-item .caption {
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+      header h1 { font-size: 1.8rem; }
+      section h2 { font-size: 1.3rem; }
+      .media-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>SPortal</h1>
+    <p>A suite of five SharePoint Framework web parts that form a self-contained intranet portal — calendar, dashboard, groups, polls and profiles.</p>
+    <div>
+      <span class="tech-badge">SPFx 1.16</span>
+      <span class="tech-badge">TypeScript</span>
+      <span class="tech-badge">React</span>
+      <span class="tech-badge">PnPjs</span>
+      <span class="tech-badge">Office UI Fabric</span>
+      <span class="tech-badge">Jest</span>
+    </div>
+    <a class="btn" href="https://github.com/toniu/SPortal">View on GitHub</a>
+  </div>
+</header>
+
+<nav>
+  <div class="container">
+    <a href="#dashboard">Dashboard</a>
+    <a href="#calendar">Calendar</a>
+    <a href="#groups">Groups</a>
+    <a href="#polls">Polls</a>
+    <a href="#profile">Profile</a>
+  </div>
+</nav>
+
+<!-- Dashboard -->
+<section id="dashboard">
+  <div class="container">
+    <h2>Dashboard</h2>
+    <p class="subtitle">Personalised landing page showing the user's recent and upcoming meetings.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>Personalised Greeting</h3>
+        <p>Welcomes the logged-in user by name on page load.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Meeting Summary</h3>
+        <p>Shows past and upcoming events pulled from a configurable SharePoint Events list.</p>
+      </div>
+    </div>
+
+    <div class="media-grid">
+      <div class="media-item">
+        <img src="../release/deliverables/demos/dashboard/screenshots/dashboard.png" alt="Dashboard overview">
+        <div class="caption">Dashboard overview with upcoming meetings</div>
+      </div>
+      <div class="media-item">
+        <video controls muted playsinline preload="metadata">
+          <source src="../release/deliverables/demos/dashboard/demo-videos/dashboard-demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Dashboard walkthrough</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Calendar -->
+<section id="calendar">
+  <div class="container">
+    <h2>Calendar</h2>
+    <p class="subtitle">Full event lifecycle with recurrence, location search and permission checks.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>Multiple Views</h3>
+        <p>Switch between month, week and day layouts via react-big-calendar.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Event CRUD</h3>
+        <p>Create, edit and delete events with attendee selection, all-day toggles and recurrence rules.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Location Search</h3>
+        <p>Search for event locations using an integrated map picker.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Permission Checks</h3>
+        <p>Edit and delete buttons only appear when the user has the required list permissions.</p>
+      </div>
+    </div>
+
+    <div class="media-grid">
+      <div class="media-item">
+        <img src="../release/deliverables/demos/calendar/screenshots/view-events.png" alt="View events">
+        <div class="caption">Calendar month view</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/calendar/screenshots/add-edit-event.png" alt="Add/edit event">
+        <div class="caption">Add or edit an event</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/calendar/screenshots/edit-add-event-recurrences.png" alt="Recurrences">
+        <div class="caption">Recurrence configuration</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/calendar/screenshots/edit-add-event-ocation-search.png" alt="Location search">
+        <div class="caption">Map-based location search</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/calendar/screenshots/delete-event.png" alt="Delete event">
+        <div class="caption">Delete event confirmation</div>
+      </div>
+      <div class="media-item">
+        <video controls muted playsinline preload="metadata">
+          <source src="../release/deliverables/demos/calendar/demo-videos/edit-add-event-demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Adding and editing events</div>
+      </div>
+      <div class="media-item">
+        <video controls muted playsinline preload="metadata">
+          <source src="../release/deliverables/demos/calendar/demo-videos/configuration-and-views-demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Calendar configuration and views</div>
+      </div>
+      <div class="media-item">
+        <video controls muted playsinline preload="metadata">
+          <source src="../release/deliverables/demos/calendar/demo-videos/edit-recurrences-demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Editing recurrence rules</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Groups -->
+<section id="groups">
+  <div class="container">
+    <h2>Group Management</h2>
+    <p class="subtitle">Create, browse, join and manage groups backed by three SharePoint Lists.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>Browse and Filter</h3>
+        <p>View all groups with name and type filters for quick discovery.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Join and Leave</h3>
+        <p>One-click join and leave for public groups.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Group CRUD</h3>
+        <p>Owners can create, rename, reconfigure or delete groups they own.</p>
+      </div>
+    </div>
+
+    <div class="media-grid">
+      <div class="media-item">
+        <img src="../release/deliverables/demos/group-management/screenshots/view-filter-groups.png" alt="Filter groups">
+        <div class="caption">View and filter groups</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/group-management/screenshots/create-group.png" alt="Create group">
+        <div class="caption">Creating a new group</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/group-management/screenshots/edit-group.png" alt="Edit group">
+        <div class="caption">Editing a group</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/group-management/screenshots/join-public-group.png" alt="Join group">
+        <div class="caption">Joining a public group</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/group-management/screenshots/leave-public-group.png" alt="Leave group">
+        <div class="caption">Leaving a group</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/group-management/screenshots/delete-group.png" alt="Delete group">
+        <div class="caption">Delete group confirmation</div>
+      </div>
+      <div class="media-item">
+        <video controls muted playsinline preload="metadata">
+          <source src="../release/deliverables/demos/group-management/demo-videos/create-group-demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Creating a new group</div>
+      </div>
+      <div class="media-item">
+        <video controls muted playsinline preload="metadata">
+          <source src="../release/deliverables/demos/group-management/demo-videos/join-leave-filter-groups-demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Joining, leaving and filtering groups</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Polls -->
+<section id="polls">
+  <div class="container">
+    <h2>Poll Management</h2>
+    <p class="subtitle">Vote on polls and view results with configurable chart analytics.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>One-Click Voting</h3>
+        <p>Submit a vote on any active poll with a single click.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Chart Analytics</h3>
+        <p>View aggregated results as bar, pie or doughnut charts.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Date-Driven Visibility</h3>
+        <p>Polls appear and expire automatically based on configured start and end dates.</p>
+      </div>
+    </div>
+
+    <div class="media-grid">
+      <div class="media-item">
+        <img src="../release/deliverables/demos/poll-management/screenshots/poll-vote.png" alt="Poll voting">
+        <div class="caption">Casting a vote</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/poll-management/screenshots/poll-analytics.png" alt="Poll analytics">
+        <div class="caption">Poll results analytics</div>
+      </div>
+      <div class="media-item">
+        <img src="../release/deliverables/demos/poll-management/screenshots/preferred-chart-type.png" alt="Chart type config">
+        <div class="caption">Configuring chart type</div>
+      </div>
+      <div class="media-item">
+        <video controls muted playsinline preload="metadata">
+          <source src="../release/deliverables/demos/poll-management/demo-videos/poll-vote-analytics-demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Voting and viewing analytics</div>
+      </div>
+      <div class="media-item">
+        <video controls muted playsinline preload="metadata">
+          <source src="../release/deliverables/demos/poll-management/demo-videos/poll-configuration-demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Poll configuration</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Profile -->
+<section id="profile">
+  <div class="container">
+    <h2>Profile</h2>
+    <p class="subtitle">User profile card with suggested connections across the tenant.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>Profile Card</h3>
+        <p>Displays the current user's name, title, department and group memberships.</p>
+      </div>
+      <div class="feature-card">
+        <h3>People You Might Know</h3>
+        <p>Surfaces other users in the tenant for discovery and networking.</p>
+      </div>
+    </div>
+
+    <div class="media-grid">
+      <div class="media-item">
+        <img src="../release/deliverables/demos/profile/screenshots/profile.png" alt="Profile view">
+        <div class="caption">User profile with suggested connections</div>
+      </div>
+      <div class="media-item">
+        <video controls muted playsinline preload="metadata">
+          <source src="../release/deliverables/demos/profile/demo-videos/profile-demo.mov" type="video/quicktime">
+        </video>
+        <div class="caption">Profile walkthrough</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Built by <a href="https://github.com/toniu">Neka Toni-Uebari</a> &middot; <a href="https://github.com/toniu/SPortal">Source on GitHub</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

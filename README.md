@@ -4,6 +4,8 @@ A suite of five SharePoint Framework web parts that form a self-contained intran
 
 > **Built with:** SPFx 1.16 · TypeScript · React · PnPjs · Office UI Fabric React · Jest · Gulp · SharePoint Lists
 
+### [View Live Demo](https://toniu.github.io/SPortal/)
+
 ---
 
 ## Table of Contents
