@@ -332,7 +332,29 @@ app.innerHTML = `
               `
             ).join('');
             const vidsSlides = vidsArr.map(m=>{
-              const posterSrc = (imgsArr && imgsArr.length) ? (imgsArr[0].remote || imgsArr[0].src) : (m.remoteMp4 || m.remote || '');
+              // determine a sensible poster for each video:
+              // 1) explicit poster on video object (m.poster)
+              // 2) find a screenshot in imgsArr with a similar filename
+              // 3) fall back to the first screenshot in the section
+              // 4) fall back to remote video thumbnail or empty string
+              let posterSrc = '';
+              if(m.poster){ posterSrc = m.poster; }
+              else {
+                const vFile = (m.mp4 || m.mov || '').split('/').pop() || '';
+                const vBase = vFile.split('.').slice(0,-1).join('.') || vFile.replace(/\.[^/.]+$/, '');
+                let matched = null;
+                if(vBase && imgsArr && imgsArr.length){
+                  matched = imgsArr.find(img=>{
+                    const imgFile = (img.src || img.remote || '').split('/').pop() || '';
+                    const imgBase = imgFile.split('.').slice(0,-1).join('.') || imgFile.replace(/\.[^/.]+$/, '');
+                    if(!imgBase) return false;
+                    return imgBase.includes(vBase) || vBase.includes(imgBase);
+                  });
+                }
+                if(matched){ posterSrc = matched.remote || matched.src || ''; }
+                else if(imgsArr && imgsArr.length){ posterSrc = imgsArr[0].remote || imgsArr[0].src || ''; }
+                else { posterSrc = m.remoteMp4 || m.remote || ''; }
+              }
               return `
                 <div class="carousel-slide">
                   <div class="media-frame video-wrap">
@@ -340,7 +362,7 @@ app.innerHTML = `
                       <source src="${m.mp4}" type="video/mp4">
                       <source src="${m.mov}" type="video/quicktime">
                     </video>
-                    <button class="video-play" aria-label="Play video">${/* play svg */ ''}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z" fill="currentColor"/></svg></button>
+                    <button class="video-play" aria-label="Play video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z" fill="currentColor"/></svg></button>
                   </div>
                   <div class="caption">${m.caption}</div>
                 </div>
